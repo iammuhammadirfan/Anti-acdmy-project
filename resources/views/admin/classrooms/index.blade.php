@@ -1,0 +1,74 @@
+@extends('layouts.admin')
+
+@section('title', 'Classrooms & Testing Facilities')
+@section('header', 'Classrooms & Labs Management')
+
+@section('content')
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <p class="text-sm text-slate-400">Manage smart acoustic labs, lecture simulation theatres, and examination suites.</p>
+        <a href="{{ route('admin.classrooms.create') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition-all flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Add New Facility
+        </a>
+    </div>
+
+    @if(session('success'))
+        <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-950/80 text-slate-400 uppercase font-semibold border-b border-slate-800">
+                <tr>
+                    <th class="px-6 py-4">Facility Title</th>
+                    <th class="px-6 py-4">Type</th>
+                    <th class="px-6 py-4">Capacity</th>
+                    <th class="px-6 py-4">Status</th>
+                    <th class="px-6 py-4 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800">
+                @forelse($classrooms as $room)
+                    <tr class="hover:bg-slate-800/40 transition-colors">
+                        <td class="px-6 py-4 font-bold text-white">
+                            <div class="text-sm">{{ $room->title }}</div>
+                            <div class="text-[11px] text-slate-500 font-normal">{{ $room->slug }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 bg-slate-800 border border-slate-700 rounded-md text-blue-400 font-semibold">{{ $room->class_type }}</span>
+                        </td>
+                        <td class="px-6 py-4 font-semibold text-white">
+                            {{ $room->capacity }} Seats
+                        </td>
+                        <td class="px-6 py-4">
+                            <form action="{{ route('admin.classrooms.toggle', $room) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="px-2.5 py-1 rounded-full text-[10px] font-bold {{ $room->status ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30' }}">
+                                    {{ $room->status ? 'Active' : 'Inactive' }}
+                                </button>
+                            </form>
+                        </td>
+                        <td class="px-6 py-4 text-right space-x-2">
+                            <a href="{{ route('admin.classrooms.edit', $room) }}" class="text-blue-400 hover:text-blue-300 font-semibold">Edit</a>
+                            <form action="{{ route('admin.classrooms.destroy', $room) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to remove this classroom?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-rose-400 hover:text-rose-300 font-semibold">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-slate-500">No classrooms configured yet.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <div>{{ $classrooms->links() }}</div>
+</div>
+@endsection
