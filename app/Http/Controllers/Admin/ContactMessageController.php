@@ -5,10 +5,18 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\ContactMessage;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class ContactMessageController extends Controller
 {
+    protected NotificationService $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     public function index(Request $request)
     {
         $status = $request->get('status');
@@ -39,7 +47,10 @@ class ContactMessageController extends Controller
 
         ActivityLog::log('update', 'contact', "Replied to message from: {$message->name}");
 
-        return back()->with('success', 'Reply saved.');
+        // Email the reply to the inquirer
+        $this->notificationService->sendContactReplyNotification($message);
+
+        return back()->with('success', 'Reply saved and email dispatched to the sender.');
     }
 
     public function destroy(ContactMessage $message)

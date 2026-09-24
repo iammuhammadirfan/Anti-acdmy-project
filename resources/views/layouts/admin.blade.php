@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin Dashboard') — Apex Academy &amp; IETS</title>
 
+    @php
+        $siteLogo = $globalSettings['academy_logo'] ?? \App\Models\Setting::get('academy_logo');
+        $siteName = $globalSettings['academy_name'] ?? \App\Models\Setting::get('academy_name', 'Apex Academy & IETS');
+    @endphp
+
+    @if(!empty($siteLogo))
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $siteLogo) }}">
+        <link rel="apple-touch-icon" href="{{ asset('storage/' . $siteLogo) }}">
+    @endif
+
     <!-- Google Fonts & Tailwind CDN -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,12 +70,18 @@
             <!-- Brand Header -->
             <div class="h-16 px-6 bg-slate-950 flex items-center justify-between border-b border-slate-800">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold shadow-md shadow-brand-500/20">
-                        <i data-lucide="graduation-cap" class="w-5 h-5"></i>
-                    </div>
+                    @if(!empty($siteLogo))
+                        <div class="w-9 h-9 rounded-xl bg-white p-0.5 flex items-center justify-center shrink-0 shadow">
+                            <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" class="h-full w-full object-contain">
+                        </div>
+                    @else
+                        <div class="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold shadow-md shadow-brand-500/20">
+                            <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                        </div>
+                    @endif
                     <div>
                         <span class="font-extrabold text-white text-base tracking-tight block">Apex Admin</span>
-                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Academy &amp; IETS</span>
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block truncate max-w-[130px]">{{ $siteName }}</span>
                     </div>
                 </a>
                 <button @click="sidebarOpen = false" class="md:hidden text-slate-400 hover:text-white">

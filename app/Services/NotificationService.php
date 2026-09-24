@@ -13,10 +13,64 @@ use Illuminate\Support\Facades\Mail;
 class NotificationService
 {
     /**
+     * Dynamically configure SMTP mail settings from database settings if defined
+     */
+    public function configureDynamicSmtp(): void
+    {
+        try {
+            $smtpHost = Setting::get('smtp_host');
+
+            // If custom SMTP host is defined in settings
+            if (!empty($smtpHost) && $smtpHost !== '127.0.0.1') {
+                $port = (int) Setting::get('smtp_port', 587);
+                $username = Setting::get('smtp_username');
+                $password = Setting::get('smtp_password');
+                $encryption = Setting::get('smtp_encryption', 'tls');
+                $fromAddress = Setting::get('mail_from_address', config('mail.from.address'));
+                $fromName = Setting::get('mail_from_name', Setting::get('academy_name', config('mail.from.name')));
+
+                config([
+                    'mail.default' => 'smtp',
+                    'mail.mailers.smtp.transport' => 'smtp',
+                    'mail.mailers.smtp.host' => $smtpHost,
+                    'mail.mailers.smtp.port' => $port,
+                    'mail.mailers.smtp.encryption' => ($encryption === 'none' || empty($encryption)) ? null : $encryption,
+                    'mail.mailers.smtp.username' => $username,
+                    'mail.mailers.smtp.password' => $password,
+                ]);
+
+                if (!empty($fromAddress)) {
+                    config([
+                        'mail.from.address' => $fromAddress,
+                        'mail.from.name' => $fromName,
+                    ]);
+                }
+
+                if (app()->bound('mail.manager')) {
+                    app('mail.manager')->purge('smtp');
+                }
+            } else {
+                $fromAddress = Setting::get('mail_from_address');
+                $fromName = Setting::get('mail_from_name');
+                if (!empty($fromAddress)) {
+                    config(['mail.from.address' => $fromAddress]);
+                }
+                if (!empty($fromName)) {
+                    config(['mail.from.name' => $fromName]);
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::debug('Dynamic SMTP configure notice: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Send notifications when an appointment / test is booked
      */
     public function sendAppointmentCreated(Appointment $appointment): void
     {
+        $this->configureDynamicSmtp();
+
         $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
         $isIets = ($appointment->type === 'iets_test');
 
@@ -27,7 +81,7 @@ class NotificationService
             'student_name' => $appointment->name,
             'email' => $appointment->email,
             'phone' => $appointment->phone,
-            'date' => $appointment->appointment_date->format('l, F j, Y'),
+            'date' => $appointment->appointment_date ? $appointment->appointment_date->format('l, F j, Y') : '',
             'time' => $appointment->time_slot,
             'registration_number' => $appointment->registration_number ?: $appointment->booking_code,
             'test_type' => $appointment->test_type ?: ($appointment->purpose ?: 'Campus Counseling'),
@@ -47,7 +101,7 @@ class NotificationService
 
         // 3. Send WhatsApp Notification
         $regNumber = $appointment->registration_number ?: $appointment->booking_code;
-        $dateFormatted = $appointment->appointment_date->format('M d, Y');
+        $dateFormatted = $appointment->appointment_date ? $appointment->appointment_date->format('M d, Y') : '';
         if ($isIets) {
             $waMessage = "Dear {$appointment->name},\n\nYour IETS test has been successfully scheduled at {$appName}.\n\nTest: {$appointment->test_type}\nDate: {$dateFormatted}\nTime: {$appointment->time_slot}\nRegistration Number: {$regNumber}\n\nPlease arrive on time with your registration number and valid ID.\n\nThank you.";
         } else {
@@ -62,6 +116,8 @@ class NotificationService
      */
     public function sendAppointmentStatusUpdated(Appointment $appointment, string $newStatus): void
     {
+        $this->configureDynamicSmtp();
+
         $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
         $regNumber = $appointment->registration_number ?: $appointment->booking_code;
 
@@ -69,7 +125,7 @@ class NotificationService
             'student_name' => $appointment->name,
             'email' => $appointment->email,
             'phone' => $appointment->phone,
-            'date' => $appointment->appointment_date->format('l, F j, Y'),
+            'date' => $appointment->appointment_date ? $appointment->appointment_date->format('l, F j, Y') : '',
             'time' => $appointment->time_slot,
             'registration_number' => $regNumber,
             'test_type' => $appointment->test_type ?: ($appointment->purpose ?: 'Campus Counseling'),
@@ -84,9 +140,10 @@ class NotificationService
             $rendered = $template->render($renderData);
             $this->sendRawHtmlEmail($appointment->email, $appointment->name, $rendered['subject'], $rendered['body'], $appName);
 
+            $dateStr = $appointment->appointment_date ? $appointment->appointment_date->format('M d, Y') : '';
             $this->sendWhatsAppMessage(
                 $appointment->whatsapp ?: $appointment->phone,
-                "Hello {$appointment->name},\n\nYour booking ({$regNumber}) for {$appointment->appointment_date->format('M d, Y')} at {$appointment->time_slot} has been CANCELLED.\n\nPlease contact administration if you wish to reschedule."
+                "Hello {$appointment->name},\n\nYour booking ({$regNumber}) for {$dateStr} at {$appointment->time_slot} has been CANCELLED.\n\nPlease contact administration if you wish to reschedule."
             );
             return;
         }
@@ -100,15 +157,22 @@ class NotificationService
         };
 
         try {
-            Mail::send('emails.appointment_status', ['appointment' => $appointment, 'appName' => $appName], function ($mail) use ($appointment, $subject) {
+            $fromAddress = Setting::get('mail_from_address', config('mail.from.address'));
+            $fromName = Setting::get('mail_from_name', $appName);
+
+            Mail::send('emails.appointment_status', ['appointment' => $appointment, 'appName' => $appName], function ($mail) use ($appointment, $subject, $fromAddress, $fromName) {
+                if (!empty($fromAddress)) {
+                    $mail->from($fromAddress, $fromName);
+                }
                 $mail->to($appointment->email, $appointment->name)->subject($subject);
             });
         } catch (\Exception $e) {
             Log::warning("Appointment status email to {$appointment->email} failed: " . $e->getMessage());
         }
 
+        $dateStr = $appointment->appointment_date ? $appointment->appointment_date->format('M d, Y') : '';
         $whatsappText = match ($newStatus) {
-            'confirmed' => "Great news {$appointment->name}!\n\nYour booking (ID: {$regNumber}) is CONFIRMED for {$appointment->appointment_date->format('M d, Y')} at {$appointment->time_slot}.\n\nWe look forward to seeing you at {$appName}.",
+            'confirmed' => "Great news {$appointment->name}!\n\nYour booking (ID: {$regNumber}) is CONFIRMED for {$dateStr} at {$appointment->time_slot}.\n\nWe look forward to seeing you at {$appName}.",
             'completed' => "Hello {$appointment->name},\n\nThank you for visiting {$appName}. We hope your session went great!",
             'no_show' => "Hello {$appointment->name},\n\nYou were marked as absent for your scheduled booking ({$regNumber}). Please contact us to reschedule.",
             default => "Hello {$appointment->name},\n\nYour booking status has been updated to {$newStatus}."
@@ -122,6 +186,8 @@ class NotificationService
      */
     public function sendAppointmentRescheduled(Appointment $appointment): void
     {
+        $this->configureDynamicSmtp();
+
         $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
         $template = EmailTemplate::getTemplate('rescheduled');
 
@@ -129,7 +195,7 @@ class NotificationService
             'student_name' => $appointment->name,
             'email' => $appointment->email,
             'phone' => $appointment->phone,
-            'date' => $appointment->appointment_date->format('l, F j, Y'),
+            'date' => $appointment->appointment_date ? $appointment->appointment_date->format('l, F j, Y') : '',
             'time' => $appointment->time_slot,
             'registration_number' => $appointment->registration_number ?: $appointment->booking_code,
             'test_type' => $appointment->test_type ?: ($appointment->purpose ?: 'Campus Counseling'),
@@ -142,9 +208,10 @@ class NotificationService
         $rendered = $template->render($renderData);
         $this->sendRawHtmlEmail($appointment->email, $appointment->name, $rendered['subject'], $rendered['body'], $appName);
 
+        $dateStr = $appointment->appointment_date ? $appointment->appointment_date->format('M d, Y') : '';
         $this->sendWhatsAppMessage(
             $appointment->whatsapp ?: $appointment->phone,
-            "Hello {$appointment->name},\n\nYour booking ({$renderData['registration_number']}) at {$appName} has been RESCHEDULED to {$appointment->appointment_date->format('M d, Y')} at {$appointment->time_slot}.\n\nPlease arrive 15 minutes before your new time."
+            "Hello {$appointment->name},\n\nYour booking ({$renderData['registration_number']}) at {$appName} has been RESCHEDULED to {$dateStr} at {$appointment->time_slot}.\n\nPlease arrive 15 minutes before your new time."
         );
     }
 
@@ -153,6 +220,8 @@ class NotificationService
      */
     public function sendReminder(Appointment $appointment): void
     {
+        $this->configureDynamicSmtp();
+
         $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
         $template = EmailTemplate::getTemplate('reminder');
 
@@ -160,7 +229,7 @@ class NotificationService
             'student_name' => $appointment->name,
             'email' => $appointment->email,
             'phone' => $appointment->phone,
-            'date' => $appointment->appointment_date->format('l, F j, Y'),
+            'date' => $appointment->appointment_date ? $appointment->appointment_date->format('l, F j, Y') : '',
             'time' => $appointment->time_slot,
             'registration_number' => $appointment->registration_number ?: $appointment->booking_code,
             'test_type' => $appointment->test_type ?: ($appointment->purpose ?: 'Campus Counseling'),
@@ -173,18 +242,32 @@ class NotificationService
         $rendered = $template->render($renderData);
         $this->sendRawHtmlEmail($appointment->email, $appointment->name, $rendered['subject'], $rendered['body'], $appName);
 
+        $dateStr = $appointment->appointment_date ? $appointment->appointment_date->format('M d, Y') : '';
         $this->sendWhatsAppMessage(
             $appointment->whatsapp ?: $appointment->phone,
-            "Reminder for {$appointment->name}:\n\nYour session at {$appName} (ID: {$renderData['registration_number']}) is tomorrow ({$appointment->appointment_date->format('M d, Y')}) at {$appointment->time_slot}. Please be on time with your ID."
+            "Reminder for {$appointment->name}:\n\nYour session at {$appName} (ID: {$renderData['registration_number']}) is tomorrow ({$dateStr}) at {$appointment->time_slot}. Please be on time with your ID."
         );
     }
 
     /**
-     * Helper to send HTML email
+     * Helper to send HTML email with dynamically configured from address and branding
      */
     protected function sendRawHtmlEmail(string $recipientEmail, string $recipientName, string $subject, string $htmlBody, string $appName): void
     {
+        $this->configureDynamicSmtp();
+
         try {
+            $fromAddress = Setting::get('mail_from_address', config('mail.from.address'));
+            $fromName = Setting::get('mail_from_name', Setting::get('academy_name', config('mail.from.name')));
+            $currentYear = date('Y');
+
+            $logoHtml = '';
+            $academyLogo = Setting::get('academy_logo');
+            if (!empty($academyLogo)) {
+                $logoUrl = asset('storage/' . $academyLogo);
+                $logoHtml = "<div style=\"margin-bottom: 12px;\"><img src=\"{$logoUrl}\" alt=\"{$appName}\" style=\"height: 52px; max-height: 52px; width: auto; background: #ffffff; padding: 4px; border-radius: 8px; display: inline-block;\"></div>";
+            }
+
             $wrappedHtml = <<<HTML
 <!DOCTYPE html>
 <html>
@@ -192,6 +275,7 @@ class NotificationService
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #f1f5f9; margin: 0; padding: 24px;">
     <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
         <div style="background: linear-gradient(135deg, #1e3a8a, #2563eb); padding: 28px 24px; color: #ffffff; text-align: center;">
+            {$logoHtml}
             <h1 style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">{$appName}</h1>
             <p style="margin: 6px 0 0 0; opacity: 0.9; font-size: 13px;">Official Admissions &amp; IETS Testing Center</p>
         </div>
@@ -199,14 +283,17 @@ class NotificationService
             {$htmlBody}
         </div>
         <div style="background: #f8fafc; padding: 16px; text-align: center; color: #94a3b8; font-size: 11px; border-top: 1px solid #e2e8f0;">
-            &copy; {date('Y')} {$appName}. All rights reserved. • This is an automated notification.
+            &copy; {$currentYear} {$appName}. All rights reserved. &bull; This is an automated notification.
         </div>
     </div>
 </body>
 </html>
 HTML;
 
-            Mail::html($wrappedHtml, function ($mail) use ($recipientEmail, $recipientName, $subject, $appName) {
+            Mail::html($wrappedHtml, function ($mail) use ($recipientEmail, $recipientName, $subject, $appName, $fromAddress, $fromName) {
+                if (!empty($fromAddress)) {
+                    $mail->from($fromAddress, $fromName);
+                }
                 $mail->to($recipientEmail, $recipientName)
                      ->subject("{$subject} - {$appName}");
             });
@@ -221,9 +308,12 @@ HTML;
     protected function sendAdminAppointmentEmail(Appointment $appointment, string $appName): void
     {
         try {
-            $adminEmail = Setting::get('admin_email', config('mail.from.address', 'admin@antiacademy.edu'));
+            $adminEmail = Setting::get('admin_email') 
+                ?: Setting::get('contact_email') 
+                ?: config('mail.from.address', 'admin@antiacademy.edu');
             $regNumber = $appointment->registration_number ?: $appointment->booking_code;
             $typeLabel = ($appointment->type === 'iets_test') ? 'IETS Test Registration' : 'Counseling Appointment';
+            $dateStr = $appointment->appointment_date ? $appointment->appointment_date->format('l, F j, Y') : '';
 
             $body = <<<HTML
 <p>A new student booking has been submitted through the portal.</p>
@@ -233,7 +323,8 @@ HTML;
     <p style="margin: 3px 0;"><strong>Student Name:</strong> {$appointment->name}</p>
     <p style="margin: 3px 0;"><strong>Email:</strong> {$appointment->email}</p>
     <p style="margin: 3px 0;"><strong>Phone:</strong> {$appointment->phone}</p>
-    <p style="margin: 3px 0;"><strong>Date:</strong> {$appointment->appointment_date->format('l, F j, Y')}</p>
+    <p style="margin: 3px 0;"><strong>WhatsApp:</strong> {$appointment->whatsapp}</p>
+    <p style="margin: 3px 0;"><strong>Date:</strong> {$dateStr}</p>
     <p style="margin: 3px 0;"><strong>Time Slot:</strong> {$appointment->time_slot}</p>
     <p style="margin: 3px 0;"><strong>Test / Purpose:</strong> {$appointment->purpose} {$appointment->test_type}</p>
     <p style="margin: 3px 0;"><strong>Status:</strong> {$appointment->status}</p>
@@ -247,20 +338,73 @@ HTML;
     }
 
     /**
-     * Notify admin of a new contact submission
+     * Notify both admin and user of a new contact form submission
      */
     public function sendContactMessageNotification(ContactMessage $msg): void
     {
-        try {
-            $adminEmail = Setting::get('admin_email', config('mail.from.address', 'admin@antiacademy.edu'));
-            $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+        $this->configureDynamicSmtp();
 
-            Mail::send('emails.contact_received', ['msg' => $msg, 'appName' => $appName], function ($mail) use ($adminEmail, $msg, $appName) {
+        $adminEmail = Setting::get('admin_email') 
+            ?: Setting::get('contact_email') 
+            ?: config('mail.from.address', 'admin@antiacademy.edu');
+        $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+        $fromAddress = Setting::get('mail_from_address', config('mail.from.address'));
+        $fromName = Setting::get('mail_from_name', $appName);
+
+        // 1. Alert sent to Admin Office
+        try {
+            Mail::send('emails.contact_received', ['msg' => $msg, 'appName' => $appName], function ($mail) use ($adminEmail, $msg, $appName, $fromAddress, $fromName) {
+                if (!empty($fromAddress)) {
+                    $mail->from($fromAddress, $fromName);
+                }
                 $mail->to($adminEmail)
                     ->subject("New Contact Message from {$msg->name} - {$appName}");
             });
         } catch (\Exception $e) {
-            Log::warning('Contact message email failed: ' . $e->getMessage());
+            Log::warning('Contact message admin email failed: ' . $e->getMessage());
+        }
+
+        // 2. Acknowledgment sent to the Student / Sender
+        if (!empty($msg->email)) {
+            try {
+                Mail::send('emails.contact_acknowledgement', ['msg' => $msg, 'appName' => $appName], function ($mail) use ($msg, $appName, $fromAddress, $fromName) {
+                    if (!empty($fromAddress)) {
+                        $mail->from($fromAddress, $fromName);
+                    }
+                    $mail->to($msg->email, $msg->name)
+                        ->subject("We received your message - {$appName}");
+                });
+            } catch (\Exception $e) {
+                Log::warning("Contact acknowledgement email to {$msg->email} failed: " . $e->getMessage());
+            }
+        }
+    }
+
+    /**
+     * Send email to student when admin replies to a contact message
+     */
+    public function sendContactReplyNotification(ContactMessage $msg): void
+    {
+        if (empty($msg->email) || empty($msg->admin_reply)) {
+            return;
+        }
+
+        $this->configureDynamicSmtp();
+
+        $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+        $fromAddress = Setting::get('mail_from_address', config('mail.from.address'));
+        $fromName = Setting::get('mail_from_name', $appName);
+
+        try {
+            Mail::send('emails.contact_reply', ['msg' => $msg, 'appName' => $appName], function ($mail) use ($msg, $appName, $fromAddress, $fromName) {
+                if (!empty($fromAddress)) {
+                    $mail->from($fromAddress, $fromName);
+                }
+                $mail->to($msg->email, $msg->name)
+                    ->subject("Response to your inquiry: " . ($msg->subject ?: 'General Inquiry') . " - {$appName}");
+            });
+        } catch (\Exception $e) {
+            Log::warning("Contact reply email to {$msg->email} failed: " . $e->getMessage());
         }
     }
 

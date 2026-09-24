@@ -61,6 +61,23 @@
     <!-- Structured Data (JSON-LD) -->
     @yield('schema_json')
 
+    @php
+        $siteLogo = $globalSettings['academy_logo'] ?? \App\Models\Setting::get('academy_logo');
+        $siteName = $globalSettings['academy_name'] ?? \App\Models\Setting::get('academy_name', 'Apex Academy & IETS');
+        $sitePhone = $globalSettings['contact_phone'] ?? \App\Models\Setting::get('contact_phone', '+1 (555) 234-5678');
+        $siteEmail = $globalSettings['contact_email'] ?? \App\Models\Setting::get('contact_email', 'info@antiacademy.edu');
+        $siteAddress = $globalSettings['contact_address'] ?? \App\Models\Setting::get('contact_address', '124 Academic Boulevard, Knowledge Park');
+        $fbLink = $globalSettings['social_facebook'] ?? \App\Models\Setting::get('social_facebook', 'https://facebook.com');
+        $instaLink = $globalSettings['social_instagram'] ?? \App\Models\Setting::get('social_instagram', 'https://instagram.com');
+        $ytLink = $globalSettings['social_youtube'] ?? \App\Models\Setting::get('social_youtube', 'https://youtube.com');
+        $liLink = $globalSettings['social_linkedin'] ?? \App\Models\Setting::get('social_linkedin', 'https://linkedin.com');
+    @endphp
+
+    @if(!empty($siteLogo))
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $siteLogo) }}">
+        <link rel="apple-touch-icon" href="{{ asset('storage/' . $siteLogo) }}">
+    @endif
+
     <style>
         [x-cloak] { display: none !important; }
         .glassmorphism {
@@ -80,8 +97,8 @@
     <div class="bg-brand-950 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
             <div class="flex items-center gap-4">
-                <span class="flex items-center gap-1.5"><i data-lucide="phone" class="w-3.5 h-3.5 text-accent-500"></i> +1 (555) 234-5678</span>
-                <span class="flex items-center gap-1.5 hidden md:flex"><i data-lucide="mail" class="w-3.5 h-3.5 text-accent-500"></i> info@antiacademy.edu</span>
+                <span class="flex items-center gap-1.5"><i data-lucide="phone" class="w-3.5 h-3.5 text-accent-500"></i> {{ $sitePhone }}</span>
+                <span class="flex items-center gap-1.5 hidden md:flex"><i data-lucide="mail" class="w-3.5 h-3.5 text-accent-500"></i> {{ $siteEmail }}</span>
                 <span class="hidden lg:inline text-slate-500">|</span>
                 <span class="hidden lg:inline text-slate-400">Admissions Open for Spring {{ date('Y') }} IETS & Language Batches</span>
             </div>
@@ -101,11 +118,17 @@
             <div class="flex items-center justify-between h-20">
                 <!-- Brand Logo -->
                 <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-                    <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-brand-700 to-brand-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/25 group-hover:scale-105 transition transform">
-                        <i data-lucide="graduation-cap" class="w-6 h-6"></i>
-                    </div>
+                    @if(!empty($siteLogo))
+                        <div class="h-12 w-12 rounded-xl bg-white p-1 shadow-sm border border-slate-200/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition transform">
+                            <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" class="h-full w-full object-contain">
+                        </div>
+                    @else
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-brand-700 to-brand-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/25 group-hover:scale-105 transition transform">
+                            <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                        </div>
+                    @endif
                     <div>
-                        <span class="text-xl font-extrabold tracking-tight text-slate-900 group-hover:text-brand-600 transition">Apex Academy</span>
+                        <span class="text-xl font-extrabold tracking-tight text-slate-900 group-hover:text-brand-600 transition">{{ $siteName }}</span>
                         <span class="text-xs font-bold uppercase tracking-wider text-accent-600 block">&amp; IETS Center</span>
                     </div>
                 </a>
@@ -198,19 +221,33 @@
                 <!-- Col 1: About -->
                 <div class="lg:col-span-2 space-y-4">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-xl">
-                            <i data-lucide="graduation-cap" class="w-6 h-6"></i>
-                        </div>
-                        <span class="text-xl font-bold text-white tracking-tight">Apex Academy &amp; IETS</span>
+                        @if(!empty($siteLogo))
+                            <div class="h-12 w-12 rounded-xl bg-white p-1 shadow-sm flex items-center justify-center shrink-0">
+                                <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" class="h-full w-full object-contain">
+                            </div>
+                        @else
+                            <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-xl">
+                                <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                            </div>
+                        @endif
+                        <span class="text-xl font-bold text-white tracking-tight">{{ $siteName }}</span>
                     </div>
                     <p class="text-sm text-slate-400 leading-relaxed pr-6">
                         An elite educational institution dedicated to higher learning, language fluency, and premier IELTS/IETS test preparation. Featuring AI-assisted evaluation, world-class faculty, and modern laboratory infrastructure.
                     </p>
                     <div class="flex items-center gap-3 pt-2">
-                        <a href="https://facebook.com" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i data-lucide="facebook" class="w-4 h-4"></i></a>
-                        <a href="https://instagram.com" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i data-lucide="instagram" class="w-4 h-4"></i></a>
-                        <a href="https://youtube.com" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i data-lucide="youtube" class="w-4 h-4"></i></a>
-                        <a href="https://linkedin.com" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+                        @if(!empty($fbLink))
+                            <a href="{{ $fbLink }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+                        @endif
+                        @if(!empty($instaLink))
+                            <a href="{{ $instaLink }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+                        @endif
+                        @if(!empty($ytLink))
+                            <a href="{{ $ytLink }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i data-lucide="youtube" class="w-4 h-4"></i></a>
+                        @endif
+                        @if(!empty($liLink))
+                            <a href="{{ $liLink }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+                        @endif
                     </div>
                 </div>
 
@@ -246,15 +283,15 @@
                     <div class="space-y-3 text-sm text-slate-400">
                         <p class="flex items-start gap-2.5">
                             <i data-lucide="map-pin" class="w-4 h-4 text-accent-500 shrink-0 mt-1"></i>
-                            <span>124 Academic Boulevard, Knowledge Park</span>
+                            <span>{{ $siteAddress }}</span>
                         </p>
                         <p class="flex items-center gap-2.5">
                             <i data-lucide="phone" class="w-4 h-4 text-accent-500 shrink-0"></i>
-                            <span>+1 (555) 234-5678</span>
+                            <span>{{ $sitePhone }}</span>
                         </p>
                         <p class="flex items-center gap-2.5">
                             <i data-lucide="mail" class="w-4 h-4 text-accent-500 shrink-0"></i>
-                            <span>info@antiacademy.edu</span>
+                            <span>{{ $siteEmail }}</span>
                         </p>
                         <p class="flex items-center gap-2.5">
                             <i data-lucide="clock" class="w-4 h-4 text-accent-500 shrink-0"></i>

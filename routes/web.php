@@ -335,6 +335,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::middleware(['module.permission:settings'])->group(function () {
         Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
+        Route::post('/settings/test-smtp', [SettingController::class, 'testSmtp'])->name('admin.settings.test_smtp');
     });
 
     // Audit Activity Logs
