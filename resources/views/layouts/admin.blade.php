@@ -137,24 +137,67 @@
                 </a>
                 @endif
 
-                <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Admissions &amp; Booking</div>
+                <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Scheduling &amp; Admissions</div>
 
                 @if(auth()->user()->canAccessSection('appointments'))
-                <a href="{{ route('admin.appointments.index') }}" 
-                   class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.appointments*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
-                    <div class="flex items-center gap-3">
-                        <i data-lucide="calendar-check" class="w-4 h-4"></i>
-                        <span>Appointments</span>
-                    </div>
-                </a>
-                @endif
+                <div x-data="{ open: {{ request()->routeIs('admin.scheduling*') || request()->routeIs('admin.appointments*') ? 'true' : 'false' }} }" class="space-y-1">
+                    <button type="button" @click="open = !open" 
+                            class="w-full flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.scheduling*') || request()->routeIs('admin.appointments*') ? 'bg-slate-800 text-white font-bold' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="calendar-range" class="w-4 h-4 text-brand-400"></i>
+                            <span>Scheduling</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform" :class="open ? 'rotate-180 text-brand-400' : 'text-slate-400'"></i>
+                    </button>
 
-                @if(auth()->user()->canAccessSection('calendar'))
-                <a href="{{ route('admin.calendar.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.calendar*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
-                    <i data-lucide="clock" class="w-4 h-4"></i>
-                    <span>Calendar Schedule</span>
-                </a>
+                    <div x-show="open" x-cloak class="pl-4 pr-1 py-1 space-y-1 text-xs">
+                        <a href="{{ route('admin.scheduling.dashboard') }}" 
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.dashboard') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                            <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+                            <span>Scheduling Dashboard</span>
+                        </a>
+                        <a href="{{ route('admin.scheduling.calendar') }}" 
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.calendar') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                            <span>Calendar</span>
+                        </a>
+                        <a href="{{ route('admin.scheduling.counseling') }}" 
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.counseling') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                            <i data-lucide="messages-square" class="w-3.5 h-3.5"></i>
+                            <span>Counseling Appointments</span>
+                        </a>
+                        <a href="{{ route('admin.scheduling.iets') }}" 
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.iets') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                            <i data-lucide="file-check-2" class="w-3.5 h-3.5"></i>
+                            <span>IETS Test Schedule</span>
+                        </a>
+                        <a href="{{ route('admin.scheduling.slots') }}" 
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.slots') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                            <span>Slot Management</span>
+                        </a>
+                        <a href="{{ route('admin.scheduling.bookings') }}" 
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.bookings') && !request()->routeIs('admin.scheduling.counseling') && !request()->routeIs('admin.scheduling.iets') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                            <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                            <span>Bookings</span>
+                        </a>
+                        <a href="{{ route('admin.scheduling.students') }}" 
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.students') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                            <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                            <span>Students</span>
+                        </a>
+                        <a href="{{ route('admin.scheduling.emails') }}" 
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.email*') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                            <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+                            <span>Email Notifications</span>
+                        </a>
+                        <a href="{{ route('admin.scheduling.settings') }}" 
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.settings') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                            <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+                            <span>Settings</span>
+                        </a>
+                    </div>
+                </div>
                 @endif
 
                 @if(auth()->user()->canAccessSection('contact'))

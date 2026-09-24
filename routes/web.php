@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\VideoController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\AppointmentController;
+use App\Http\Controllers\Admin\SchedulingController;
 use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\MediaController;
@@ -252,18 +253,47 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::delete('/faqs/{faq}', [FaqController::class, 'destroy'])->name('admin.faqs.destroy');
     });
 
-    // Appointments
+    // Scheduling & Appointment Management (Dynamic Section RBAC)
     Route::middleware(['module.permission:appointments'])->group(function () {
-        Route::get('/appointments', [AppointmentController::class, 'index'])->name('admin.appointments.index');
-        Route::get('/appointments/{appointment}', [AppointmentController::class, 'show'])->name('admin.appointments.show');
-        Route::post('/appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('admin.appointments.status');
+        // Dedicated Scheduling Section
+        Route::get('/scheduling', [SchedulingController::class, 'dashboard'])->name('admin.scheduling.dashboard');
+        Route::get('/scheduling/calendar', [SchedulingController::class, 'calendar'])->name('admin.scheduling.calendar');
+        Route::get('/scheduling/slots', [SchedulingController::class, 'slots'])->name('admin.scheduling.slots');
+        Route::post('/scheduling/slots', [SchedulingController::class, 'storeSlot'])->name('admin.scheduling.slot.store');
+        Route::post('/scheduling/slots/batch', [SchedulingController::class, 'batchGenerateSlots'])->name('admin.scheduling.slots.batch');
+        Route::put('/scheduling/slots/{slot}', [SchedulingController::class, 'updateSlot'])->name('admin.scheduling.slot.update');
+        Route::post('/scheduling/slots/{slot}/toggle', [SchedulingController::class, 'toggleSlot'])->name('admin.scheduling.slot.toggle');
+        Route::delete('/scheduling/slots/{slot}', [SchedulingController::class, 'destroySlot'])->name('admin.scheduling.slot.destroy');
+
+        Route::get('/scheduling/bookings', [SchedulingController::class, 'bookings'])->name('admin.scheduling.bookings');
+        Route::get('/scheduling/counseling', [SchedulingController::class, 'counselingSchedule'])->name('admin.scheduling.counseling');
+        Route::get('/scheduling/iets', [SchedulingController::class, 'ietsSchedule'])->name('admin.scheduling.iets');
+        Route::get('/scheduling/bookings/{booking}', [SchedulingController::class, 'showBooking'])->name('admin.scheduling.booking.show');
+        Route::post('/scheduling/bookings/{booking}/status', [SchedulingController::class, 'updateBookingStatus'])->name('admin.scheduling.booking.status');
+        Route::post('/scheduling/bookings/{booking}/reschedule', [SchedulingController::class, 'rescheduleBooking'])->name('admin.scheduling.booking.reschedule');
+        Route::get('/scheduling/export', [SchedulingController::class, 'exportBookings'])->name('admin.scheduling.export');
+
+        Route::get('/scheduling/students', [SchedulingController::class, 'students'])->name('admin.scheduling.students');
+
+        Route::get('/scheduling/emails', [SchedulingController::class, 'emails'])->name('admin.scheduling.emails');
+        Route::get('/scheduling/emails/{template}/edit', [SchedulingController::class, 'editEmail'])->name('admin.scheduling.email.edit');
+        Route::put('/scheduling/emails/{template}', [SchedulingController::class, 'updateEmail'])->name('admin.scheduling.email.update');
+        Route::post('/scheduling/emails/{template}/reset', [SchedulingController::class, 'resetEmail'])->name('admin.scheduling.email.reset');
+
+        Route::get('/scheduling/settings', [SchedulingController::class, 'settings'])->name('admin.scheduling.settings');
+        Route::post('/scheduling/settings', [SchedulingController::class, 'updateSettings'])->name('admin.scheduling.settings.update');
+
+        // Backward compatibility for legacy appointment endpoints
+        Route::get('/appointments', [SchedulingController::class, 'bookings'])->name('admin.appointments.index');
+        Route::get('/appointments/{appointment}', [SchedulingController::class, 'showBooking'])->name('admin.appointments.show');
+        Route::post('/appointments/{appointment}/status', [SchedulingController::class, 'updateBookingStatus'])->name('admin.appointments.status');
         Route::delete('/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('admin.appointments.destroy');
     });
 
-    // Calendar
+    // Calendar & Blocking
     Route::middleware(['module.permission:calendar'])->group(function () {
-        Route::get('/calendar', [CalendarController::class, 'index'])->name('admin.calendar.index');
-        Route::post('/calendar/settings', [CalendarController::class, 'updateSettings'])->name('admin.calendar.settings');
+        Route::get('/calendar', [SchedulingController::class, 'calendar'])->name('admin.calendar.index');
+        Route::post('/calendar/settings', [SchedulingController::class, 'updateSettings'])->name('admin.calendar.settings');
         Route::post('/calendar/block-date', [CalendarController::class, 'blockDate'])->name('admin.calendar.block');
         Route::delete('/calendar/unblock/{blockedDate}', [CalendarController::class, 'unblockDate'])->name('admin.calendar.unblock');
     });
