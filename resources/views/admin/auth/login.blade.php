@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff &amp; Admin Sign In — Apex Academy</title>
+
+    @php
+        $siteLogo = $globalSettings['academy_logo'] ?? \App\Models\Setting::get('academy_logo');
+        $siteName = $globalSettings['academy_name'] ?? \App\Models\Setting::get('academy_name', 'Apex Academy & IETS');
+    @endphp
+
+    @if(!empty($siteLogo))
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $siteLogo) }}">
+    @endif
+
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -12,10 +22,16 @@
     <div class="max-w-md w-full">
         <!-- Logo -->
         <div class="text-center mb-8">
-            <div class="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-500 items-center justify-center text-white shadow-xl shadow-blue-500/30 mb-3">
-                <i data-lucide="graduation-cap" class="w-8 h-8"></i>
-            </div>
-            <h1 class="text-2xl font-extrabold text-white tracking-tight">Apex Academy &amp; IETS</h1>
+            @if(!empty($siteLogo))
+                <div class="inline-flex w-20 h-20 rounded-2xl bg-white p-2 items-center justify-center shadow-xl shadow-blue-500/20 mb-3 border border-slate-100">
+                    <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" class="h-full w-full object-contain">
+                </div>
+            @else
+                <div class="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-500 items-center justify-center text-white shadow-xl shadow-blue-500/30 mb-3">
+                    <i data-lucide="graduation-cap" class="w-8 h-8"></i>
+                </div>
+            @endif
+            <h1 class="text-2xl font-extrabold text-white tracking-tight">{{ $siteName }}</h1>
             <p class="text-sm text-slate-400 mt-1">Management Portal &amp; Staff Login</p>
         </div>
 

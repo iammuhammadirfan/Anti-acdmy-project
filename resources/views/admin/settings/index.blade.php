@@ -114,10 +114,50 @@
     </div>
 
     <!-- SMTP Email Settings Form -->
-    <div x-show="tab === 'email'" x-cloak class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
-        <div>
-            <h3 class="font-bold text-slate-900 text-base">SMTP Mail Server Settings</h3>
-            <p class="text-xs text-slate-500">Configure outbound email credentials for automated appointment confirmations and inquiries.</p>
+    <div x-show="tab === 'email'" x-cloak class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6"
+         x-data="{
+             testing: false,
+             testEmail: '{{ $settings['admin_email'] ?: $settings['contact_email'] }}',
+             testResult: null,
+             testSuccess: false,
+             sendTestEmail() {
+                 if (!this.testEmail) {
+                     alert('Please enter a valid recipient email address.');
+                     return;
+                 }
+                 this.testing = true;
+                 this.testResult = null;
+                 fetch('{{ route('admin.settings.test_smtp') }}', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                         'Accept': 'application/json'
+                     },
+                     body: JSON.stringify({ test_email: this.testEmail })
+                 })
+                 .then(res => res.json().then(data => ({ status: res.status, body: data })))
+                 .then(res => {
+                     this.testing = false;
+                     this.testSuccess = res.status === 200 && res.body.success;
+                     this.testResult = res.body.message || (this.testSuccess ? 'Test email dispatched successfully!' : 'Failed to send test email.');
+                 })
+                 .catch(err => {
+                     this.testing = false;
+                     this.testSuccess = false;
+                     this.testResult = 'Network or request error: ' + err.message;
+                 });
+             }
+         }">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+                <h3 class="font-bold text-slate-900 text-base">SMTP Mail Server Settings</h3>
+                <p class="text-xs text-slate-500">Configure outbound email credentials for automated appointment confirmations and contact inquiries.</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Active Auto Dispatch
+            </span>
         </div>
 
         <form action="{{ route('admin.settings.update') }}" method="POST" class="space-y-5">
@@ -127,35 +167,50 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">SMTP Host</label>
-                    <input type="text" name="smtp_host" value="{{ $settings['smtp_host'] }}" placeholder="smtp.mailtrap.io"
+                    <input type="text" name="smtp_host" value="{{ $settings['smtp_host'] }}" placeholder="smtp.gmail.com or live.smtp.mailtrap.io" required
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <p class="text-[11px] text-slate-400 mt-1">e.g. <code>smtp.gmail.com</code> (Gmail) or your cPanel mail server</p>
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">SMTP Port</label>
-                    <input type="number" name="smtp_port" value="{{ $settings['smtp_port'] }}" placeholder="587 / 465"
+                    <input type="number" name="smtp_port" value="{{ $settings['smtp_port'] }}" placeholder="587 or 465" required
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <p class="text-[11px] text-slate-400 mt-1">Recommended: <code>587</code> for TLS or <code>465</code> for SSL</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">SMTP Username / Email</label>
+                    <input type="text" name="smtp_username" value="{{ $settings['smtp_username'] }}" placeholder="your-email@gmail.com" required
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">SMTP Username</label>
-                    <input type="text" name="smtp_username" value="{{ $settings['smtp_username'] }}"
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">SMTP Password / App Password</label>
+                    <input type="password" name="smtp_password" placeholder="{{ !empty($settings['smtp_password']) ? '•••••••• (leave blank to keep current)' : 'Enter password or 16-char App Password' }}"
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <p class="text-[11px] text-slate-400 mt-1">For Gmail, use Google 2FA 16-character "App Password"</p>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">SMTP Password</label>
-                    <input type="password" name="smtp_password" placeholder="{{ !empty($settings['smtp_password']) ? '••••••••' : 'Enter password' }}"
-                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Encryption</label>
-                    <select name="smtp_encryption" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                        <option value="tls" {{ $settings['smtp_encryption'] === 'tls' ? 'selected' : '' }}>TLS</option>
-                        <option value="ssl" {{ $settings['smtp_encryption'] === 'ssl' ? 'selected' : '' }}>SSL</option>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Encryption Protocol</label>
+                    <select name="smtp_encryption" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="tls" {{ $settings['smtp_encryption'] === 'tls' ? 'selected' : '' }}>TLS (Recommended for Port 587)</option>
+                        <option value="ssl" {{ $settings['smtp_encryption'] === 'ssl' ? 'selected' : '' }}>SSL (For Port 465)</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">From Email Address</label>
-                    <input type="email" name="mail_from_address" value="{{ $settings['mail_from_address'] }}"
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Sender Name (From Name)</label>
+                    <input type="text" name="mail_from_name" value="{{ $settings['mail_from_name'] }}" placeholder="Apex Academy & IETS Center" required
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">From Email Address</label>
+                    <input type="email" name="mail_from_address" value="{{ $settings['mail_from_address'] }}" placeholder="no-reply@yourdomain.com" required
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <p class="text-[11px] text-slate-400 mt-1">Must match your SMTP account or authenticated domain</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Admin Notification Inbox (Alerts Email)</label>
+                    <input type="email" name="admin_email" value="{{ $settings['admin_email'] }}" placeholder="admin@yourdomain.com" required
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <p class="text-[11px] text-slate-400 mt-1">All new appointment bookings and contact inquiries will arrive here</p>
                 </div>
             </div>
 
@@ -163,6 +218,64 @@
                 <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow transition">Save SMTP Configuration</button>
             </div>
         </form>
+
+        <!-- Test SMTP Connection Card -->
+        <div class="mt-8 pt-6 border-t border-slate-200/80 bg-slate-50/70 p-5 rounded-xl border">
+            <h4 class="font-bold text-slate-900 text-sm mb-1 flex items-center gap-2">
+                <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                Instant SMTP Connection Test
+            </h4>
+            <p class="text-xs text-slate-500 mb-4">Send an instant test email to verify that your credentials, port, and authentication are functioning without errors.</p>
+
+            <div class="flex flex-col sm:flex-row gap-3 items-center">
+                <input type="email" x-model="testEmail" placeholder="Enter recipient email (e.g. yourname@gmail.com)"
+                       class="w-full sm:flex-1 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <button type="button" @click="sendTestEmail()" :disabled="testing"
+                        class="w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
+                    <template x-if="testing">
+                        <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                    </template>
+                    <span x-text="testing ? 'Connecting & Sending...' : 'Send Test Email'"></span>
+                </button>
+            </div>
+
+            <!-- Test Feedback Display -->
+            <div x-show="testResult" x-cloak class="mt-4 p-3.5 rounded-xl text-xs font-medium"
+                 :class="testSuccess ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-rose-50 text-rose-800 border border-rose-200'">
+                <div class="flex items-start gap-2">
+                    <span x-text="testSuccess ? '✔' : '✖'" class="font-bold text-sm"></span>
+                    <span x-text="testResult" class="leading-relaxed"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick SMTP Provider Guide Box -->
+        <div class="p-4 bg-brand-50/50 border border-brand-100 rounded-xl text-xs text-slate-600 space-y-2">
+            <h5 class="font-bold text-brand-900 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Quick Reference for Popular SMTP Providers:
+            </h5>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+                <div class="bg-white p-3 rounded-lg border border-slate-200/60 shadow-xs">
+                    <p class="font-bold text-slate-800">Gmail SMTP</p>
+                    <p class="text-[11px] text-slate-500 mt-1">Host: <code>smtp.gmail.com</code></p>
+                    <p class="text-[11px] text-slate-500">Port: <code>587</code> (TLS)</p>
+                    <p class="text-[11px] text-slate-500">Pass: Google 16-char App Password</p>
+                </div>
+                <div class="bg-white p-3 rounded-lg border border-slate-200/60 shadow-xs">
+                    <p class="font-bold text-slate-800">Mailtrap (Testing)</p>
+                    <p class="text-[11px] text-slate-500 mt-1">Host: <code>sandbox.smtp.mailtrap.io</code></p>
+                    <p class="text-[11px] text-slate-500">Port: <code>2525</code> or <code>587</code></p>
+                    <p class="text-[11px] text-slate-500">Safe sandbox for email preview</p>
+                </div>
+                <div class="bg-white p-3 rounded-lg border border-slate-200/60 shadow-xs">
+                    <p class="font-bold text-slate-800">cPanel / Custom Domain</p>
+                    <p class="text-[11px] text-slate-500 mt-1">Host: <code>mail.yourdomain.com</code></p>
+                    <p class="text-[11px] text-slate-500">Port: <code>465</code> (SSL) or <code>587</code> (TLS)</p>
+                    <p class="text-[11px] text-slate-500">User: full email address</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- WhatsApp Business API Settings Form -->

@@ -6,15 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Setting;
 use App\Services\MediaUploadService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class SettingController extends Controller
 {
     protected MediaUploadService $mediaService;
+    protected NotificationService $notificationService;
 
-    public function __construct(MediaUploadService $mediaService)
+    public function __construct(MediaUploadService $mediaService, NotificationService $notificationService)
     {
         $this->mediaService = $mediaService;
+        $this->notificationService = $notificationService;
     }
 
     public function index()
@@ -38,12 +43,13 @@ class SettingController extends Controller
             'twilio_token' => Setting::get('twilio_token', ''),
             'twilio_from_whatsapp' => Setting::get('twilio_from_whatsapp', ''),
             'smtp_host' => Setting::get('smtp_host', config('mail.mailers.smtp.host', '127.0.0.1')),
-            'smtp_port' => Setting::get('smtp_port', config('mail.mailers.smtp.port', 2525)),
+            'smtp_port' => Setting::get('smtp_port', config('mail.mailers.smtp.port', 587)),
             'smtp_username' => Setting::get('smtp_username', ''),
             'smtp_password' => Setting::get('smtp_password', ''),
             'smtp_encryption' => Setting::get('smtp_encryption', 'tls'),
-            'mail_from_name' => Setting::get('mail_from_name', 'Apex Academy'),
+            'mail_from_name' => Setting::get('mail_from_name', 'Apex Academy & IETS'),
             'mail_from_address' => Setting::get('mail_from_address', 'no-reply@antiacademy.edu'),
+            'admin_email' => Setting::get('admin_email', Setting::get('contact_email', 'admin@antiacademy.edu')),
         ];
 
         return view('admin.settings.index', compact('settings'));
@@ -88,13 +94,74 @@ class SettingController extends Controller
             Setting::set('smtp_encryption', $request->smtp_encryption, 'email');
             Setting::set('mail_from_name', $request->mail_from_name, 'email');
             Setting::set('mail_from_address', $request->mail_from_address, 'email');
+            Setting::set('admin_email', $request->admin_email, 'email');
             if ($request->filled('smtp_password')) {
                 Setting::set('smtp_password', $request->smtp_password, 'email', true);
             }
+
+            // Immediately reconfigure runtime dynamic mailer
+            $this->notificationService->configureDynamicSmtp();
         }
 
         ActivityLog::log('update', 'settings', "Updated {$group} system settings.");
 
         return back()->with('success', ucfirst($group) . ' settings saved.');
+    }
+
+    /**
+     * Send a test SMTP email to verify credentials
+     */
+    public function testSmtp(Request $request)
+    {
+        $request->validate([
+            'test_email' => 'required|email',
+        ]);
+
+        $testEmail = $request->test_email;
+        $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+
+        try {
+            $this->notificationService->configureDynamicSmtp();
+
+            $fromAddress = Setting::get('mail_from_address', config('mail.from.address'));
+            $fromName = Setting::get('mail_from_name', $appName);
+
+            $html = <<<HTML
+<div style="font-family: Arial, sans-serif; background: #f8fafc; padding: 24px; border-radius: 8px; border: 1px solid #e2e8f0; max-width: 500px; margin: 0 auto;">
+    <h2 style="color: #16a34a; margin-top: 0;">&#10004; SMTP Server Connected Successfully!</h2>
+    <p style="color: #334155; font-size: 14px; line-height: 1.6;">
+        Congratulations! Your SMTP configuration on <strong>{$appName}</strong> is working perfectly.
+    </p>
+    <div style="background: #ffffff; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 13px; color: #475569;">
+        <p style="margin: 2px 0;"><strong>Recipient:</strong> {$testEmail}</p>
+        <p style="margin: 2px 0;"><strong>From:</strong> {$fromName} &lt;{$fromAddress}&gt;</p>
+        <p style="margin: 2px 0;"><strong>Timestamp:</strong> {$request->server('REQUEST_TIME')}</p>
+    </div>
+    <p style="color: #64748b; font-size: 12px; margin-top: 16px; margin-bottom: 0;">
+        All appointment bookings and contact inquiries will now dispatch emails seamlessly.
+    </p>
+</div>
+HTML;
+
+            Mail::html($html, function ($mail) use ($testEmail, $appName, $fromAddress, $fromName) {
+                if (!empty($fromAddress)) {
+                    $mail->from($fromAddress, $fromName);
+                }
+                $mail->to($testEmail)
+                     ->subject("SMTP Test Connection Successful - {$appName}");
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => "Success! Test email was successfully dispatched to {$testEmail}. Your SMTP server is fully functional.",
+            ]);
+        } catch (\Throwable $e) {
+            Log::error("SMTP Test Dispatch Error: " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => "SMTP Connection Failed: " . $e->getMessage(),
+            ], 422);
+        }
     }
 }

@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'module.permission' => \App\Http\Middleware\CheckModulePermission::class,
             'super.admin' => \App\Http\Middleware\SuperAdminOnly::class,
+            'page.visible' => \App\Http\Middleware\CheckPageVisibility::class,
         ]);
         $middleware->validateCsrfTokens(except: [
             'api/ai/chat',

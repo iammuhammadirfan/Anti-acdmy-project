@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\VideoController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\AppointmentController;
+use App\Http\Controllers\Admin\SchedulingController;
 use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\MediaController;
@@ -36,6 +37,7 @@ use App\Http\Controllers\Admin\SeoController;
 use App\Http\Controllers\Admin\AiController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\PageVisibilityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,34 +45,34 @@ use App\Http\Controllers\Admin\ActivityLogController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/about', [PageController::class, 'about'])->name('about');
-Route::get('/history', [PageController::class, 'history'])->name('history');
+Route::get('/', [HomeController::class, 'index'])->name('home')->middleware('page.visible:home');
+Route::get('/about', [PageController::class, 'about'])->name('about')->middleware('page.visible:about');
+Route::get('/history', [PageController::class, 'history'])->name('history')->middleware('page.visible:history');
 
-Route::get('/teachers', [TeacherFrontendController::class, 'index'])->name('teachers');
-Route::get('/teachers/{slug}', [TeacherFrontendController::class, 'show'])->name('teachers.show');
+Route::get('/teachers', [TeacherFrontendController::class, 'index'])->name('teachers')->middleware('page.visible:teachers');
+Route::get('/teachers/{slug}', [TeacherFrontendController::class, 'show'])->name('teachers.show')->middleware('page.visible:teachers');
 
-Route::get('/classrooms', [PageController::class, 'classrooms'])->name('classrooms');
-Route::get('/gallery', [PageController::class, 'gallery'])->name('gallery');
+Route::get('/classrooms', [PageController::class, 'classrooms'])->name('classrooms')->middleware('page.visible:classrooms');
+Route::get('/gallery', [PageController::class, 'gallery'])->name('gallery')->middleware('page.visible:campus');
 
-Route::get('/iets', [PageController::class, 'iets'])->name('iets');
-Route::get('/iets/results', [PageController::class, 'ietsResults'])->name('iets.results');
+Route::get('/iets', [PageController::class, 'iets'])->name('iets')->middleware('page.visible:iets');
+Route::get('/iets/results', [PageController::class, 'ietsResults'])->name('iets.results')->middleware('page.visible:results');
 
-Route::get('/videos', [PageController::class, 'videos'])->name('videos');
-Route::get('/videos/{slug}', [PageController::class, 'videoDetail'])->name('videos.show');
+Route::get('/videos', [PageController::class, 'videos'])->name('videos')->middleware('page.visible:videos');
+Route::get('/videos/{slug}', [PageController::class, 'videoDetail'])->name('videos.show')->middleware('page.visible:videos');
 
-Route::get('/blog', [PageController::class, 'blog'])->name('blog');
-Route::get('/blog/{slug}', [PageController::class, 'blogDetail'])->name('blog.show');
+Route::get('/blog', [PageController::class, 'blog'])->name('blog')->middleware('page.visible:news');
+Route::get('/blog/{slug}', [PageController::class, 'blogDetail'])->name('blog.show')->middleware('page.visible:news');
 
-Route::get('/faq', [PageController::class, 'faq'])->name('faq');
+Route::get('/faq', [PageController::class, 'faq'])->name('faq')->middleware('page.visible:faq');
 
-Route::get('/appointments', [AppointmentBookingController::class, 'index'])->name('appointments');
-Route::get('/appointments/slots', [AppointmentBookingController::class, 'getSlots'])->name('appointments.slots');
-Route::post('/appointments/book', [AppointmentBookingController::class, 'book'])->name('appointments.book');
-Route::get('/appointments/success', [AppointmentBookingController::class, 'success'])->name('appointments.success');
+Route::get('/appointments', [AppointmentBookingController::class, 'index'])->name('appointments')->middleware('page.visible:appointments');
+Route::get('/appointments/slots', [AppointmentBookingController::class, 'getSlots'])->name('appointments.slots')->middleware('page.visible:appointments');
+Route::post('/appointments/book', [AppointmentBookingController::class, 'book'])->name('appointments.book')->middleware('page.visible:appointments');
+Route::get('/appointments/success', [AppointmentBookingController::class, 'success'])->name('appointments.success')->middleware('page.visible:appointments');
 
-Route::get('/contact', [ContactFrontendController::class, 'index'])->name('contact');
-Route::post('/contact/submit', [ContactFrontendController::class, 'submit'])->name('contact.submit');
+Route::get('/contact', [ContactFrontendController::class, 'index'])->name('contact')->middleware('page.visible:contact');
+Route::post('/contact/submit', [ContactFrontendController::class, 'submit'])->name('contact.submit')->middleware('page.visible:contact');
 
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/terms-and-conditions', [PageController::class, 'terms'])->name('terms');
@@ -252,18 +254,48 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::delete('/faqs/{faq}', [FaqController::class, 'destroy'])->name('admin.faqs.destroy');
     });
 
-    // Appointments
+    // Scheduling & Appointment Management (Dynamic Section RBAC)
     Route::middleware(['module.permission:appointments'])->group(function () {
-        Route::get('/appointments', [AppointmentController::class, 'index'])->name('admin.appointments.index');
-        Route::get('/appointments/{appointment}', [AppointmentController::class, 'show'])->name('admin.appointments.show');
-        Route::post('/appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('admin.appointments.status');
+        // Dedicated Scheduling Section
+        Route::get('/scheduling', [SchedulingController::class, 'dashboard'])->name('admin.scheduling.dashboard');
+        Route::get('/scheduling/calendar', [SchedulingController::class, 'calendar'])->name('admin.scheduling.calendar');
+        Route::get('/scheduling/slots', [SchedulingController::class, 'slots'])->name('admin.scheduling.slots');
+        Route::post('/scheduling/slots', [SchedulingController::class, 'storeSlot'])->name('admin.scheduling.slot.store');
+        Route::post('/scheduling/slots/batch', [SchedulingController::class, 'batchGenerateSlots'])->name('admin.scheduling.slots.batch');
+        Route::put('/scheduling/slots/{slot}', [SchedulingController::class, 'updateSlot'])->name('admin.scheduling.slot.update');
+        Route::post('/scheduling/slots/{slot}/toggle', [SchedulingController::class, 'toggleSlot'])->name('admin.scheduling.slot.toggle');
+        Route::delete('/scheduling/slots/{slot}', [SchedulingController::class, 'destroySlot'])->name('admin.scheduling.slot.destroy');
+        Route::post('/scheduling/slots/bulk-destroy', [SchedulingController::class, 'bulkDestroySlots'])->name('admin.scheduling.slots.bulk-destroy');
+
+        Route::get('/scheduling/bookings', [SchedulingController::class, 'bookings'])->name('admin.scheduling.bookings');
+        Route::get('/scheduling/counseling', [SchedulingController::class, 'counselingSchedule'])->name('admin.scheduling.counseling');
+        Route::get('/scheduling/iets', [SchedulingController::class, 'ietsSchedule'])->name('admin.scheduling.iets');
+        Route::get('/scheduling/bookings/{booking}', [SchedulingController::class, 'showBooking'])->name('admin.scheduling.booking.show');
+        Route::post('/scheduling/bookings/{booking}/status', [SchedulingController::class, 'updateBookingStatus'])->name('admin.scheduling.booking.status');
+        Route::post('/scheduling/bookings/{booking}/reschedule', [SchedulingController::class, 'rescheduleBooking'])->name('admin.scheduling.booking.reschedule');
+        Route::get('/scheduling/export', [SchedulingController::class, 'exportBookings'])->name('admin.scheduling.export');
+
+        Route::get('/scheduling/students', [SchedulingController::class, 'students'])->name('admin.scheduling.students');
+
+        Route::get('/scheduling/emails', [SchedulingController::class, 'emails'])->name('admin.scheduling.emails');
+        Route::get('/scheduling/emails/{template}/edit', [SchedulingController::class, 'editEmail'])->name('admin.scheduling.email.edit');
+        Route::put('/scheduling/emails/{template}', [SchedulingController::class, 'updateEmail'])->name('admin.scheduling.email.update');
+        Route::post('/scheduling/emails/{template}/reset', [SchedulingController::class, 'resetEmail'])->name('admin.scheduling.email.reset');
+
+        Route::get('/scheduling/settings', [SchedulingController::class, 'settings'])->name('admin.scheduling.settings');
+        Route::post('/scheduling/settings', [SchedulingController::class, 'updateSettings'])->name('admin.scheduling.settings.update');
+
+        // Backward compatibility for legacy appointment endpoints
+        Route::get('/appointments', [SchedulingController::class, 'bookings'])->name('admin.appointments.index');
+        Route::get('/appointments/{appointment}', [SchedulingController::class, 'showBooking'])->name('admin.appointments.show');
+        Route::post('/appointments/{appointment}/status', [SchedulingController::class, 'updateBookingStatus'])->name('admin.appointments.status');
         Route::delete('/appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('admin.appointments.destroy');
     });
 
-    // Calendar
+    // Calendar & Blocking
     Route::middleware(['module.permission:calendar'])->group(function () {
-        Route::get('/calendar', [CalendarController::class, 'index'])->name('admin.calendar.index');
-        Route::post('/calendar/settings', [CalendarController::class, 'updateSettings'])->name('admin.calendar.settings');
+        Route::get('/calendar', [SchedulingController::class, 'calendar'])->name('admin.calendar.index');
+        Route::post('/calendar/settings', [SchedulingController::class, 'updateSettings'])->name('admin.calendar.settings');
         Route::post('/calendar/block-date', [CalendarController::class, 'blockDate'])->name('admin.calendar.block');
         Route::delete('/calendar/unblock/{blockedDate}', [CalendarController::class, 'unblockDate'])->name('admin.calendar.unblock');
     });
@@ -305,10 +337,14 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::middleware(['module.permission:settings'])->group(function () {
         Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
+        Route::post('/settings/test-smtp', [SettingController::class, 'testSmtp'])->name('admin.settings.test_smtp');
     });
 
-    // Audit Activity Logs
+    // Website Page Visibility Manager & Audit Logs (Super Admin Exclusive)
     Route::middleware(['super.admin'])->group(function () {
+        Route::get('/page-visibility', [PageVisibilityController::class, 'index'])->name('admin.page_visibility.index');
+        Route::post('/page-visibility', [PageVisibilityController::class, 'update'])->name('admin.page_visibility.update');
+        Route::post('/page-visibility/toggle', [PageVisibilityController::class, 'toggle'])->name('admin.page_visibility.toggle');
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('admin.activity.index');
     });
 });
