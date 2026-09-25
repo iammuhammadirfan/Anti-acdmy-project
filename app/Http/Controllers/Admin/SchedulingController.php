@@ -366,6 +366,61 @@ class SchedulingController extends Controller
     }
 
     /**
+     * Bulk Delete Selected Slots (both IETS and Counseling)
+     */
+    public function bulkDestroySlots(Request $request)
+    {
+        $request->validate([
+            'slot_ids' => 'required|array|min:1',
+            'slot_ids.*' => 'integer|exists:appointment_slots,id',
+            'force' => 'nullable|boolean',
+        ]);
+
+        $slotIds = $request->input('slot_ids', []);
+        $force = (bool) $request->input('force', false);
+
+        if (empty($slotIds)) {
+            return back()->with('error', 'No slots selected for deletion. Please select at least one slot.');
+        }
+
+        $slots = AppointmentSlot::whereIn('id', $slotIds)
+            ->withCount(['appointments' => function ($q) {
+                $q->whereNotIn('status', ['cancelled']);
+            }])
+            ->get();
+
+        $deletedCount = 0;
+        $skippedCount = 0;
+
+        foreach ($slots as $slot) {
+            if ($slot->appointments_count > 0 && !$force) {
+                $skippedCount++;
+                continue;
+            }
+
+            if ($force && $slot->appointments_count > 0) {
+                $slot->appointments()->whereNotIn('status', ['cancelled'])->update([
+                    'status' => 'cancelled',
+                    'admin_notes' => 'Slot was bulk-deleted by administrator.',
+                ]);
+            }
+
+            $slot->delete();
+            $deletedCount++;
+        }
+
+        ActivityLog::log('delete', 'appointments', "Bulk deleted {$deletedCount} slots." . ($skippedCount > 0 ? " ({$skippedCount} skipped due to active bookings)" : ""));
+
+        if ($skippedCount > 0 && $deletedCount > 0) {
+            return back()->with('warning', "Successfully deleted {$deletedCount} slot(s). {$skippedCount} slot(s) were preserved because they have active student registrations.");
+        } elseif ($skippedCount > 0 && $deletedCount === 0) {
+            return back()->with('error', "Could not delete the selected slot(s) because all {$skippedCount} slot(s) have active student registrations. Cancel or reschedule those registrations first.");
+        }
+
+        return back()->with('success', "Successfully deleted all {$deletedCount} selected slot(s).");
+    }
+
+    /**
      * All Bookings / Registrations with comprehensive multi-field filtering
      */
     public function bookings(Request $request)

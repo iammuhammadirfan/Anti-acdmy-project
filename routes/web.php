@@ -37,6 +37,7 @@ use App\Http\Controllers\Admin\SeoController;
 use App\Http\Controllers\Admin\AiController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\PageVisibilityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,34 +45,34 @@ use App\Http\Controllers\Admin\ActivityLogController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/about', [PageController::class, 'about'])->name('about');
-Route::get('/history', [PageController::class, 'history'])->name('history');
+Route::get('/', [HomeController::class, 'index'])->name('home')->middleware('page.visible:home');
+Route::get('/about', [PageController::class, 'about'])->name('about')->middleware('page.visible:about');
+Route::get('/history', [PageController::class, 'history'])->name('history')->middleware('page.visible:history');
 
-Route::get('/teachers', [TeacherFrontendController::class, 'index'])->name('teachers');
-Route::get('/teachers/{slug}', [TeacherFrontendController::class, 'show'])->name('teachers.show');
+Route::get('/teachers', [TeacherFrontendController::class, 'index'])->name('teachers')->middleware('page.visible:teachers');
+Route::get('/teachers/{slug}', [TeacherFrontendController::class, 'show'])->name('teachers.show')->middleware('page.visible:teachers');
 
-Route::get('/classrooms', [PageController::class, 'classrooms'])->name('classrooms');
-Route::get('/gallery', [PageController::class, 'gallery'])->name('gallery');
+Route::get('/classrooms', [PageController::class, 'classrooms'])->name('classrooms')->middleware('page.visible:classrooms');
+Route::get('/gallery', [PageController::class, 'gallery'])->name('gallery')->middleware('page.visible:campus');
 
-Route::get('/iets', [PageController::class, 'iets'])->name('iets');
-Route::get('/iets/results', [PageController::class, 'ietsResults'])->name('iets.results');
+Route::get('/iets', [PageController::class, 'iets'])->name('iets')->middleware('page.visible:iets');
+Route::get('/iets/results', [PageController::class, 'ietsResults'])->name('iets.results')->middleware('page.visible:results');
 
-Route::get('/videos', [PageController::class, 'videos'])->name('videos');
-Route::get('/videos/{slug}', [PageController::class, 'videoDetail'])->name('videos.show');
+Route::get('/videos', [PageController::class, 'videos'])->name('videos')->middleware('page.visible:videos');
+Route::get('/videos/{slug}', [PageController::class, 'videoDetail'])->name('videos.show')->middleware('page.visible:videos');
 
-Route::get('/blog', [PageController::class, 'blog'])->name('blog');
-Route::get('/blog/{slug}', [PageController::class, 'blogDetail'])->name('blog.show');
+Route::get('/blog', [PageController::class, 'blog'])->name('blog')->middleware('page.visible:news');
+Route::get('/blog/{slug}', [PageController::class, 'blogDetail'])->name('blog.show')->middleware('page.visible:news');
 
-Route::get('/faq', [PageController::class, 'faq'])->name('faq');
+Route::get('/faq', [PageController::class, 'faq'])->name('faq')->middleware('page.visible:faq');
 
-Route::get('/appointments', [AppointmentBookingController::class, 'index'])->name('appointments');
-Route::get('/appointments/slots', [AppointmentBookingController::class, 'getSlots'])->name('appointments.slots');
-Route::post('/appointments/book', [AppointmentBookingController::class, 'book'])->name('appointments.book');
-Route::get('/appointments/success', [AppointmentBookingController::class, 'success'])->name('appointments.success');
+Route::get('/appointments', [AppointmentBookingController::class, 'index'])->name('appointments')->middleware('page.visible:appointments');
+Route::get('/appointments/slots', [AppointmentBookingController::class, 'getSlots'])->name('appointments.slots')->middleware('page.visible:appointments');
+Route::post('/appointments/book', [AppointmentBookingController::class, 'book'])->name('appointments.book')->middleware('page.visible:appointments');
+Route::get('/appointments/success', [AppointmentBookingController::class, 'success'])->name('appointments.success')->middleware('page.visible:appointments');
 
-Route::get('/contact', [ContactFrontendController::class, 'index'])->name('contact');
-Route::post('/contact/submit', [ContactFrontendController::class, 'submit'])->name('contact.submit');
+Route::get('/contact', [ContactFrontendController::class, 'index'])->name('contact')->middleware('page.visible:contact');
+Route::post('/contact/submit', [ContactFrontendController::class, 'submit'])->name('contact.submit')->middleware('page.visible:contact');
 
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/terms-and-conditions', [PageController::class, 'terms'])->name('terms');
@@ -264,6 +265,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::put('/scheduling/slots/{slot}', [SchedulingController::class, 'updateSlot'])->name('admin.scheduling.slot.update');
         Route::post('/scheduling/slots/{slot}/toggle', [SchedulingController::class, 'toggleSlot'])->name('admin.scheduling.slot.toggle');
         Route::delete('/scheduling/slots/{slot}', [SchedulingController::class, 'destroySlot'])->name('admin.scheduling.slot.destroy');
+        Route::post('/scheduling/slots/bulk-destroy', [SchedulingController::class, 'bulkDestroySlots'])->name('admin.scheduling.slots.bulk-destroy');
 
         Route::get('/scheduling/bookings', [SchedulingController::class, 'bookings'])->name('admin.scheduling.bookings');
         Route::get('/scheduling/counseling', [SchedulingController::class, 'counselingSchedule'])->name('admin.scheduling.counseling');
@@ -338,8 +340,11 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::post('/settings/test-smtp', [SettingController::class, 'testSmtp'])->name('admin.settings.test_smtp');
     });
 
-    // Audit Activity Logs
+    // Website Page Visibility Manager & Audit Logs (Super Admin Exclusive)
     Route::middleware(['super.admin'])->group(function () {
+        Route::get('/page-visibility', [PageVisibilityController::class, 'index'])->name('admin.page_visibility.index');
+        Route::post('/page-visibility', [PageVisibilityController::class, 'update'])->name('admin.page_visibility.update');
+        Route::post('/page-visibility/toggle', [PageVisibilityController::class, 'toggle'])->name('admin.page_visibility.toggle');
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('admin.activity.index');
     });
 });

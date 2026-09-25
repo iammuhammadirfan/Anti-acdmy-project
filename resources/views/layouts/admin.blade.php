@@ -324,6 +324,15 @@
                     <i data-lucide="shield" class="w-4 h-4"></i>
                     <span>Roles &amp; Permissions</span>
                 </a>
+
+                <a href="{{ route('admin.page_visibility.index') }}" 
+                   class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.page_visibility*') ? 'bg-brand-600 text-white shadow-md shadow-brand-500/20' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="eye" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Page Visibility</span>
+                    </div>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase bg-emerald-500/20 text-emerald-300">Admin</span>
+                </a>
                 @endif
 
                 @if(auth()->user()->canAccessSection('settings'))

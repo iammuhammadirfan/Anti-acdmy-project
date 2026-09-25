@@ -4,7 +4,34 @@
 @section('page_title', 'Appointment & Test Slots')
 
 @section('content')
-<div class="space-y-6" x-data="{ createModal: false, batchModal: false, editModal: false, editSlotData: {}, studentsModal: false, currentSlotStudents: [], currentSlotTitle: '' }">
+<div class="space-y-6" x-data="{ 
+    createModal: false, 
+    batchModal: false, 
+    editModal: false, 
+    editSlotData: {}, 
+    studentsModal: false, 
+    currentSlotStudents: [], 
+    currentSlotTitle: '',
+    selectedSlots: [],
+    allSlotIds: {{ json_encode($slots->pluck('id')->toArray()) }},
+    toggleAll(event) {
+        if (event.target.checked) {
+            this.selectedSlots = [...this.allSlotIds];
+        } else {
+            this.selectedSlots = [];
+        }
+    },
+    isSelected(id) {
+        return this.selectedSlots.includes(id);
+    },
+    toggleSlot(id) {
+        if (this.selectedSlots.includes(id)) {
+            this.selectedSlots = this.selectedSlots.filter(s => s !== id);
+        } else {
+            this.selectedSlots.push(id);
+        }
+    }
+}">
 
     <!-- Header Actions -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -55,12 +82,57 @@
         </form>
     </div>
 
+    <!-- Bulk Delete Action Bar (appears when 1 or more slots are selected) -->
+    <div x-show="selectedSlots.length > 0" x-cloak 
+         class="bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-4 transition-all">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-rose-600 flex items-center justify-center text-white shrink-0">
+                <i data-lucide="check-square" class="w-4 h-4"></i>
+            </div>
+            <div>
+                <div class="text-xs font-bold text-white">
+                    <span x-text="selectedSlots.length" class="text-rose-400 font-extrabold text-sm"></span> Slot(s) Selected
+                </div>
+                <div class="text-[11px] text-slate-400">
+                    Delete selected IETS or Counseling slots at once.
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button type="button" @click="selectedSlots = [...allSlotIds]" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition">
+                Select All Visible (<span x-text="allSlotIds.length"></span>)
+            </button>
+            <button type="button" @click="selectedSlots = []" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 text-xs font-bold transition">
+                Clear Selection
+            </button>
+
+            <form action="{{ route('admin.scheduling.slots.bulk-destroy') }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete ALL selected slots?');">
+                @csrf
+                <template x-for="id in selectedSlots" :key="id">
+                    <input type="hidden" name="slot_ids[]" :value="id">
+                </template>
+                <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold rounded-xl shadow-lg shadow-rose-600/30 transition">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <span>Delete Selected Slots</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Slots Table -->
     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-slate-600">
                 <thead class="bg-slate-50 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-slate-100">
                     <tr>
+                        <th class="py-3.5 px-4 w-10 text-center">
+                            <input type="checkbox" 
+                                   :checked="selectedSlots.length === allSlotIds.length && allSlotIds.length > 0" 
+                                   @change="toggleAll($event)" 
+                                   class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer" 
+                                   title="Select All Slots">
+                        </th>
                         <th class="py-3.5 px-4">Date</th>
                         <th class="py-3.5 px-4">Time Window</th>
                         <th class="py-3.5 px-4">Type</th>
@@ -89,7 +161,14 @@
                                 ];
                             });
                         @endphp
-                        <tr class="hover:bg-slate-50/70 transition">
+                        <tr class="hover:bg-slate-50/70 transition" :class="isSelected({{ $slot->id }}) ? 'bg-brand-50/50' : ''">
+                            <td class="py-3.5 px-4 text-center">
+                                <input type="checkbox" 
+                                       :value="{{ $slot->id }}" 
+                                       :checked="isSelected({{ $slot->id }})" 
+                                       @change="toggleSlot({{ $slot->id }})" 
+                                       class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer">
+                            </td>
                             <td class="py-3.5 px-4 font-bold text-slate-900 whitespace-nowrap">
                                 {{ $slot->slot_date->format('l, M d, Y') }}
                             </td>
@@ -162,7 +241,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="py-8 text-center text-slate-400">
+                            <td colspan="8" class="py-8 text-center text-slate-400">
                                 No slots found. Use "Add Single Slot" or "Batch Generate Day" to create testing and counseling slots.
                             </td>
                         </tr>

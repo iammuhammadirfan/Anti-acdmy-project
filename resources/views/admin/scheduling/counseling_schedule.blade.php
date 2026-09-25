@@ -23,6 +23,10 @@
                 <i data-lucide="sliders" class="w-4 h-4"></i>
                 <span>Configure Counseling Schedule</span>
             </button>
+            <a href="{{ route('admin.scheduling.slots', ['type' => 'counseling']) }}" class="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition" title="Select and bulk delete counseling slots">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                <span>Select &amp; Delete Counseling Slots</span>
+            </a>
             <a href="{{ route('admin.scheduling.bookings', ['type' => 'counseling']) }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
                 <i data-lucide="users" class="w-4 h-4"></i>
                 <span>Counseling Bookings</span>
