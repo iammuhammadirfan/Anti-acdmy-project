@@ -19,7 +19,30 @@ class NotificationService
     {
         try {
             $smtpHost = Setting::get('smtp_host');
+// If Brevo API mode is selected
+            if (!empty($smtpHost) && strtolower(trim($smtpHost)) === 'brevo-api') {
+                $apiKey = Setting::get('smtp_password');
+                $fromAddress = Setting::get('mail_from_address', config('mail.from.address'));
+                $fromName = Setting::get('mail_from_name', Setting::get('academy_name', config('mail.from.name')));
 
+                config([
+                    'mail.default' => 'brevo',
+                    'mail.mailers.brevo.transport' => 'brevo',
+                    'services.brevo.key' => $apiKey,
+                ]);
+
+                if (!empty($fromAddress)) {
+                    config([
+                        'mail.from.address' => $fromAddress,
+                        'mail.from.name' => $fromName,
+                    ]);
+                }
+
+                if (app()->bound('mail.manager')) {
+                    app('mail.manager')->purge('brevo');
+                }
+                return;
+            }
             // If custom SMTP host is defined in settings
             if (!empty($smtpHost) && $smtpHost !== '127.0.0.1') {
                 $port = (int) Setting::get('smtp_port', 587);
