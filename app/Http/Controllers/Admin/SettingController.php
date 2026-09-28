@@ -50,6 +50,10 @@ class SettingController extends Controller
             'mail_from_name' => Setting::get('mail_from_name', 'Apex Academy & IETS'),
             'mail_from_address' => Setting::get('mail_from_address', 'no-reply@antiacademy.edu'),
             'admin_email' => Setting::get('admin_email', Setting::get('contact_email', 'admin@antiacademy.edu')),
+            'results_page_badge' => Setting::get('results_page_badge', 'Official Verified Scorecards & Posters'),
+            'results_page_title' => Setting::get('results_page_title', 'Student Hall of Fame & Results'),
+            'results_page_subtitle' => Setting::get('results_page_subtitle', 'Authentic standardized result cards earned by our candidates. Filter by IELTS, PTE, or TOEFL to view genuine scorecards.'),
+            'results_slider_title' => Setting::get('results_slider_title', 'Featured Result Scorecards'),
         ];
 
         return view('admin.settings.index', compact('settings'));
@@ -101,6 +105,11 @@ class SettingController extends Controller
 
             // Immediately reconfigure runtime dynamic mailer
             $this->notificationService->configureDynamicSmtp();
+        } elseif ($group === 'results') {
+            Setting::set('results_page_badge', $request->results_page_badge, 'results');
+            Setting::set('results_page_title', $request->results_page_title, 'results');
+            Setting::set('results_page_subtitle', $request->results_page_subtitle, 'results');
+            Setting::set('results_slider_title', $request->results_slider_title, 'results');
         }
 
         ActivityLog::log('update', 'settings', "Updated {$group} system settings.");

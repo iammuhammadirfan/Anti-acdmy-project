@@ -56,9 +56,9 @@ class DashboardController extends Controller
 
         // IETS Band Distribution
         $bandDistribution = [
-            'Band 6.5 - 7.0' => IetsResult::whereBetween('overall_band', [6.5, 7.0])->count(),
-            'Band 7.5 - 8.0' => IetsResult::whereBetween('overall_band', [7.5, 8.0])->count(),
-            'Band 8.5 - 9.0' => IetsResult::where('overall_band', '>=', 8.5)->count(),
+            'Band 6.5 - 7.0' => IetsResult::where('test_type', 'LIKE', '%IELTS%')->whereBetween('overall_band', [6.5, 7.0])->count(),
+            'Band 7.5 - 8.0' => IetsResult::where('test_type', 'LIKE', '%IELTS%')->whereBetween('overall_band', [7.5, 8.0])->count(),
+            'Band 8.5 - 9.0' => IetsResult::where('test_type', 'LIKE', '%IELTS%')->where('overall_band', '>=', 8.5)->count(),
         ];
 
         $recentAppointments = Appointment::latest()->limit(5)->get();

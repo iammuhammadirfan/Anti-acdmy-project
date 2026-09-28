@@ -94,15 +94,15 @@
                 <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex flex-col justify-between">
                     <div>
                         <div class="flex items-center gap-3 mb-4">
-                            <img src="{{ $res->student_image }}" alt="{{ $res->student_name }}" class="w-12 h-12 rounded-full object-cover border border-blue-500/50">
+                            <img src="{{ $res->card_image_url }}" alt="{{ $res->student_name }}" class="w-12 h-14 rounded-xl object-cover border border-blue-500/50">
                             <div>
                                 <h4 class="font-bold text-sm text-white">{{ $res->student_name }}</h4>
                                 <span class="text-xs text-slate-400">{{ $res->test_type }}</span>
                             </div>
                         </div>
                         <div class="bg-blue-950/60 p-3 rounded-xl border border-blue-800/40 text-center mb-3">
-                            <span class="text-xs uppercase text-slate-400 font-semibold block">Overall Band</span>
-                            <span class="text-3xl font-extrabold text-blue-400">{{ number_format($res->overall_band, 1) }}</span>
+                            <span class="text-xs uppercase text-slate-400 font-semibold block">Score / Band</span>
+                            <span class="text-3xl font-extrabold text-blue-400">{{ $res->overall_band }}</span>
                         </div>
                         <p class="text-xs text-slate-300 italic">"{{ $res->description }}"</p>
                     </div>

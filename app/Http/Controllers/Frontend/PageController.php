@@ -77,16 +77,51 @@ class PageController extends Controller
     {
         $band = $request->get('band');
         $type = $request->get('type');
-        $query = IetsResult::latest('test_date');
+        $search = $request->get('search');
+
+        $query = IetsResult::latest('test_date')->latest('id');
+
         if ($band) {
-            $query->where('overall_band', '>=', (float) $band);
+            $query->where('overall_band', 'LIKE', "%{$band}%");
         }
-        if ($type) {
-            $query->where('test_type', $type);
+        if ($type && in_array(strtoupper($type), ['IELTS', 'PTE', 'TOEFL'])) {
+            $query->where('test_type', 'LIKE', '%' . strtoupper($type) . '%');
         }
-        $results = $query->paginate(18);
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('student_name', 'LIKE', "%{$search}%")
+                  ->orWhere('overall_band', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $results = $query->paginate(24)->withQueryString();
+        $allCards = IetsResult::latest('test_date')->latest('id')->get();
+
+        $featuredSlider = IetsResult::featured()->latest('test_date')->latest('id')->limit(12)->get();
+        if ($featuredSlider->isEmpty()) {
+            $featuredSlider = $allCards->take(12);
+        }
+
+        $ieltsCount = IetsResult::where('test_type', 'LIKE', '%IELTS%')->count();
+        $pteCount = IetsResult::where('test_type', 'LIKE', '%PTE%')->count();
+        $toeflCount = IetsResult::where('test_type', 'LIKE', '%TOEFL%')->count();
+        $totalCount = IetsResult::count();
+
         $seo = SeoMeta::getForPage('iets_results');
-        return view('frontend.iets_results', compact('results', 'band', 'type', 'seo'));
+
+        return view('frontend.iets_results', compact(
+            'results',
+            'allCards',
+            'band',
+            'type',
+            'search',
+            'seo',
+            'featuredSlider',
+            'ieltsCount',
+            'pteCount',
+            'toeflCount',
+            'totalCount'
+        ));
     }
 
     public function videos(Request $request)
