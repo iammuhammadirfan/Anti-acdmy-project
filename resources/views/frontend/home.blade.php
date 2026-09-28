@@ -241,52 +241,208 @@
         </div>
     </section>
 
-    <!-- 5. IETS Success Stories & High Band Results -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-                <span class="text-xs font-extrabold uppercase tracking-wider text-purple-600 bg-purple-50 border border-purple-200 px-3 py-1 rounded-full">
-                    Student Achievement
-                </span>
-                <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Recent IETS Band Score Achievements</h2>
-                <p class="text-xs text-slate-500 mt-1">Authentic results achieved by Apex Academy students across Academic &amp; General tests.</p>
-            </div>
-            <a href="{{ route('iets.results') }}" class="text-sm font-bold text-brand-600 hover:text-brand-800 inline-flex items-center gap-1">
-                <span>View All Results Board</span>
-                <i data-lucide="arrow-right" class="w-4 h-4"></i>
-            </a>
-        </div>
+    <!-- 5. Student Result Cards Slider (IELTS, PTE, TOEFL) -->
+    <section class="py-16 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden"
+             x-data="{
+                activeTab: 'ALL',
+                modalOpen: false,
+                modalImg: '',
+                modalTitle: '',
+                modalScore: '',
+                modalCategory: '',
+                filterResults(category) {
+                    this.activeTab = category;
+                    this.$nextTick(() => {
+                        if (window.homeResultSwiper) {
+                            window.homeResultSwiper.update();
+                            window.homeResultSwiper.slideTo(0);
+                        }
+                    });
+                }
+             }">
+        <!-- Subtle background glow -->
+        <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-brand-600/15 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            @forelse($ietsResults as $res)
-                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex items-center justify-between hover:shadow-md transition">
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center font-bold text-lg text-brand-700">
-                            @if($res->student_image)
-                                <img src="{{ asset('storage/' . $res->student_image) }}" class="w-full h-full object-cover">
-                            @else
-                                {{ substr($res->student_name, 0, 1) }}
-                            @endif
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-slate-900 text-sm">{{ $res->student_name }}</h4>
-                            <span class="text-[11px] text-slate-500 block">{{ $res->test_type }}</span>
-                            <div class="flex items-center gap-2 mt-1 text-[10px] text-slate-400">
-                                <span>L: {{ $res->listening_score }}</span>
-                                <span>R: {{ $res->reading_score }}</span>
-                                <span>W: {{ $res->writing_score }}</span>
-                                <span>S: {{ $res->speaking_score }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-xs text-slate-400 block font-semibold">OVERALL</span>
-                        <span class="text-2xl font-black text-brand-600">{{ $res->overall_band }}</span>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-8">
+            <!-- Section Header -->
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-brand-500/10 text-brand-400 border border-brand-500/20 uppercase tracking-wider mb-3">
+                        <i data-lucide="award" class="w-3.5 h-3.5"></i>
+                        Verified Hall of Fame
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+                        Student Result <span class="bg-gradient-to-r from-blue-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">Scorecards</span>
+                    </h2>
+                    <p class="text-sm text-slate-400 mt-2 max-w-xl">
+                        Real test scorecards achieved by our students. Standardized verified results across <strong class="text-slate-200">IELTS</strong>, <strong class="text-slate-200">PTE</strong>, and <strong class="text-slate-200">TOEFL</strong>.
+                    </p>
+                </div>
+
+                <!-- 3 Portion Category Filter Tabs -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" @click="filterResults('ALL')"
+                            :class="activeTab === 'ALL' ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/30' : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'"
+                            class="px-4 py-2 rounded-xl text-xs font-bold transition-all">
+                        All Results
+                    </button>
+                    <button type="button" @click="filterResults('IELTS')"
+                            :class="activeTab === 'IELTS' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'"
+                            class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                        IELTS
+                    </button>
+                    <button type="button" @click="filterResults('PTE')"
+                            :class="activeTab === 'PTE' ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/30' : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'"
+                            class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                        PTE Pearson
+                    </button>
+                    <button type="button" @click="filterResults('TOEFL')"
+                            :class="activeTab === 'TOEFL' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'"
+                            class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                        TOEFL iBT
+                    </button>
+
+                    <!-- Swiper Navigation Arrows -->
+                    <div class="hidden sm:flex items-center gap-1.5 ml-2 pl-2 border-l border-slate-800">
+                        <button type="button" id="home-swiper-prev" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition border border-slate-700 hover:border-slate-600">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                        <button type="button" id="home-swiper-next" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition border border-slate-700 hover:border-slate-600">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
                     </div>
                 </div>
-            @empty
-                <div class="col-span-full py-8 text-center text-slate-400">Results configured dynamically via Admin Panel.</div>
-            @endforelse
+            </div>
+
+            <!-- Swiper Slider Container -->
+            <div class="swiper home-results-swiper !overflow-visible">
+                <div class="swiper-wrapper">
+                    @forelse($ietsResults as $res)
+                        <div class="swiper-slide !h-auto"
+                             x-show="activeTab === 'ALL' || activeTab === '{{ $res->category }}'"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100">
+                            <div class="group relative bg-slate-900 border border-slate-800 hover:border-blue-500/50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 flex flex-col cursor-pointer"
+                                 @click="modalImg = '{{ $res->card_image_url }}'; modalTitle = '{{ addslashes($res->student_name) }}'; modalScore = '{{ $res->overall_band }}'; modalCategory = '{{ $res->category }}'; modalOpen = true">
+
+                                <!-- Card Top Bar (Keeps badges separate so NOTHING covers the scorecard image) -->
+                                <div class="px-3.5 py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+                                    @if($res->category === 'IELTS')
+                                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-red-600 text-white shadow-sm flex items-center gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                            IELTS
+                                        </span>
+                                    @elseif($res->category === 'PTE')
+                                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-600 text-white shadow-sm flex items-center gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                            PTE
+                                        </span>
+                                    @else
+                                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-600 text-white shadow-sm flex items-center gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                            TOEFL
+                                        </span>
+                                    @endif
+
+                                    <div class="px-2 py-0.5 rounded-lg text-[11px] font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
+                                        {{ $res->category === 'IELTS' ? 'Band ' . $res->overall_band : 'Score ' . $res->overall_band }}
+                                    </div>
+                                </div>
+
+                                <!-- Fixed 4:5 Aspect Ratio Standard Card Frame (Unobscured) -->
+                                <div class="relative w-full aspect-[4/5] bg-slate-950 overflow-hidden">
+                                    <img src="{{ $res->card_image_url }}"
+                                         alt="{{ $res->student_name }} Result Card"
+                                         loading="lazy"
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+
+                                    <!-- Hover Magnify Overlay -->
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                                        <div class="flex items-center justify-between text-xs text-white font-semibold">
+                                            <span class="inline-flex items-center gap-1 text-emerald-400">
+                                                <i data-lucide="zoom-in" class="w-4 h-4"></i> Click to View Full Card
+                                            </span>
+                                            <span class="text-slate-400 text-[10px]">800&times;1000px</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card Footer Info -->
+                                <div class="p-4 bg-slate-900 border-t border-slate-800/80 flex items-center justify-between">
+                                    <div class="min-w-0 pr-2">
+                                        <h4 class="font-bold text-white text-sm truncate group-hover:text-blue-400 transition">{{ $res->student_name }}</h4>
+                                        <p class="text-[11px] text-slate-400 truncate">
+                                            {{ $res->test_date ? \Carbon\Carbon::parse($res->test_date)->format('M Y') : 'Verified Score' }}
+                                        </p>
+                                    </div>
+                                    <div class="shrink-0 text-right">
+                                        <span class="text-[10px] text-slate-500 block uppercase font-bold tracking-wider">Result</span>
+                                        <span class="text-base font-extrabold text-white">{{ $res->overall_band }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-full py-12 text-center text-slate-400">
+                            No student result cards available yet.
+                        </div>
+                    @endforelse
+                </div>
+
+                <!-- Swiper Pagination Dots -->
+                <div class="swiper-pagination !relative !mt-6"></div>
+            </div>
+
+            <!-- Bottom CTA Link -->
+            <div class="flex items-center justify-center pt-2">
+                <a href="{{ route('iets.results') }}" class="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold border border-slate-700 hover:border-slate-600 transition flex items-center gap-2 shadow-lg">
+                    <span>Explore Full Hall of Fame Gallery (IELTS, PTE & TOEFL)</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Lightbox Modal for Full Card View -->
+        <div x-show="modalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            <div class="relative bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-6 max-w-xl w-full shadow-2xl flex flex-col items-center"
+                 @click.away="modalOpen = false">
+                <div class="w-full flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full"
+                              :class="modalCategory === 'IELTS' ? 'bg-red-600 text-white' : (modalCategory === 'PTE' ? 'bg-amber-600 text-white' : 'bg-indigo-600 text-white')"
+                              x-text="modalCategory"></span>
+                        <h3 class="text-base font-bold text-white inline-block ml-2" x-text="modalTitle"></h3>
+                    </div>
+                    <button type="button" @click="modalOpen = false" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <div class="w-full aspect-[4/5] bg-black rounded-2xl overflow-hidden flex items-center justify-center shadow-inner">
+                    <img :src="modalImg" alt="Result Card" class="w-full h-full object-contain">
+                </div>
+
+                <div class="mt-4 flex items-center justify-between w-full text-xs text-slate-400">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-white">Score:</span>
+                        <span class="text-emerald-400 font-extrabold text-sm" x-text="modalScore"></span>
+                    </div>
+                    <a :href="modalImg" target="_blank" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs transition flex items-center gap-1.5">
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                        Open High-Res Card
+                    </a>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -445,5 +601,46 @@
             }
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof Swiper !== 'undefined') {
+            window.homeResultSwiper = new Swiper('.home-results-swiper', {
+                slidesPerView: 1.15,
+                spaceBetween: 16,
+                loop: true,
+                autoplay: {
+                    delay: 3500,
+                    disableOnInteraction: false,
+                    pauseOnMouseEnter: true,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '#home-swiper-next',
+                    prevEl: '#home-swiper-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 2.8,
+                        spaceBetween: 22,
+                    },
+                    1024: {
+                        slidesPerView: 3.5,
+                        spaceBetween: 24,
+                    },
+                    1280: {
+                        slidesPerView: 4,
+                        spaceBetween: 28,
+                    },
+                },
+            });
+        }
+    });
 </script>
 @endsection

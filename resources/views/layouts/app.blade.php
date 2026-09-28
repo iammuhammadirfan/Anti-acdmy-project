@@ -55,6 +55,10 @@
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
 
+    <!-- Swiper Slider CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -80,6 +84,10 @@
 
     <style>
         [x-cloak] { display: none !important; }
+        html, body {
+            overflow-x: hidden !important;
+            max-width: 100vw;
+        }
         .glassmorphism {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
@@ -91,7 +99,7 @@
         }
     </style>
 </head>
-<body class="font-sans antialiased text-slate-800 bg-slate-50 min-h-screen flex flex-col selection:bg-brand-500 selection:text-white" x-data="{ mobileMenu: false }">
+<body class="font-sans antialiased text-slate-800 bg-slate-50 min-h-screen flex flex-col selection:bg-brand-500 selection:text-white overflow-x-hidden" x-data="{ mobileMenu: false }">
 
     @if(!empty($isAdminPreview))
         <div class="bg-gradient-to-r from-amber-600 via-amber-700 to-amber-600 text-white text-xs font-bold py-2 px-4 text-center shadow flex items-center justify-center gap-2">

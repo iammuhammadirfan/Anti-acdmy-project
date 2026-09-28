@@ -25,10 +25,13 @@ class HomeController extends Controller
         $statistics = Statistic::active()->get();
         $teachers = Teacher::active()->limit(4)->get();
         $ietsPrograms = IetsProgram::active()->limit(4)->get();
-        $ietsResults = IetsResult::featured()->latest('test_date')->limit(6)->get();
+        $ietsResults = IetsResult::featured()->latest('test_date')->latest('id')->limit(16)->get();
         if ($ietsResults->isEmpty()) {
-            $ietsResults = IetsResult::latest('test_date')->limit(6)->get();
+            $ietsResults = IetsResult::latest('test_date')->latest('id')->limit(16)->get();
         }
+        $ieltsResults = IetsResult::where('test_type', 'LIKE', '%IELTS%')->latest('test_date')->latest('id')->limit(12)->get();
+        $pteResults = IetsResult::where('test_type', 'LIKE', '%PTE%')->latest('test_date')->latest('id')->limit(12)->get();
+        $toeflResults = IetsResult::where('test_type', 'LIKE', '%TOEFL%')->latest('test_date')->latest('id')->limit(12)->get();
         $classrooms = Classroom::active()->limit(3)->get();
         $videos = Video::active()->latest('published_at')->limit(3)->get();
         $blogs = Blog::published()->limit(3)->get();
@@ -45,6 +48,9 @@ class HomeController extends Controller
             'teachers',
             'ietsPrograms',
             'ietsResults',
+            'ieltsResults',
+            'pteResults',
+            'toeflResults',
             'classrooms',
             'videos',
             'blogs',

@@ -8,6 +8,9 @@
     <!-- Tab Navigation -->
     <div class="flex items-center gap-2 border-b border-slate-200 pb-3 text-xs font-bold uppercase tracking-wider overflow-x-auto">
         <button @click="tab = 'general'" :class="tab === 'general' ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl transition shadow-sm">General Info</button>
+        <button @click="tab = 'results'" :class="tab === 'results' ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl transition shadow-sm flex items-center gap-1.5">
+            <span>🏆 Results Page (Hall of Fame)</span>
+        </button>
         <button @click="tab = 'social'" :class="tab === 'social' ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl transition shadow-sm">Social Channels</button>
         <button @click="tab = 'email'" :class="tab === 'email' ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl transition shadow-sm">SMTP Email Server</button>
         <button @click="tab = 'whatsapp'" :class="tab === 'whatsapp' ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl transition shadow-sm">WhatsApp Business API</button>
@@ -331,6 +334,56 @@
 
             <div class="flex justify-end pt-3 border-t border-slate-100">
                 <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow transition">Save WhatsApp API Credentials</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Page (Hall of Fame) Content Settings Form -->
+    <div x-show="tab === 'results'" class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
+        <div>
+            <h3 class="font-bold text-slate-900 text-base">Results Page (Hall of Fame) Content &amp; Headings</h3>
+            <p class="text-xs text-slate-500">Edit the public badge, main title, and description displayed at the top of the Results page (/iets/results).</p>
+        </div>
+
+        <form action="{{ route('admin.settings.update') }}" method="POST" class="space-y-5">
+            @csrf
+            <input type="hidden" name="group" value="results">
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Top Badge Text</label>
+                <input type="text" name="results_page_badge" value="{{ $settings['results_page_badge'] }}" required
+                       placeholder="e.g. Official Verified Scorecards & Posters"
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <span class="text-[11px] text-slate-400 mt-1 block">Displays inside the pill badge above the main heading.</span>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Main Heading (Title)</label>
+                <input type="text" name="results_page_title" value="{{ $settings['results_page_title'] }}" required
+                       placeholder="e.g. Student Hall of Fame & Results"
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <span class="text-[11px] text-slate-400 mt-1 block">The large title shown in Screenshot 2.</span>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Subheading / Description</label>
+                <textarea name="results_page_subtitle" rows="3" required
+                          placeholder="Authentic standardized result cards earned by our candidates..."
+                          class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">{{ $settings['results_page_subtitle'] }}</textarea>
+                <span class="text-[11px] text-slate-400 mt-1 block">Paragraph shown below the title.</span>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Featured Slider Section Title</label>
+                <input type="text" name="results_slider_title" value="{{ $settings['results_slider_title'] }}" required
+                       placeholder="e.g. Featured Result Scorecards"
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+
+            <div class="flex justify-end pt-3 border-t border-slate-100">
+                <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow transition">
+                    Save Results Page Content
+                </button>
             </div>
         </form>
     </div>
