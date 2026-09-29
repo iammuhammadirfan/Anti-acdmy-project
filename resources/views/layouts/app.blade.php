@@ -61,6 +61,8 @@
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/brands.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/fontawesome.min.css">
 
     <!-- Structured Data (JSON-LD) -->
     @yield('schema_json')
@@ -305,16 +307,16 @@
                     </p>
                     <div class="flex items-center gap-3 pt-2">
                         @if(!empty($fbLink))
-                            <a href="{{ $fbLink }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+                            <a href="{{ $fbLink }}" target="_blank" rel="noopener" aria-label="Facebook" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
                         @endif
                         @if(!empty($instaLink))
-                            <a href="{{ $instaLink }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+                            <a href="{{ $instaLink }}" target="_blank" rel="noopener" aria-label="Instagram" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
                         @endif
                         @if(!empty($ytLink))
-                            <a href="{{ $ytLink }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i data-lucide="youtube" class="w-4 h-4"></i></a>
+                            <a href="{{ $ytLink }}" target="_blank" rel="noopener" aria-label="YouTube" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
                         @endif
                         @if(!empty($liLink))
-                            <a href="{{ $liLink }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+                            <a href="{{ $liLink }}" target="_blank" rel="noopener" aria-label="LinkedIn" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>
                         @endif
                     </div>
                 </div>
