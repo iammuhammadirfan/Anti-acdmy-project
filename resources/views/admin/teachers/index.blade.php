@@ -5,12 +5,12 @@
 
 @section('content')
 <div class="space-y-6">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
             <h2 class="text-lg font-bold text-slate-900">Academic Faculty</h2>
             <p class="text-xs text-slate-500">Manage instructor profiles, qualifications, subjects, and social links.</p>
         </div>
-        <a href="{{ route('admin.teachers.create') }}" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md shadow-brand-500/20 transition">
+        <a href="{{ route('admin.teachers.create') }}" class="inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md shadow-brand-500/20 transition shrink-0 self-start sm:self-auto">
             <i data-lucide="plus" class="w-4 h-4"></i>
             <span>Add New Teacher</span>
         </a>

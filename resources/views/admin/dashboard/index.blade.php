@@ -4,99 +4,99 @@
 @section('page_title', 'Institutional Overview & Dashboard')
 
 @section('content')
-<div class="space-y-8">
+<div class="space-y-6 sm:space-y-8">
     <!-- Top Stat Cards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5">
         <!-- Teachers -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center justify-between">
-            <div>
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex items-center justify-between min-w-0">
+            <div class="min-w-0">
                 <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Total Faculty</span>
                 <span class="text-2xl font-extrabold text-slate-900">{{ $metrics['total_teachers'] }}</span>
-                <span class="text-[11px] text-emerald-600 block mt-1 font-semibold flex items-center gap-0.5">
-                    <i data-lucide="check" class="w-3 h-3"></i> Qualified Instructors
+                <span class="text-[11px] text-emerald-600 block mt-1 font-semibold flex items-center gap-0.5 truncate">
+                    <i data-lucide="check" class="w-3 h-3 shrink-0"></i> Qualified Instructors
                 </span>
             </div>
-            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-brand-600 flex items-center justify-center">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-brand-600 flex items-center justify-center shrink-0">
                 <i data-lucide="users" class="w-6 h-6"></i>
             </div>
         </div>
 
         <!-- Students Stat -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center justify-between">
-            <div>
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex items-center justify-between min-w-0">
+            <div class="min-w-0">
                 <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Active Students</span>
                 <span class="text-2xl font-extrabold text-slate-900">{{ $metrics['total_students'] }}</span>
-                <span class="text-[11px] text-brand-600 block mt-1 font-semibold">Enrolled across batches</span>
+                <span class="text-[11px] text-brand-600 block mt-1 font-semibold truncate">Enrolled across batches</span>
             </div>
-            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
                 <i data-lucide="graduation-cap" class="w-6 h-6"></i>
             </div>
         </div>
 
         <!-- Appointments -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center justify-between">
-            <div>
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex items-center justify-between min-w-0">
+            <div class="min-w-0">
                 <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Appointments</span>
                 <span class="text-2xl font-extrabold text-slate-900">{{ $metrics['total_appointments'] }}</span>
-                <span class="text-[11px] text-amber-600 font-semibold block mt-1">
+                <span class="text-[11px] text-amber-600 font-semibold block mt-1 truncate">
                     {{ $metrics['pending_appointments'] }} Pending Review
                 </span>
             </div>
-            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
                 <i data-lucide="calendar" class="w-6 h-6"></i>
             </div>
         </div>
 
         <!-- IETS Results -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center justify-between">
-            <div>
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex items-center justify-between min-w-0">
+            <div class="min-w-0">
                 <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">IETS Success</span>
                 <span class="text-2xl font-extrabold text-slate-900">{{ $metrics['iets_results'] }}</span>
-                <span class="text-[11px] text-purple-600 font-semibold block mt-1">Verified Band Scores</span>
+                <span class="text-[11px] text-purple-600 font-semibold block mt-1 truncate">Verified Band Scores</span>
             </div>
-            <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center">
+            <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
                 <i data-lucide="award" class="w-6 h-6"></i>
             </div>
         </div>
     </div>
 
     <!-- Charts Row -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <!-- Monthly Appointments Growth -->
-        <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm">
+        <div class="lg:col-span-2 bg-white rounded-2xl p-4 sm:p-6 border border-slate-200/80 shadow-sm min-w-0">
             <div class="flex items-center justify-between mb-4">
                 <div>
-                    <h3 class="font-bold text-slate-900 text-base">Booking Inquiries (Last 6 Months)</h3>
+                    <h3 class="font-bold text-slate-900 text-sm sm:text-base">Booking Inquiries (Last 6 Months)</h3>
                     <p class="text-xs text-slate-500">Student counseling and diagnostic test appointments</p>
                 </div>
             </div>
-            <div class="h-64">
+            <div class="h-56 sm:h-64 relative">
                 <canvas id="appointmentsChart"></canvas>
             </div>
         </div>
 
         <!-- Appointment Status Breakdown -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between min-w-0">
             <div>
-                <h3 class="font-bold text-slate-900 text-base mb-1">Booking Status Breakdown</h3>
+                <h3 class="font-bold text-slate-900 text-sm sm:text-base mb-1">Booking Status Breakdown</h3>
                 <p class="text-xs text-slate-500 mb-4">Distribution by appointment state</p>
             </div>
-            <div class="h-56 relative flex items-center justify-center">
+            <div class="h-48 sm:h-56 relative flex items-center justify-center">
                 <canvas id="statusChart"></canvas>
             </div>
         </div>
     </div>
 
     <!-- Two-Column Feed: Recent Appointments & Contact Inquiries -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <!-- Recent Appointments -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm">
+        <div class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200/80 shadow-sm min-w-0">
             <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
                 <div class="flex items-center gap-2">
-                    <i data-lucide="calendar-check" class="w-5 h-5 text-brand-600"></i>
-                    <h3 class="font-bold text-slate-900 text-base">Recent Appointments</h3>
+                    <i data-lucide="calendar-check" class="w-5 h-5 text-brand-600 shrink-0"></i>
+                    <h3 class="font-bold text-slate-900 text-sm sm:text-base">Recent Appointments</h3>
                 </div>
-                <a href="{{ route('admin.appointments.index') }}" class="text-xs text-brand-600 hover:text-brand-800 font-semibold">View All &rarr;</a>
+                <a href="{{ route('admin.appointments.index') }}" class="text-xs text-brand-600 hover:text-brand-800 font-semibold shrink-0">View All &rarr;</a>
             </div>
 
             @if($recentAppointments->isEmpty())
@@ -104,18 +104,18 @@
             @else
                 <div class="divide-y divide-slate-100">
                     @foreach($recentAppointments as $apt)
-                        <div class="py-3 flex items-center justify-between">
-                            <div>
-                                <h5 class="text-sm font-bold text-slate-900">{{ $apt->name }}</h5>
-                                <div class="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
+                        <div class="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div class="min-w-0">
+                                <h5 class="text-sm font-bold text-slate-900 truncate">{{ $apt->name }}</h5>
+                                <div class="text-xs text-slate-500 flex flex-wrap items-center gap-1.5 sm:gap-2 mt-0.5">
                                     <span>{{ $apt->appointment_date->format('M d, Y') }}</span>
                                     <span>•</span>
                                     <span>{{ $apt->time_slot }}</span>
                                     <span>•</span>
-                                    <span class="text-slate-600 font-medium">{{ $apt->purpose }}</span>
+                                    <span class="text-slate-600 font-medium truncate">{{ $apt->purpose }}</span>
                                 </div>
                             </div>
-                            <span class="text-[11px] font-bold uppercase px-2.5 py-1 rounded-full 
+                            <span class="self-start sm:self-center text-[10px] sm:text-[11px] font-bold uppercase px-2.5 py-1 rounded-full shrink-0
                                 {{ $apt->status === 'confirmed' ? 'bg-emerald-100 text-emerald-800' : ($apt->status === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700') }}">
                                 {{ $apt->status }}
                             </span>
@@ -126,13 +126,13 @@
         </div>
 
         <!-- Recent Contact Messages -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm">
+        <div class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200/80 shadow-sm min-w-0">
             <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
                 <div class="flex items-center gap-2">
-                    <i data-lucide="inbox" class="w-5 h-5 text-amber-600"></i>
-                    <h3 class="font-bold text-slate-900 text-base">Latest Contact Messages</h3>
+                    <i data-lucide="inbox" class="w-5 h-5 text-amber-600 shrink-0"></i>
+                    <h3 class="font-bold text-slate-900 text-sm sm:text-base">Latest Contact Messages</h3>
                 </div>
-                <a href="{{ route('admin.messages.index') }}" class="text-xs text-brand-600 hover:text-brand-800 font-semibold">View All &rarr;</a>
+                <a href="{{ route('admin.messages.index') }}" class="text-xs text-brand-600 hover:text-brand-800 font-semibold shrink-0">View All &rarr;</a>
             </div>
 
             @if($recentMessages->isEmpty())
@@ -140,13 +140,13 @@
             @else
                 <div class="divide-y divide-slate-100">
                     @foreach($recentMessages as $msg)
-                        <div class="py-3 flex items-start justify-between">
-                            <div>
-                                <h5 class="text-sm font-bold text-slate-900">{{ $msg->name }} <span class="text-xs font-normal text-slate-500">({{ $msg->email }})</span></h5>
+                        <div class="py-3 flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                            <div class="min-w-0">
+                                <h5 class="text-sm font-bold text-slate-900 truncate">{{ $msg->name }} <span class="text-xs font-normal text-slate-500">({{ $msg->email }})</span></h5>
                                 <p class="text-xs text-slate-600 mt-1 line-clamp-1">{{ $msg->message }}</p>
                                 <span class="text-[10px] text-slate-400 mt-1 block">{{ $msg->created_at->diffForHumans() }}</span>
                             </div>
-                            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full {{ $msg->status === 'unread' ? 'bg-red-100 text-red-800' : 'bg-slate-100 text-slate-600' }}">
+                            <span class="self-start sm:self-center text-[10px] font-bold uppercase px-2 py-0.5 rounded-full shrink-0 {{ $msg->status === 'unread' ? 'bg-red-100 text-red-800' : 'bg-slate-100 text-slate-600' }}">
                                 {{ $msg->status }}
                             </span>
                         </div>
@@ -157,14 +157,14 @@
     </div>
 
     <!-- Recent Audit Logs -->
-    <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm">
-        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-            <div class="flex items-center gap-2">
-                <i data-lucide="activity" class="w-5 h-5 text-slate-700"></i>
-                <h3 class="font-bold text-slate-900 text-base">System Activity &amp; Audit Trail</h3>
+    <div class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200/80 shadow-sm min-w-0">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+                <i data-lucide="activity" class="w-5 h-5 text-slate-700 shrink-0"></i>
+                <h3 class="font-bold text-slate-900 text-sm sm:text-base truncate">System Activity &amp; Audit Trail</h3>
             </div>
             @if(auth()->user()->isSuperAdmin())
-                <a href="{{ route('admin.activity.index') }}" class="text-xs text-brand-600 hover:text-brand-800 font-semibold">All Audit Logs &rarr;</a>
+                <a href="{{ route('admin.activity.index') }}" class="text-xs text-brand-600 hover:text-brand-800 font-semibold shrink-0">All Audit Logs &rarr;</a>
             @endif
         </div>
 

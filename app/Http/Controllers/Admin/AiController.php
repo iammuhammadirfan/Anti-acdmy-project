@@ -32,10 +32,10 @@ class AiController extends Controller
         }
 
         $aiSettings = [
-            'provider' => Setting::get('ai_provider', 'openai'),
+            'provider' => Setting::get('ai_provider', 'gemini'),
             'api_key' => Setting::get('ai_api_key', ''),
-            'model' => Setting::get('ai_model', 'gpt-4o-mini'),
-            'system_prompt' => Setting::get('ai_system_prompt', "You are Apex Academy & IETS's dedicated AI academic counselor and admissions advisor."),
+            'model' => Setting::get('ai_model', 'gemini-1.5-flash'),
+            'system_prompt' => Setting::get('ai_system_prompt', "You are Apex Academy & IETS's dedicated AI academic counselor and admissions advisor. Respond politely and accurately to students in their chosen language (English, Urdu, or Roman Urdu)."),
             'chatbot_name' => Setting::get('ai_chatbot_name', 'Apex AI Counselor'),
             'welcome_message' => Setting::get('ai_welcome_message', 'Hello! Welcome to Apex Academy & IETS. How can I help you today with courses, faculty, or appointment booking?'),
             'is_enabled' => Setting::get('ai_is_enabled', '1'),
