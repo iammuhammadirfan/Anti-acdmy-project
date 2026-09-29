@@ -61,11 +61,22 @@
 </head>
 <body class="font-sans antialiased text-slate-800 bg-slate-100 min-h-screen flex flex-col" x-data="{ sidebarOpen: false }">
 
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex h-screen overflow-hidden relative">
+        <!-- Mobile Sidebar Overlay Backdrop -->
+        <div x-show="sidebarOpen" 
+             x-cloak
+             x-transition:enter="transition-opacity ease-linear duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-linear duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click="sidebarOpen = false" 
+             class="fixed inset-0 bg-slate-950/60 z-30 md:hidden backdrop-blur-xs"></div>
+
         <!-- Sidebar Navigation -->
-        <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 transition-all duration-300 z-30 overflow-y-auto"
-               :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
-               class="fixed md:static inset-y-0 left-0">
+        <aside class="fixed md:static inset-y-0 left-0 z-40 w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 transition-transform duration-300 ease-in-out overflow-y-auto shadow-2xl md:shadow-none"
+               :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
             
             <!-- Brand Header -->
             <div class="h-16 px-6 bg-slate-950 flex items-center justify-between border-b border-slate-800">
@@ -354,17 +365,17 @@
         </aside>
 
         <!-- Main Wrapper -->
-        <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="flex-1 flex flex-col overflow-hidden min-w-0">
             <!-- Top Navbar -->
-            <header class="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between shrink-0">
-                <div class="flex items-center gap-3">
-                    <button @click="sidebarOpen = !sidebarOpen" class="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg">
+            <header class="h-16 bg-white border-b border-slate-200 px-3 sm:px-6 flex items-center justify-between shrink-0 gap-2">
+                <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <button @click="sidebarOpen = !sidebarOpen" class="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg shrink-0" aria-label="Toggle navigation">
                         <i data-lucide="menu" class="w-5 h-5"></i>
                     </button>
-                    <h1 class="text-lg font-bold text-slate-900">@yield('page_title', 'Dashboard')</h1>
+                    <h1 class="text-sm sm:text-lg font-bold text-slate-900 truncate">@yield('page_title', 'Dashboard')</h1>
                 </div>
 
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-1.5 sm:gap-4 shrink-0">
                     <!-- Live Site Link -->
                     <a href="{{ route('home') }}" target="_blank" 
                        class="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-brand-600 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 transition">
@@ -374,10 +385,10 @@
 
                     <!-- Profile Link -->
                     <a href="{{ route('admin.profile') }}" class="flex items-center gap-2 hover:bg-slate-50 p-1.5 rounded-lg transition text-slate-700">
-                        <div class="w-7 h-7 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center text-xs">
+                        <div class="w-7 h-7 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center text-xs shrink-0">
                             {{ substr(auth()->user()->name, 0, 1) }}
                         </div>
-                        <span class="text-sm font-semibold hidden md:inline">{{ auth()->user()->name }}</span>
+                        <span class="text-sm font-semibold hidden lg:inline truncate max-w-[120px]">{{ auth()->user()->name }}</span>
                     </a>
 
                     <!-- Logout Form -->
@@ -391,7 +402,7 @@
             </header>
 
             <!-- Main Content Area -->
-            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <main class="flex-1 overflow-y-auto p-3.5 sm:p-6 lg:p-8 min-w-0">
                 <!-- Flash Alerts -->
                 @if(session('success'))
                     <div class="mb-6 bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-xl text-emerald-800 flex items-center justify-between shadow-sm">

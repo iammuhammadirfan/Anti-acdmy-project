@@ -5,14 +5,14 @@
 
 @section('content')
 <div class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
             <a href="{{ route('admin.gallery.index') }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ empty($category) ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300' }}">All</a>
             @foreach(['classroom' => 'Classroom', 'lab' => 'Lab', 'events' => 'Events', 'student_activity' => 'Students', 'library' => 'Library'] as $k => $l)
                 <a href="{{ route('admin.gallery.index', ['category' => $k]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $category === $k ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300' }}">{{ $l }}</a>
             @endforeach
         </div>
-        <a href="{{ route('admin.gallery.create') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition-all flex items-center gap-1.5">
+        <a href="{{ route('admin.gallery.create') }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-1.5 shrink-0 self-start sm:self-auto">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             Upload Photo
         </a>

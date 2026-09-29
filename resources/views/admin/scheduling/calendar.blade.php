@@ -11,7 +11,7 @@
             <h2 class="text-lg font-bold text-slate-900">Interactive Slot Calendar</h2>
             <p class="text-xs text-slate-500">Inspect scheduled IETS tests and campus counseling sessions by date.</p>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
             <button type="button" @click="addSlotModal = true" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
                 <i data-lucide="plus" class="w-4 h-4"></i>
                 <span>Add Slot to Selected Date</span>
@@ -52,59 +52,64 @@
                 </div>
             </div>
 
-            <!-- Day Headers -->
-            <div class="grid grid-cols-7 gap-1 text-center font-bold text-[11px] uppercase tracking-wider text-slate-400 py-1">
-                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-            </div>
+            <!-- Calendar Grid Container with Responsive Horizontal Scroll for mobile -->
+            <div class="overflow-x-auto -mx-2 px-2 pb-2">
+                <div class="min-w-[520px]">
+                    <!-- Day Headers -->
+                    <div class="grid grid-cols-7 gap-1 text-center font-bold text-[11px] uppercase tracking-wider text-slate-400 py-1">
+                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                    </div>
 
-            <!-- Days Grid -->
-            <div class="grid grid-cols-7 gap-1.5 text-xs">
-                @for($i = 0; $i < $startDayOfWeek; $i++)
-                    <div class="h-24 p-1.5 bg-slate-50/40 rounded-xl border border-transparent"></div>
-                @endfor
+                    <!-- Days Grid -->
+                    <div class="grid grid-cols-7 gap-1.5 text-xs">
+                        @for($i = 0; $i < $startDayOfWeek; $i++)
+                            <div class="h-24 p-1.5 bg-slate-50/40 rounded-xl border border-transparent"></div>
+                        @endfor
 
-                @for($day = 1; $day <= $daysInMonth; $day++)
-                    @php
-                        $dateStr = sprintf('%s-%02d', $month, $day);
-                        $daySlotsList = $slots->get($dateStr, collect());
-                        $isToday = ($dateStr === date('Y-m-d'));
-                        $isSelected = ($dateStr === $selectedDate);
-                        $isBlocked = in_array($dateStr, $blockedDates);
-                    @endphp
-                    <a href="{{ route('admin.scheduling.calendar', ['month' => $month, 'date' => $dateStr]) }}" 
-                       class="h-24 p-1.5 rounded-xl border transition flex flex-col justify-between text-left group
-                       {{ $isSelected ? 'border-brand-500 bg-brand-50/50 ring-2 ring-brand-400/50 shadow-sm' : ($isBlocked ? 'border-red-200 bg-red-50/30' : 'border-slate-200/80 bg-white hover:border-slate-300 hover:bg-slate-50') }}">
-                        
-                        <div class="flex items-center justify-between">
-                            <span class="font-bold text-xs {{ $isToday ? 'w-5 h-5 rounded-full bg-brand-600 text-white flex items-center justify-center text-[11px]' : ($isSelected ? 'text-brand-900 font-extrabold' : 'text-slate-700') }}">
-                                {{ $day }}
-                            </span>
-                            @if($isBlocked)
-                                <span class="w-2 h-2 rounded-full bg-red-500" title="Blocked Date"></span>
-                            @endif
-                        </div>
-
-                        <!-- Mini Slot Pills -->
-                        <div class="space-y-1 overflow-hidden">
-                            @foreach($daySlotsList->take(2) as $s)
-                                @php
-                                    $bCount = $s->booked_count;
-                                    $sFull = $s->is_full;
-                                @endphp
-                                <div class="px-1.5 py-0.5 rounded text-[9px] font-bold truncate flex items-center justify-between
-                                    {{ $s->type === 'iets_test' 
-                                        ? ($sFull ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800') 
-                                        : 'bg-blue-100 text-blue-800' }}">
-                                    <span>{{ $s->start_time }}</span>
-                                    <span>{{ $bCount }}/{{ $s->capacity }}</span>
+                        @for($day = 1; $day <= $daysInMonth; $day++)
+                            @php
+                                $dateStr = sprintf('%s-%02d', $month, $day);
+                                $daySlotsList = $slots->get($dateStr, collect());
+                                $isToday = ($dateStr === date('Y-m-d'));
+                                $isSelected = ($dateStr === $selectedDate);
+                                $isBlocked = in_array($dateStr, $blockedDates);
+                            @endphp
+                            <a href="{{ route('admin.scheduling.calendar', ['month' => $month, 'date' => $dateStr]) }}" 
+                               class="h-24 p-1.5 rounded-xl border transition flex flex-col justify-between text-left group
+                               {{ $isSelected ? 'border-brand-500 bg-brand-50/50 ring-2 ring-brand-400/50 shadow-sm' : ($isBlocked ? 'border-red-200 bg-red-50/30' : 'border-slate-200/80 bg-white hover:border-slate-300 hover:bg-slate-50') }}">
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-xs {{ $isToday ? 'w-5 h-5 rounded-full bg-brand-600 text-white flex items-center justify-center text-[11px]' : ($isSelected ? 'text-brand-900 font-extrabold' : 'text-slate-700') }}">
+                                        {{ $day }}
+                                    </span>
+                                    @if($isBlocked)
+                                        <span class="w-2 h-2 rounded-full bg-red-500" title="Blocked Date"></span>
+                                    @endif
                                 </div>
-                            @endforeach
-                            @if($daySlotsList->count() > 2)
-                                <div class="text-[9px] text-slate-400 font-semibold px-1">+{{ $daySlotsList->count() - 2 }} more</div>
-                            @endif
-                        </div>
-                    </a>
-                @endfor
+
+                                <!-- Mini Slot Pills -->
+                                <div class="space-y-1 overflow-hidden">
+                                    @foreach($daySlotsList->take(2) as $s)
+                                        @php
+                                            $bCount = $s->booked_count;
+                                            $sFull = $s->is_full;
+                                        @endphp
+                                        <div class="px-1.5 py-0.5 rounded text-[9px] font-bold truncate flex items-center justify-between
+                                            {{ $s->type === 'iets_test' 
+                                                ? ($sFull ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800') 
+                                                : 'bg-blue-100 text-blue-800' }}">
+                                            <span>{{ $s->start_time }}</span>
+                                            <span>{{ $bCount }}/{{ $s->capacity }}</span>
+                                        </div>
+                                    @endforeach
+                                    @if($daySlotsList->count() > 2)
+                                        <div class="text-[9px] text-slate-400 font-semibold px-1">+{{ $daySlotsList->count() - 2 }} more</div>
+                                    @endif
+                                </div>
+                            </a>
+                        @endfor
+                    </div>
+                </div>
             </div>
         </div>
 
