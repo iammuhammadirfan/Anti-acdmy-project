@@ -273,6 +273,8 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/scheduling/bookings/{booking}', [SchedulingController::class, 'showBooking'])->name('admin.scheduling.booking.show');
         Route::post('/scheduling/bookings/{booking}/status', [SchedulingController::class, 'updateBookingStatus'])->name('admin.scheduling.booking.status');
         Route::post('/scheduling/bookings/{booking}/reschedule', [SchedulingController::class, 'rescheduleBooking'])->name('admin.scheduling.booking.reschedule');
+        Route::delete('/scheduling/bookings/{booking}', [SchedulingController::class, 'destroyBooking'])->name('admin.scheduling.booking.destroy');
+        Route::post('/scheduling/bookings/bulk-destroy', [SchedulingController::class, 'bulkDestroyBookings'])->name('admin.scheduling.bookings.bulk-destroy');
         Route::get('/scheduling/export', [SchedulingController::class, 'exportBookings'])->name('admin.scheduling.export');
 
         Route::get('/scheduling/students', [SchedulingController::class, 'students'])->name('admin.scheduling.students');

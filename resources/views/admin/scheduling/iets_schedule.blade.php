@@ -277,14 +277,10 @@
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Start Time *</label>
-                        <input type="time" name="start_time" required value="09:00"
-                               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <x-watch-time-picker name="start_time" value="09:00 AM" label="Start Time *" required placeholder="09:00 AM" />
                     </div>
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">End Time *</label>
-                        <input type="time" name="end_time" required value="10:00"
-                               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <x-watch-time-picker name="end_time" value="10:00 AM" label="End Time *" required placeholder="10:00 AM" />
                     </div>
                 </div>
 
@@ -345,14 +341,10 @@
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Start Time *</label>
-                        <input type="text" name="start_time" x-model="editSlotData.start_time" required
-                               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <x-watch-time-picker name="start_time" model="editSlotData.start_time" label="Start Time *" required />
                     </div>
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">End Time *</label>
-                        <input type="text" name="end_time" x-model="editSlotData.end_time" required
-                               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <x-watch-time-picker name="end_time" model="editSlotData.end_time" label="End Time *" required />
                     </div>
                 </div>
 

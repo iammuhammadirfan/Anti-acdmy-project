@@ -9,6 +9,14 @@
         <a href="{{ route('admin.scheduling.bookings') }}" class="text-xs text-slate-500 hover:text-brand-600 flex items-center gap-1 font-semibold">
             <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to All Bookings
         </a>
+        <form action="{{ route('admin.scheduling.booking.destroy', $booking) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this booking for {{ addslashes($booking->name) }} ({{ $booking->registration_number ?: $booking->booking_code }})?');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                <span>Delete Booking</span>
+            </button>
+        </form>
     </div>
 
     <!-- Main Grid -->

@@ -4,7 +4,6 @@
     $heroBadge = \App\Models\Setting::get('results_page_badge', 'Official Verified Scorecards & Posters');
     $heroTitle = \App\Models\Setting::get('results_page_title', 'Student Hall of Fame & Results');
     $heroSubtitle = \App\Models\Setting::get('results_page_subtitle', 'Authentic standardized result cards earned by our candidates. Filter by IELTS, PTE, or TOEFL to view genuine scorecards.');
-    $sliderTitle = \App\Models\Setting::get('results_slider_title', 'Featured Result Scorecards');
 @endphp
 
 @section('title', $heroTitle . ' — ' . config('app.name', 'Apex Academy'))
@@ -93,89 +92,7 @@
         </div>
     </section>
 
-    <!-- 2. Featured Result Cards Slider (Continuous Swiper) -->
-    @if($featuredSlider->isNotEmpty())
-        <section class="py-10 sm:py-14 bg-slate-900/80 border-b border-slate-800 relative">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <span class="text-[10px] sm:text-xs uppercase font-extrabold tracking-wider text-emerald-400 block">Top Performers</span>
-                        <h2 class="text-lg sm:text-2xl font-bold text-white">{{ $sliderTitle }}</h2>
-                    </div>
-
-                    <!-- Slider Arrow Buttons -->
-                    <div class="flex items-center gap-2">
-                        <button type="button" id="results-slider-prev" class="w-8 sm:w-9 h-8 sm:h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition border border-slate-700">
-                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
-                        </button>
-                        <button type="button" id="results-slider-next" class="w-8 sm:w-9 h-8 sm:h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition border border-slate-700">
-                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Swiper -->
-                <div class="swiper results-page-swiper !overflow-visible">
-                    <div class="swiper-wrapper">
-                        @foreach($featuredSlider as $card)
-                            <div class="swiper-slide !h-auto">
-                                <div class="group relative bg-slate-950 border border-slate-800 hover:border-blue-500/60 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col cursor-pointer"
-                                     @click="openModal('{{ $card->card_image_url }}', '{{ addslashes($card->student_name) }}', '{{ $card->overall_band }}', '{{ $card->category }}')">
-
-                                    <!-- Top Meta Bar (Prevents overlapping badges on the scorecard) -->
-                                    <div class="px-3.5 py-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
-                                        @if($card->category === 'IELTS')
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-red-600 text-white shadow-sm">
-                                                IELTS
-                                            </span>
-                                        @elseif($card->category === 'PTE')
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-600 text-white shadow-sm">
-                                                PTE
-                                            </span>
-                                        @else
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-600 text-white shadow-sm">
-                                                TOEFL
-                                            </span>
-                                        @endif
-
-                                        <span class="text-[11px] font-extrabold text-emerald-400">
-                                            {{ $card->category === 'IELTS' ? 'Band ' . $card->overall_band : 'Score ' . $card->overall_band }}
-                                        </span>
-                                    </div>
-
-                                    <!-- Clean 4:5 Aspect Ratio Standard Card (Unobscured) -->
-                                    <div class="relative w-full aspect-[4/5] bg-slate-950 overflow-hidden">
-                                        <img src="{{ $card->card_image_url }}"
-                                             alt="{{ $card->student_name }} Result Card"
-                                             loading="lazy"
-                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-
-                                        <!-- Hover Overlay -->
-                                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
-                                            <span class="inline-flex items-center gap-1 text-emerald-400 text-xs font-semibold">
-                                                <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i> Click to View Full Card
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Footer -->
-                                    <div class="p-3 bg-slate-900 border-t border-slate-800 flex items-center justify-between">
-                                        <div class="min-w-0 pr-2">
-                                            <h4 class="font-bold text-white text-xs truncate group-hover:text-blue-400 transition">{{ $card->student_name }}</h4>
-                                            <span class="text-[10px] text-slate-400 block truncate">{{ $card->test_date ? \Carbon\Carbon::parse($card->test_date)->format('M d, Y') : 'Verified' }}</span>
-                                        </div>
-                                        <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-500 group-hover:text-white transition shrink-0"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </section>
-    @endif
-
-    <!-- 3. Portions Filter & Main Cards Grid (Anchor id: results-filter) -->
+    <!-- 2. Portions Filter & Main Cards Grid (Anchor id: results-filter) -->
     <section id="results-filter" class="py-12 sm:py-16 bg-slate-950 scroll-mt-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             <!-- Filter Bar & Search (Instant in-place filtering with ZERO scroll jump) -->
@@ -365,42 +282,6 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Initialize Swiper for top featured results
-        if (typeof Swiper !== 'undefined' && document.querySelector('.results-page-swiper')) {
-            new Swiper('.results-page-swiper', {
-                slidesPerView: 1.15,
-                spaceBetween: 14,
-                loop: true,
-                autoplay: {
-                    delay: 3200,
-                    disableOnInteraction: false,
-                    pauseOnMouseEnter: true,
-                },
-                navigation: {
-                    nextEl: '#results-slider-next',
-                    prevEl: '#results-slider-prev',
-                },
-                breakpoints: {
-                    480: {
-                        slidesPerView: 1.5,
-                        spaceBetween: 16,
-                    },
-                    640: {
-                        slidesPerView: 2,
-                        spaceBetween: 18,
-                    },
-                    768: {
-                        slidesPerView: 3,
-                        spaceBetween: 20,
-                    },
-                    1024: {
-                        slidesPerView: 4,
-                        spaceBetween: 24,
-                    },
-                },
-            });
-        }
-
         // Prevent unwanted top scrolling if URL contains query parameters
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('type') || urlParams.has('search') || window.location.hash === '#results-filter') {

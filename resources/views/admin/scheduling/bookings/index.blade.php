@@ -4,17 +4,51 @@
 @section('page_title', 'Appointment & Test Registrations')
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-6" x-data="{
+    selectedBookings: [],
+    allBookingIds: {{ json_encode($bookings->pluck('id')->toArray()) }},
+    toggleAll(event) {
+        if (event.target.checked) {
+            this.selectedBookings = [...this.allBookingIds];
+        } else {
+            this.selectedBookings = [];
+        }
+    },
+    isSelected(id) {
+        return this.selectedBookings.includes(id);
+    },
+    toggleBooking(id) {
+        if (this.selectedBookings.includes(id)) {
+            this.selectedBookings = this.selectedBookings.filter(b => b !== id);
+        } else {
+            this.selectedBookings.push(id);
+        }
+    }
+}">
     <!-- Header Actions -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h2 class="text-lg font-bold text-slate-900">Student &amp; Candidate Registrations</h2>
-            <p class="text-xs text-slate-500">Track registrations with unique enrollment numbers, manage statuses, and reschedule slots.</p>
+            <p class="text-xs text-slate-500">Track registrations with unique enrollment numbers, manage statuses, and delete or reschedule slots.</p>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+            @if($bookings->total() > 0)
+                <form action="{{ route('admin.scheduling.bookings.bulk-destroy') }}" method="POST" onsubmit="return confirm('DANGER: Are you sure you want to permanently delete ALL {{ $bookings->total() }} bookings matching current filter? This action CANNOT be undone!');" class="inline">
+                    @csrf
+                    <input type="hidden" name="all" value="1">
+                    @if($type) <input type="hidden" name="type" value="{{ $type }}"> @endif
+                    @if($testType) <input type="hidden" name="test_type" value="{{ $testType }}"> @endif
+                    @if($status) <input type="hidden" name="status" value="{{ $status }}"> @endif
+                    @if($date) <input type="hidden" name="date" value="{{ $date }}"> @endif
+                    <button type="submit" class="inline-flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs px-3.5 py-2.5 rounded-xl border border-rose-200 transition shadow-sm" title="Delete all filtered bookings">
+                        <i data-lucide="trash" class="w-3.5 h-3.5"></i>
+                        <span>Delete All ({{ $bookings->total() }})</span>
+                    </button>
+                </form>
+            @endif
             <a href="{{ route('admin.scheduling.export', request()->all()) }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
                 <i data-lucide="download" class="w-4 h-4"></i>
-                <span>Export Filtered CSV</span>
+                <span>Export CSV</span>
             </a>
             <a href="{{ route('admin.scheduling.slots') }}" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
                 <i data-lucide="calendar" class="w-4 h-4"></i>
@@ -77,12 +111,56 @@
         </form>
     </div>
 
+    <!-- Bulk Delete Action Bar (appears when 1 or more bookings are selected) -->
+    <div x-show="selectedBookings.length > 0" x-cloak 
+         class="bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-4 transition-all">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-rose-600 flex items-center justify-center text-white shrink-0">
+                <i data-lucide="check-square" class="w-4 h-4"></i>
+            </div>
+            <div>
+                <div class="text-xs font-bold text-white">
+                    <span x-text="selectedBookings.length" class="text-rose-400 font-extrabold text-sm"></span> Booking(s) Selected
+                </div>
+                <div class="text-[11px] text-slate-400">
+                    Delete selected candidate registrations in bulk.
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+            <button type="button" @click="selectedBookings = [...allBookingIds]" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition">
+                Select All Visible (<span x-text="allBookingIds.length"></span>)
+            </button>
+            <button type="button" @click="selectedBookings = []" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 text-xs font-bold transition">
+                Deselect All
+            </button>
+            <form action="{{ route('admin.scheduling.bookings.bulk-destroy') }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete ALL selected bookings?');">
+                @csrf
+                <template x-for="id in selectedBookings" :key="id">
+                    <input type="hidden" name="booking_ids[]" :value="id">
+                </template>
+                <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow transition">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    <span>Delete Selected Bookings</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Bookings Table -->
     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-slate-600">
                 <thead class="bg-slate-50 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-slate-100">
                     <tr>
+                        <th class="py-3.5 px-4 w-10 text-center">
+                            <input type="checkbox" 
+                                   @change="toggleAll($event)" 
+                                   :checked="selectedBookings.length === allBookingIds.length && allBookingIds.length > 0" 
+                                   class="rounded text-brand-600 focus:ring-brand-500 cursor-pointer"
+                                   title="Select All Visible Bookings">
+                        </th>
                         <th class="py-3.5 px-4">Registration #</th>
                         <th class="py-3.5 px-4">Student Candidate</th>
                         <th class="py-3.5 px-4">Type &amp; Subject</th>
@@ -94,7 +172,14 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse($bookings as $b)
-                        <tr class="hover:bg-slate-50/60 transition">
+                        <tr class="hover:bg-slate-50/60 transition" :class="isSelected({{ $b->id }}) ? 'bg-rose-50/40' : ''">
+                            <td class="py-3.5 px-4 text-center">
+                                <input type="checkbox" 
+                                       :value="{{ $b->id }}" 
+                                       :checked="isSelected({{ $b->id }})" 
+                                       @change="toggleBooking({{ $b->id }})" 
+                                       class="rounded text-brand-600 focus:ring-brand-500 cursor-pointer">
+                            </td>
                             <td class="py-3.5 px-4 font-mono font-bold whitespace-nowrap {{ $b->type === 'iets_test' ? 'text-emerald-700' : 'text-brand-600' }}">
                                 <a href="{{ route('admin.scheduling.booking.show', $b) }}" class="hover:underline">
                                     {{ $b->registration_number ?: $b->booking_code }}
@@ -130,14 +215,23 @@
                                 {{ $b->created_at->format('M d, Y H:i') }}
                             </td>
                             <td class="py-3.5 px-4 text-right whitespace-nowrap">
-                                <a href="{{ route('admin.scheduling.booking.show', $b) }}" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-xs font-bold transition">
-                                    Manage &rarr;
-                                </a>
+                                <div class="flex items-center justify-end gap-1.5">
+                                    <a href="{{ route('admin.scheduling.booking.show', $b) }}" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-xs font-bold transition">
+                                        Manage &rarr;
+                                    </a>
+                                    <form action="{{ route('admin.scheduling.booking.destroy', $b) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete booking for {{ addslashes($b->name) }} ({{ $b->registration_number ?: $b->booking_code }})?');" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-400 transition" title="Delete Booking">
+                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="py-8 text-center text-slate-400">
+                            <td colspan="8" class="py-8 text-center text-slate-400">
                                 No student bookings found matching the selected filters.
                             </td>
                         </tr>
