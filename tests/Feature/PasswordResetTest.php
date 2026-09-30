@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\ResetPasswordMail;
 use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
@@ -13,6 +14,23 @@ use Tests\TestCase;
 class PasswordResetTest extends TestCase
 {
     use DatabaseTransactions;
+
+    public function test_email_subject_and_content_do_not_contain_laravel(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'mail_check_' . uniqid() . '@example.com',
+            'is_active' => true,
+        ]);
+
+        $mail = new ResetPasswordMail($user, 'https://example.com/reset');
+        $subject = $mail->envelope()->subject;
+
+        $this->assertStringNotContainsString('Laravel', $subject);
+        $this->assertStringContainsString('Password Reset Request', $subject);
+
+        $rendered = $mail->render();
+        $this->assertStringNotContainsString('Laravel', $rendered);
+    }
     public function test_forgot_password_page_loads_successfully(): void
     {
         $response = $this->get('/admin/forgot-password');
