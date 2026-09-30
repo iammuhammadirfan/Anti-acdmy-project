@@ -178,4 +178,18 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
     }
+
+    public function resetPassword(Request $request, User $user)
+    {
+        $request->validate([
+            'password' => 'required|string|min:8',
+        ]);
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        ActivityLog::log('admin_password_reset', 'users', "Admin reset password for staff user: {$user->name} ({$user->email})");
+
+        return back()->with('success', "Password for user {$user->name} ({$user->email}) has been updated successfully.");
+    }
 }

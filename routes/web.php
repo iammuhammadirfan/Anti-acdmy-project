@@ -93,6 +93,12 @@ Route::prefix('admin')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
     Route::post('/login', [AuthController::class, 'login'])->name('admin.login.submit');
     Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
+
+    // Password Recovery Routes
+    Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('admin.password.request');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('admin.password.email');
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('admin.password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('admin.password.update');
 });
 
 /*
@@ -115,6 +121,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
         Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
         Route::post('/users/{user}/toggle', [UserController::class, 'toggleStatus'])->name('admin.users.toggle');
+        Route::post('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('admin.users.reset-password');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
     });
 
