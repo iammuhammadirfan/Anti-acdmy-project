@@ -24,8 +24,10 @@ class ResetPasswordMail extends Mailable
 
     public function envelope(): Envelope
     {
+        $academyName = \App\Models\Setting::get('academy_name') ?: 'Apex Academy';
+
         return new Envelope(
-            subject: 'Password Reset Request — ' . config('app.name', 'Apex Academy'),
+            subject: 'Password Reset Request — ' . $academyName,
         );
     }
 
