@@ -80,6 +80,10 @@
                         <input type="checkbox" name="remember" class="rounded text-blue-600 focus:ring-blue-500">
                         <span>Remember my session</span>
                     </label>
+
+                    <a href="{{ route('admin.password.request') }}" class="font-semibold text-blue-600 hover:text-blue-700 hover:underline transition">
+                        Forgot password?
+                    </a>
                 </div>
 
                 <button type="submit" 
