@@ -556,6 +556,54 @@ class SchedulingController extends Controller
     }
 
     /**
+     * Delete a single candidate booking
+     */
+    public function destroyBooking(Appointment $booking)
+    {
+        $code = $booking->registration_number ?: $booking->booking_code;
+        $name = $booking->name;
+
+        $booking->delete();
+
+        ActivityLog::log('delete', 'appointments', "Deleted booking: {$code} ({$name})");
+
+        return back()->with('success', "Booking {$code} for {$name} deleted successfully.");
+    }
+
+    /**
+     * Bulk Delete Selected or All Bookings
+     */
+    public function bulkDestroyBookings(Request $request)
+    {
+        if ($request->boolean('all')) {
+            $query = Appointment::query();
+            if ($request->filled('type')) $query->where('type', $request->type);
+            if ($request->filled('test_type')) $query->where('test_type', $request->test_type);
+            if ($request->filled('status')) $query->where('status', $request->status);
+            if ($request->filled('date')) $query->where('appointment_date', $request->date);
+
+            $count = $query->count();
+            $query->delete();
+
+            ActivityLog::log('delete', 'appointments', "Bulk deleted all {$count} booking(s).");
+
+            return back()->with('success', "Successfully deleted all {$count} booking(s).");
+        }
+
+        $request->validate([
+            'booking_ids' => 'required|array|min:1',
+            'booking_ids.*' => 'integer|exists:appointments,id',
+        ]);
+
+        $ids = $request->input('booking_ids', []);
+        $count = Appointment::whereIn('id', $ids)->delete();
+
+        ActivityLog::log('delete', 'appointments', "Bulk deleted {$count} selected booking(s).");
+
+        return back()->with('success', "Successfully deleted {$count} selected booking(s).");
+    }
+
+    /**
      * Export Bookings to CSV
      */
     public function exportBookings(Request $request): StreamedResponse

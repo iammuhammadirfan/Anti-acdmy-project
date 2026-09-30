@@ -77,9 +77,18 @@
                                 </span>
                             </td>
                             <td class="py-3.5 px-5 text-right whitespace-nowrap">
-                                <a href="{{ route('admin.appointments.show', $apt) }}" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-xs font-bold transition">
-                                    Manage &rarr;
-                                </a>
+                                <div class="flex items-center justify-end gap-1.5">
+                                    <a href="{{ route('admin.appointments.show', $apt) }}" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-xs font-bold transition">
+                                        Manage &rarr;
+                                    </a>
+                                    <form action="{{ route('admin.appointments.destroy', $apt) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete appointment {{ $apt->booking_code }} for {{ addslashes($apt->name) }}?');" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-400 transition" title="Delete Appointment">
+                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty

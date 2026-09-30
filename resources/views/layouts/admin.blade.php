@@ -428,6 +428,129 @@
     </div>
 
     <script>
+        window.watchTimePicker = function(initialValue = '09:00 AM', modelName = null) {
+            return {
+                isOpen: false,
+                hour: 9,
+                minute: 0,
+                period: 'AM',
+                modelName: modelName,
+                displayTime: initialValue || '09:00 AM',
+                clockNumbers: [
+                    { num: 12, x: 50, y: 15 },
+                    { num: 1,  x: 67.5, y: 19.7 },
+                    { num: 2,  x: 80.3, y: 32.5 },
+                    { num: 3,  x: 85, y: 50 },
+                    { num: 4,  x: 80.3, y: 67.5 },
+                    { num: 5,  x: 67.5, y: 80.3 },
+                    { num: 6,  x: 50, y: 85 },
+                    { num: 7,  x: 32.5, y: 80.3 },
+                    { num: 8,  x: 19.7, y: 67.5 },
+                    { num: 9,  x: 15, y: 50 },
+                    { num: 10, x: 19.7, y: 32.5 },
+                    { num: 11, x: 32.5, y: 19.7 }
+                ],
+                init() {
+                    this.parseInitial(this.displayTime);
+                    this.updateDisplay(false);
+                },
+                parseInitial(val) {
+                    if (!val) return;
+                    const match = String(val).match(/^(\d{1,2}):(\d{2})(?:\s*([APap][Mm]))?/);
+                    if (match) {
+                        let h = parseInt(match[1], 10);
+                        let m = parseInt(match[2], 10);
+                        let p = match[3] ? match[3].toUpperCase() : 'AM';
+                        if (h > 12) {
+                            h = h - 12;
+                            p = 'PM';
+                        } else if (h === 0) {
+                            h = 12;
+                        }
+                        this.hour = h;
+                        this.minute = m;
+                        this.period = p;
+                    }
+                },
+                togglePicker() {
+                    this.isOpen = !this.isOpen;
+                },
+                openPicker() {
+                    this.isOpen = true;
+                },
+                closePicker() {
+                    this.isOpen = false;
+                },
+                setHour(h) {
+                    this.hour = h;
+                    this.updateDisplay();
+                },
+                setMinute(m) {
+                    this.minute = (m + 60) % 60;
+                    this.updateDisplay();
+                },
+                stepMinute(delta) {
+                    let m = this.minute + delta;
+                    if (m >= 60) {
+                        m = 0;
+                        this.stepHour(1);
+                    } else if (m < 0) {
+                        m = 55;
+                        this.stepHour(-1);
+                    }
+                    this.minute = m;
+                    this.updateDisplay();
+                },
+                stepHour(delta) {
+                    let h = this.hour + delta;
+                    if (h > 12) h = 1;
+                    if (h < 1) h = 12;
+                    this.hour = h;
+                    this.updateDisplay();
+                },
+                setPeriod(p) {
+                    this.period = p;
+                    this.updateDisplay();
+                },
+                setPreset(preset) {
+                    this.parseInitial(preset);
+                    this.updateDisplay();
+                    this.closePicker();
+                },
+                updateDisplay(emit = true) {
+                    const hStr = String(this.hour).padStart(2, '0');
+                    const mStr = String(this.minute).padStart(2, '0');
+                    this.displayTime = `${hStr}:${mStr} ${this.period}`;
+                    if (this.modelName) {
+                        try {
+                            const parts = this.modelName.split('.');
+                            let target = this;
+                            for (let i = 0; i < parts.length - 1; i++) {
+                                target = target[parts[i]];
+                            }
+                            if (target) {
+                                target[parts[parts.length - 1]] = this.displayTime;
+                            }
+                        } catch(e) {}
+                    }
+                    if (emit) {
+                        this.$nextTick(() => {
+                            if (this.$refs.inputEl) {
+                                this.$refs.inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+                                this.$refs.inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                        });
+                    }
+                },
+                hourAngle() {
+                    return (this.hour % 12) * 30 + (this.minute / 60) * 30;
+                },
+                minuteAngle() {
+                    return this.minute * 6;
+                }
+            };
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
         });
