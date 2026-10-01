@@ -39,6 +39,7 @@ use App\Http\Controllers\Admin\AiController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\PageVisibilityController;
+use App\Http\Controllers\Admin\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -127,6 +128,12 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     });
 
     // Roles & Permissions (Super Admin only)
+    
+    // In-App Notification Routes
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('admin.notifications.mark-all-read');
+    Route::get('/notifications/read/{booking}', [NotificationController::class, 'readAndRedirect'])->name('admin.notifications.read');
+    Route::post('/notifications/read/{booking}', [NotificationController::class, 'markSingleRead'])->name('admin.notifications.mark-single-read');
+
     Route::middleware(['super.admin'])->group(function () {
         Route::get('/roles', [RoleController::class, 'index'])->name('admin.roles.index');
         Route::get('/roles/create', [RoleController::class, 'create'])->name('admin.roles.create');
@@ -355,6 +362,12 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     });
 
     // Website Page Visibility Manager & Audit Logs (Super Admin Exclusive)
+    
+    // In-App Notification Routes
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('admin.notifications.mark-all-read');
+    Route::get('/notifications/read/{booking}', [NotificationController::class, 'readAndRedirect'])->name('admin.notifications.read');
+    Route::post('/notifications/read/{booking}', [NotificationController::class, 'markSingleRead'])->name('admin.notifications.mark-single-read');
+
     Route::middleware(['super.admin'])->group(function () {
         Route::get('/page-visibility', [PageVisibilityController::class, 'index'])->name('admin.page_visibility.index');
         Route::post('/page-visibility', [PageVisibilityController::class, 'update'])->name('admin.page_visibility.update');

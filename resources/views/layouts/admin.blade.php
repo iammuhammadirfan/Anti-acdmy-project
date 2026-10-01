@@ -388,17 +388,41 @@
                     </a>
 
                     <!-- Notification Bell Icon & Dropdown -->
-                    <div class="relative" x-data="{ bellOpen: false, dismissed: false }">
+                    <div class="relative" x-data="{ 
+                        bellOpen: false, 
+                        unreadCount: {{ $adminUnreadBookingsCount ?? 0 }},
+                        cleared: false,
+                        async markAllAsRead() {
+                            this.cleared = true;
+                            this.unreadCount = 0;
+                            try {
+                                await fetch('{{ route('admin.notifications.mark-all-read') }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                    }
+                                });
+                            } catch(e) {}
+                        },
+                        markSingle(id) {
+                            this.unreadCount = Math.max(0, this.unreadCount - 1);
+                            if (this.unreadCount === 0) {
+                                this.cleared = true;
+                            }
+                        }
+                    }">
                         <button @click="bellOpen = !bellOpen; if(bellOpen) { $nextTick(() => lucide.createIcons()); }" 
                                 class="relative p-2 text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-xl transition cursor-pointer flex items-center justify-center"
                                 title="Booking Notifications & Alerts"
                                 aria-label="View notifications">
                             <i data-lucide="bell" class="w-5 h-5"></i>
-                            @if(!empty($adminUnreadBookingsCount) && $adminUnreadBookingsCount > 0)
-                            <span x-show="!dismissed" class="absolute top-1 right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow ring-2 ring-white animate-pulse">
-                                {{ $adminUnreadBookingsCount > 99 ? '99+' : $adminUnreadBookingsCount }}
-                            </span>
-                            @endif
+                            <template x-if="unreadCount > 0 && !cleared">
+                                <span class="absolute top-1 right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow ring-2 ring-white animate-pulse">
+                                    <span x-text="unreadCount > 99 ? '99+' : unreadCount"></span>
+                                </span>
+                            </template>
                         </button>
 
                         <!-- Notification Dropdown Menu -->
@@ -418,25 +442,36 @@
                                 <div class="flex items-center gap-2">
                                     <i data-lucide="bell" class="w-4 h-4 text-brand-400"></i>
                                     <span class="font-bold text-sm">Booking Alerts</span>
-                                    @if(!empty($adminUnreadBookingsCount) && $adminUnreadBookingsCount > 0)
-                                    <span class="bg-rose-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-xs">
-                                        {{ $adminUnreadBookingsCount }} New
-                                    </span>
-                                    @endif
+                                    <template x-if="unreadCount > 0 && !cleared">
+                                        <span class="bg-rose-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-xs">
+                                            <span x-text="unreadCount"></span> New
+                                        </span>
+                                    </template>
                                 </div>
-                                <button @click="dismissed = true" class="text-[11px] text-slate-300 hover:text-white transition underline cursor-pointer" title="Dismiss badge">
-                                    Mark as read
-                                </button>
+                                <template x-if="unreadCount > 0 && !cleared">
+                                    <button @click="markAllAsRead()" class="text-[11px] text-slate-300 hover:text-white transition underline cursor-pointer" title="Dismiss all alerts">
+                                        Mark as read
+                                    </button>
+                                </template>
                             </div>
 
                             <!-- Bookings List -->
-                            <div class="max-h-[380px] overflow-y-auto divide-y divide-slate-100">
+                            <div x-show="cleared || unreadCount === 0" class="p-8 text-center text-slate-400">
+                                <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-2.5 border border-emerald-100">
+                                    <i data-lucide="check-check" class="w-5 h-5"></i>
+                                </div>
+                                <p class="text-xs font-bold text-slate-800">All Caught Up!</p>
+                                <p class="text-[11px] text-slate-400 mt-0.5">No unread booking alerts.</p>
+                            </div>
+
+                            <div x-show="!cleared && unreadCount > 0" class="max-h-[380px] overflow-y-auto divide-y divide-slate-100">
                                 @forelse($adminRecentBookings ?? [] as $booking)
                                 @php
                                     $isIets = ($booking->type === 'iets_test');
                                     $reg = $booking->registration_number ?: $booking->booking_code;
                                 @endphp
-                                <a href="{{ route('admin.scheduling.booking.show', $booking->id) }}" 
+                                <a href="{{ route('admin.notifications.read', $booking->id) }}" 
+                                   @click="markSingle({{ $booking->id }})"
                                    class="block p-3.5 hover:bg-slate-50/90 transition group">
                                     <div class="flex items-start gap-3">
                                         <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold {{ $isIets ? 'bg-violet-100 text-violet-700 border border-violet-200' : 'bg-blue-100 text-blue-700 border border-blue-200' }}">
@@ -460,9 +495,11 @@
                                 </a>
                                 @empty
                                 <div class="p-8 text-center text-slate-400">
-                                    <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
-                                    <p class="text-xs font-semibold text-slate-600">No recent bookings</p>
-                                    <p class="text-[11px] text-slate-400 mt-0.5">New test and counseling registrations will appear here automatically.</p>
+                                    <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-2.5 border border-emerald-100">
+                                        <i data-lucide="check-check" class="w-5 h-5"></i>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-800">All Caught Up!</p>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">No unread booking alerts.</p>
                                 </div>
                                 @endforelse
                             </div>
