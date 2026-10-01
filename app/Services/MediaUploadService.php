@@ -29,6 +29,20 @@ class MediaUploadService
 
         $path = $file->storeAs($folder, $safeName, 'public');
 
+        try {
+            $destFullPath = storage_path('app/public/' . $path);
+            $publicStorageCopy = public_path('storage/' . $path);
+            $publicDir = dirname($publicStorageCopy);
+            if (!is_dir($publicDir)) {
+                @mkdir($publicDir, 0755, true);
+            }
+            if (file_exists($destFullPath) && !file_exists($publicStorageCopy)) {
+                @copy($destFullPath, $publicStorageCopy);
+            }
+        } catch (\Throwable $e) {
+            // Ignore copy failure
+        }
+
         return Media::create([
             'title' => pathinfo($origName, PATHINFO_FILENAME),
             'alt_text' => $altText ?: pathinfo($origName, PATHINFO_FILENAME),

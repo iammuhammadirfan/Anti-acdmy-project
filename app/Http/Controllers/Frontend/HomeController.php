@@ -32,7 +32,7 @@ class HomeController extends Controller
         $ieltsResults = IetsResult::where('test_type', 'LIKE', '%IELTS%')->latest('test_date')->latest('id')->limit(12)->get();
         $pteResults = IetsResult::where('test_type', 'LIKE', '%PTE%')->latest('test_date')->latest('id')->limit(12)->get();
         $toeflResults = IetsResult::where('test_type', 'LIKE', '%TOEFL%')->latest('test_date')->latest('id')->limit(12)->get();
-        $classrooms = Classroom::active()->limit(3)->get();
+        $classrooms = Classroom::active()->get();
         $videos = Video::active()->latest('published_at')->limit(3)->get();
         $blogs = Blog::published()->limit(3)->get();
         $faqs = Faq::active()->limit(6)->get();

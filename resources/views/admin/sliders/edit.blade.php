@@ -46,7 +46,9 @@
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Primary Button URL</label>
                     <input type="text" name="button_url" value="{{ old('button_url', $slider->button_url) }}"
+                           placeholder="e.g. /iets or https://external-link.com"
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                    <p class="text-[11px] text-slate-400 mt-1">For external sites (e.g. <code>https://www.pearsonpte.com</code>), it will automatically open in a new tab without attaching your domain.</p>
                 </div>
             </div>
 
@@ -54,12 +56,15 @@
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Secondary Button Text</label>
                     <input type="text" name="secondary_button_text" value="{{ old('secondary_button_text', $slider->secondary_button_text) }}"
+                           placeholder="e.g. PTE booking or Book Appointment"
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Secondary Button URL</label>
                     <input type="text" name="secondary_button_url" value="{{ old('secondary_button_url', $slider->secondary_button_url) }}"
+                           placeholder="e.g. /appointments or https://www.pearsonpte.com"
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                    <p class="text-[11px] text-slate-400 mt-1">For external sites (e.g. <code>https://www.pearsonpte.com</code>), it will automatically open in a new tab without attaching your domain.</p>
                 </div>
             </div>
 
