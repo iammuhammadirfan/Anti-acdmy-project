@@ -52,9 +52,9 @@ class SliderController extends Controller
             'short_description' => $request->short_description,
             'image' => $imagePath,
             'button_text' => $request->button_text,
-            'button_url' => $request->button_url,
+            'button_url' => !empty($request->button_url) ? Slider::normalizeUrl($request->button_url) : null,
             'secondary_button_text' => $request->secondary_button_text,
-            'secondary_button_url' => $request->secondary_button_url,
+            'secondary_button_url' => !empty($request->secondary_button_url) ? Slider::normalizeUrl($request->secondary_button_url) : null,
             'display_order' => (int) $request->display_order,
             'status' => $request->boolean('status', true),
             'start_date' => $request->start_date,
@@ -92,9 +92,9 @@ class SliderController extends Controller
         $slider->heading = $request->heading;
         $slider->short_description = $request->short_description;
         $slider->button_text = $request->button_text;
-        $slider->button_url = $request->button_url;
+        $slider->button_url = !empty($request->button_url) ? Slider::normalizeUrl($request->button_url) : null;
         $slider->secondary_button_text = $request->secondary_button_text;
-        $slider->secondary_button_url = $request->secondary_button_url;
+        $slider->secondary_button_url = !empty($request->secondary_button_url) ? Slider::normalizeUrl($request->secondary_button_url) : null;
         $slider->display_order = (int) $request->display_order;
         $slider->status = $request->boolean('status', true);
         $slider->start_date = $request->start_date;

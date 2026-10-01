@@ -32,8 +32,14 @@
                     <input type="number" name="capacity" value="{{ old('capacity', $classroom->capacity) }}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs uppercase font-bold text-slate-400 mb-2">Replace Facility Image</label>
+                    <label class="block text-xs uppercase font-bold text-slate-400 mb-2">Facility Image</label>
+                    @if($classroom->primary_image)
+                        <div class="mb-3 w-36 h-24 rounded-xl overflow-hidden border border-slate-700 bg-slate-950">
+                            <img src="{{ $classroom->primary_image }}" alt="{{ $classroom->title }}" class="w-full h-full object-cover">
+                        </div>
+                    @endif
                     <input type="file" name="image_file" accept="image/*" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-400 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white">
+                    <p class="text-[10px] text-slate-500 mt-1">Upload a new image to replace the current one.</p>
                 </div>
             </div>
 

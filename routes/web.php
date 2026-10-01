@@ -362,3 +362,12 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('admin.activity.index');
     });
 });
+
+// Direct Storage File Access Fallback (Ensures images work on Railway / Shared hosting when symlink is missing)
+Route::get('/storage/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+    return response()->file($fullPath);
+})->where('path', '.*');

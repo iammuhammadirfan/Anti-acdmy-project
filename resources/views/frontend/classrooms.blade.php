@@ -24,10 +24,7 @@
             @forelse($classrooms as $room)
                 <div class="bg-slate-800/80 rounded-2xl border border-slate-700 overflow-hidden shadow-xl hover:border-blue-500/50 transition-all flex flex-col group">
                     <div class="relative h-64 overflow-hidden bg-slate-950">
-                        @php
-                            $img = is_array($room->images) && count($room->images) > 0 ? $room->images[0] : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop';
-                        @endphp
-                        <img src="{{ $img }}" alt="{{ $room->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="{{ $room->primary_image }}" alt="{{ $room->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-blue-400 border border-slate-700">
                             {{ $room->class_type }} Suite
                         </div>

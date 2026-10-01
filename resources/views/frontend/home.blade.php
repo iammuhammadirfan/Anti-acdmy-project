@@ -32,8 +32,8 @@
                     
                     <!-- Background Image with Gradient Overlays -->
                     <div class="absolute inset-0 z-0">
-                        @if($slide->image)
-                            <img src="{{ asset('storage/' . $slide->image) }}" class="w-full h-full object-cover opacity-35 filter brightness-75">
+                        @if($slide->image_url)
+                            <img src="{{ $slide->image_url }}" alt="{{ $slide->heading }}" class="w-full h-full object-cover opacity-35 filter brightness-75">
                         @else
                             <div class="w-full h-full bg-gradient-to-r from-brand-950 via-slate-900 to-brand-900 opacity-90"></div>
                         @endif
@@ -58,18 +58,28 @@
 
                             <div class="flex flex-wrap items-center gap-4 pt-4">
                                 @if($slide->button_text)
-                                    <a href="{{ $slide->button_url ?: route('appointments') }}" 
+                                    @php
+                                        $btnUrl = $slide->formatted_button_url ?: route('appointments');
+                                        $isBtnExt = $slide->is_button_external;
+                                    @endphp
+                                    <a href="{{ $btnUrl }}" 
+                                       @if($isBtnExt) target="_blank" rel="noopener noreferrer" @endif
                                        class="bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm px-7 py-3.5 rounded-xl shadow-lg shadow-brand-500/30 transition transform hover:-translate-y-0.5 inline-flex items-center gap-2">
                                         <span>{{ $slide->button_text }}</span>
-                                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                        <i data-lucide="{{ $isBtnExt ? 'external-link' : 'arrow-right' }}" class="w-4 h-4"></i>
                                     </a>
                                 @endif
 
                                 @if($slide->secondary_button_text)
-                                    <a href="{{ $slide->secondary_button_url ?: route('iets') }}" 
+                                    @php
+                                        $secUrl = $slide->formatted_secondary_button_url ?: route('iets');
+                                        $isSecExt = $slide->is_secondary_button_external;
+                                    @endphp
+                                    <a href="{{ $secUrl }}" 
+                                       @if($isSecExt) target="_blank" rel="noopener noreferrer" @endif
                                        class="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold text-sm px-7 py-3.5 rounded-xl backdrop-blur-md transition inline-flex items-center gap-2">
                                         <span>{{ $slide->secondary_button_text }}</span>
-                                        <i data-lucide="book-open" class="w-4 h-4"></i>
+                                        <i data-lucide="{{ $isSecExt ? 'external-link' : 'book-open' }}" class="w-4 h-4"></i>
                                     </a>
                                 @endif
                             </div>
@@ -487,51 +497,97 @@
         </div>
     </section>
 
-    <!-- 7. Classrooms & Labs Section -->
-    <section class="bg-slate-900 text-white py-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <!-- 7. Classrooms & Labs Section (Interactive Slider) -->
+    <section class="bg-slate-900 text-white py-20 overflow-hidden" 
+             x-data="{
+                 scrollLeft() {
+                     this.$refs.carousel.scrollBy({ left: -380, behavior: 'smooth' });
+                 },
+                 scrollRight() {
+                     this.$refs.carousel.scrollBy({ left: 380, behavior: 'smooth' });
+                 }
+             }">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div>
                     <span class="text-xs font-extrabold uppercase tracking-wider text-accent-500 bg-accent-500/10 border border-accent-500/20 px-3 py-1 rounded-full">
                         Modern Infrastructure
                     </span>
-                    <h2 class="text-3xl font-extrabold text-white mt-2">World-Class Multimedia Classrooms &amp; Speech Labs</h2>
-                    <p class="text-xs text-slate-400 mt-1">High-tech sound-isolated testing suites and acoustic audio-visual setups.</p>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">World-Class Multimedia Classrooms &amp; Speech Labs</h2>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-1">High-tech sound-isolated testing suites and acoustic audio-visual setups.</p>
                 </div>
-                <a href="{{ route('classrooms') }}" class="text-sm font-bold text-accent-500 hover:text-accent-400 inline-flex items-center gap-1">
-                    <span>Explore All Classrooms</span>
-                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </a>
+                
+                <!-- Slider Controls & All Link -->
+                <div class="flex items-center gap-3 shrink-0">
+                    <div class="flex items-center gap-1.5">
+                        <button @click="scrollLeft()" 
+                                class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition shadow cursor-pointer"
+                                aria-label="Previous Classrooms">
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                        </button>
+                        <button @click="scrollRight()" 
+                                class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition shadow cursor-pointer"
+                                aria-label="Next Classrooms">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <a href="{{ route('classrooms') }}" class="text-xs sm:text-sm font-bold text-accent-500 hover:text-accent-400 inline-flex items-center gap-1 pl-2">
+                        <span>Explore All</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Classrooms Horizontal Slider -->
+            <div x-ref="carousel" 
+                 class="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 pt-2 no-scrollbar"
+                 style="scrollbar-width: none; -ms-overflow-style: none;">
                 @forelse($classrooms as $room)
-                    <div class="bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 shadow-lg flex flex-col justify-between">
-                        <div class="h-48 bg-slate-950 relative overflow-hidden flex items-center justify-center">
-                            @php $imgs = $room->images ?? []; @endphp
-                            @if(!empty($imgs) && isset($imgs[0]))
-                                <img src="{{ asset('storage/' . $imgs[0]) }}" class="w-full h-full object-cover">
-                            @else
-                                <i data-lucide="building" class="w-12 h-12 text-slate-600"></i>
-                            @endif
-                            <span class="absolute top-3 right-3 bg-slate-900/90 text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg">
-                                Capacity: {{ $room->capacity }} Seats
+                    <div class="w-[85vw] sm:w-[320px] md:w-[370px] shrink-0 snap-start bg-slate-800/90 rounded-2xl overflow-hidden border border-slate-700/80 hover:border-accent-500/50 transition-all duration-300 shadow-xl flex flex-col justify-between group">
+                        <!-- Top Image -->
+                        <div class="h-52 bg-slate-950 relative overflow-hidden flex items-center justify-center">
+                            <img src="{{ $room->primary_image }}" 
+                                 alt="{{ $room->title }}" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                 loading="lazy">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                            
+                            <!-- Badges -->
+                            <span class="absolute top-3 left-3 bg-slate-900/90 backdrop-blur-md text-brand-300 border border-slate-700 text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-sm">
+                                {{ $room->class_type ?? 'Lab' }} Suite
+                            </span>
+                            <span class="absolute top-3 right-3 bg-slate-900/90 backdrop-blur-md text-emerald-400 border border-slate-700 text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-sm">
+                                Capacity: {{ $room->capacity }} Scholars
                             </span>
                         </div>
-                        <div class="p-6">
-                            <h4 class="font-bold text-white text-lg">{{ $room->title }}</h4>
-                            <p class="text-xs text-slate-400 mt-1 line-clamp-2">{{ $room->description }}</p>
-                            @if($room->facilities)
-                                <div class="flex flex-wrap gap-1.5 mt-4">
-                                    @foreach(array_slice($room->facilities, 0, 3) as $fac)
-                                        <span class="text-[10px] bg-slate-700 text-slate-300 px-2 py-0.5 rounded">{{ $fac }}</span>
-                                    @endforeach
-                                </div>
-                            @endif
+
+                        <!-- Card Body -->
+                        <div class="p-6 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-bold text-white text-lg group-hover:text-accent-400 transition-colors leading-snug">{{ $room->title }}</h4>
+                                <p class="text-xs text-slate-300 mt-2 line-clamp-2 leading-relaxed">{{ $room->description }}</p>
+                                
+                                @if($room->facilities && count($room->facilities) > 0)
+                                    <div class="flex flex-wrap gap-1.5 mt-4">
+                                        @foreach(array_slice($room->facilities, 0, 3) as $fac)
+                                            <span class="text-[10px] bg-slate-700/70 text-slate-200 border border-slate-600/50 px-2.5 py-1 rounded-md font-medium">{{ $fac }}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Card Footer -->
+                            <div class="pt-4 mt-5 border-t border-slate-700/60 flex items-center justify-between">
+                                <span class="text-[11px] text-slate-400">Active Course Facility</span>
+                                <a href="{{ route('appointments') }}" class="text-xs font-bold text-accent-500 hover:text-accent-400 inline-flex items-center gap-1 group/btn">
+                                    <span>Book In-Person Tour</span>
+                                    <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 @empty
-                    <div class="col-span-full py-8 text-center text-slate-500">Classrooms configured dynamically via Admin Panel.</div>
+                    <div class="w-full py-12 text-center text-slate-500">Classrooms configured dynamically via Admin Panel.</div>
                 @endforelse
             </div>
         </div>

@@ -38,18 +38,22 @@ class ClassroomController extends Controller
             'class_type' => 'required|string|max:100',
             'facilities_str' => 'nullable|string',
             'video_url' => 'nullable|string|max:255',
+            'image_file' => 'nullable|image|max:5120',
             'images_files.*' => 'nullable|image|max:5120',
         ]);
 
         $imagePaths = [];
-        if ($request->hasFile('images_files')) {
-            foreach ($request->file('images_files') as $file) {
+        if ($request->hasFile('image_file')) {
+            $media = $this->mediaService->upload($request->file('image_file'), 'classrooms', $request->title);
+            $imagePaths[] = $media->file_path;
+        } elseif ($request->hasFile('images_files')) {
+            foreach ((array) $request->file('images_files') as $file) {
                 $media = $this->mediaService->upload($file, 'classrooms', $request->title);
                 $imagePaths[] = $media->file_path;
             }
         }
 
-        $facilities = array_filter(array_map('trim', explode(',', $request->input('facilities_str', ''))));
+        $facilities = array_filter(array_map('trim', preg_split('/[\r\n,]+/', (string) $request->input('facilities_str', ''))));
 
         $classroom = Classroom::create([
             'title' => $request->title,
@@ -82,18 +86,22 @@ class ClassroomController extends Controller
             'class_type' => 'required|string|max:100',
             'facilities_str' => 'nullable|string',
             'video_url' => 'nullable|string|max:255',
+            'image_file' => 'nullable|image|max:5120',
             'images_files.*' => 'nullable|image|max:5120',
         ]);
 
-        $currentImages = $classroom->images ?? [];
-        if ($request->hasFile('images_files')) {
-            foreach ($request->file('images_files') as $file) {
+        $currentImages = is_array($classroom->images) ? $classroom->images : [];
+        if ($request->hasFile('image_file')) {
+            $media = $this->mediaService->upload($request->file('image_file'), 'classrooms', $request->title);
+            $currentImages = [$media->file_path];
+        } elseif ($request->hasFile('images_files')) {
+            foreach ((array) $request->file('images_files') as $file) {
                 $media = $this->mediaService->upload($file, 'classrooms', $request->title);
                 $currentImages[] = $media->file_path;
             }
         }
 
-        $facilities = array_filter(array_map('trim', explode(',', $request->input('facilities_str', ''))));
+        $facilities = array_filter(array_map('trim', preg_split('/[\r\n,]+/', (string) $request->input('facilities_str', ''))));
 
         $classroom->title = $request->title;
         $classroom->description = $request->description;
