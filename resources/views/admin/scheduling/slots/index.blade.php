@@ -300,13 +300,17 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Duration (Minutes)</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Slot Duration / Test Length *</label>
                     <select name="duration_minutes" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
                         <option value="30">30 Minutes</option>
                         <option value="45">45 Minutes</option>
                         <option value="60" selected>60 Minutes (1 Hour)</option>
-                        <option value="90">90 Minutes (1.5 Hours)</option>
+                        <option value="90">90 Minutes (1:30 Hour / 1.5 Hours)</option>
                         <option value="120">120 Minutes (2 Hours)</option>
+                        <option value="150">150 Minutes (2:30 Hours / 2.5 Hours)</option>
+                        <option value="180">180 Minutes (3 Hours)</option>
+                        <option value="210">210 Minutes (3:30 Hours / 3.5 Hours)</option>
+                        <option value="240">240 Minutes (4 Hours)</option>
                     </select>
                 </div>
 
@@ -373,11 +377,17 @@
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Slot Interval (Minutes) *</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Slot Interval / Duration *</label>
                         <select name="duration_minutes" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
                             <option value="30">Every 30 Minutes</option>
+                            <option value="45">Every 45 Minutes</option>
                             <option value="60" selected>Every 60 Minutes (1 Hour)</option>
-                            <option value="90">Every 90 Minutes</option>
+                            <option value="90">Every 90 Minutes (1:30 Hours)</option>
+                            <option value="120">Every 120 Minutes (2 Hours)</option>
+                            <option value="150">Every 150 Minutes (2:30 Hours)</option>
+                            <option value="180">Every 180 Minutes (3 Hours)</option>
+                            <option value="210">Every 210 Minutes (3:30 Hours)</option>
+                            <option value="240">Every 240 Minutes (4 Hours)</option>
                         </select>
                     </div>
                     <div>

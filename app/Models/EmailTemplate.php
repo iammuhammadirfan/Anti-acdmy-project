@@ -52,7 +52,7 @@ class EmailTemplate extends Model
         $defaultData = $defaults[$slug] ?? [
             'slug' => $slug,
             'name' => ucwords(str_replace('_', ' ', $slug)),
-            'subject' => 'Notification from ' . config('app.name', 'Apex Academy'),
+            'subject' => 'Notification from ' . (\App\Models\Setting::get('academy_name') ?: config('app.name', 'Academy')),
             'body' => '<p>Hello {{student_name}},</p><p>Your booking details: {{registration_number}} on {{date}} at {{time}}.</p>',
             'description' => 'Notification email',
         ];
@@ -167,7 +167,7 @@ HTML
             'reminder' => [
                 'slug' => 'reminder',
                 'name' => 'Upcoming Session Reminder (24h)',
-                'subject' => 'Reminder: Your Scheduled Session at Apex Academy Tomorrow',
+                'subject' => 'Reminder: Your Scheduled Session Tomorrow',
                 'description' => 'Automated reminder dispatched 24 hours prior to the scheduled test/counseling slot.',
                 'body' => <<<HTML
 <p>Dear <strong>{{student_name}}</strong>,</p>

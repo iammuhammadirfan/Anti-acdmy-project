@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Scheduling Dashboard — Apex Academy')
+@section('title', 'Scheduling Dashboard — ' . ($globalSettings['academy_name'] ?? 'Academy'))
 @section('page_title', 'Appointment & IETS Test Scheduling')
 
 @section('content')

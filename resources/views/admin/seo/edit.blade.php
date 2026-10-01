@@ -16,7 +16,7 @@
         <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-5">
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Meta Title Tag (Google Search &amp; Browser)</label>
-                <input type="text" name="seo_title" value="{{ old('seo_title', $meta->seo_title) }}" placeholder="e.g. Best IELTS Coaching &amp; Language Academy | Apex Education"
+                <input type="text" name="seo_title" value="{{ old('seo_title', $meta->seo_title) }}" placeholder="e.g. Best IELTS Coaching &amp; Language Academy"
                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
             </div>
 

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Academic Faculty & Instructors — Apex Academy')
-@section('meta_description', 'Meet our team of certified educators, IELTS examiners, and academic counselors at Apex Academy & IETS.')
+@section('title', 'Academic Faculty & Instructors — ' . ($globalSettings['academy_name'] ?? 'Academy'))
+@section('meta_description', 'Meet our team of certified educators, IELTS examiners, and academic counselors at ' . ($globalSettings['academy_name'] ?? 'our academy') . '.')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">

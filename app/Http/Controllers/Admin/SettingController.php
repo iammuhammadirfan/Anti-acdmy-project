@@ -25,7 +25,7 @@ class SettingController extends Controller
     public function index()
     {
         $settings = [
-            'academy_name' => Setting::get('academy_name', 'Apex Academy & IETS'),
+            'academy_name' => Setting::get('academy_name', config('app.name', 'Academy')),
             'academy_logo' => Setting::get('academy_logo', ''),
             'contact_email' => Setting::get('contact_email', 'info@antiacademy.edu'),
             'contact_phone' => Setting::get('contact_phone', '+1 (555) 234-5678'),
@@ -50,7 +50,7 @@ class SettingController extends Controller
             'smtp_username' => Setting::get('smtp_username', ''),
             'smtp_password' => Setting::get('smtp_password', ''),
             'smtp_encryption' => Setting::get('smtp_encryption', 'tls'),
-            'mail_from_name' => Setting::get('mail_from_name', 'Apex Academy & IETS'),
+            'mail_from_name' => Setting::get('mail_from_name', Setting::get('academy_name', config('app.name', 'Academy'))),
             'mail_from_address' => Setting::get('mail_from_address', 'no-reply@antiacademy.edu'),
             'admin_email' => Setting::get('admin_email', Setting::get('contact_email', 'admin@antiacademy.edu')),
             'results_page_badge' => Setting::get('results_page_badge', 'Official Verified Scorecards & Posters'),
@@ -139,7 +139,7 @@ class SettingController extends Controller
         ]);
 
         $testEmail = $request->test_email;
-        $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+        $appName = Setting::get('academy_name', config('app.name', 'Academy'));
 
         try {
             $this->notificationService->configureDynamicSmtp();
@@ -199,7 +199,7 @@ HTML;
         $rawPhone = $request->admin_phone;
         $cleanPhone = preg_replace('/[^0-9]/', '', $rawPhone);
         $apiKey = trim($request->api_key);
-        $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+        $appName = Setting::get('academy_name', config('app.name', 'Academy'));
 
         if (empty($cleanPhone) || empty($apiKey)) {
             return response()->json([

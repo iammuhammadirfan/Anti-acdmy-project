@@ -126,6 +126,20 @@ class AppointmentSlot extends Model
         return $this->is_active && !$this->is_full && !$this->is_past;
     }
 
+    public function getFormattedDurationAttribute(): string
+    {
+        $minutes = (int) ($this->duration_minutes ?: 60);
+        if ($minutes < 60) {
+            return "{$minutes} Mins";
+        }
+        $hours = floor($minutes / 60);
+        $rem = $minutes % 60;
+        if ($rem === 0) {
+            return $hours == 1 ? '1 Hour' : "{$hours} Hours";
+        }
+        return $hours == 1 ? "1 Hr {$rem} Mins" : "{$hours} Hrs {$rem} Mins";
+    }
+
     /**
      * Clean up expired unbooked slots from database.
      * Preserves all slots that have existing booking records.

@@ -16,7 +16,7 @@ class GeoSchemaService
      */
     public function getOrganizationSchema(): array
     {
-        $name = Setting::get('academy_name', 'Apex Academy & IETS');
+        $name = Setting::get('academy_name', config('app.name', 'Academy'));
         $url = url('/');
         $logo = asset('storage/' . Setting::get('academy_logo', 'logo.png'));
         $phone = Setting::get('contact_phone', '+1 (555) 234-5678');
@@ -73,7 +73,7 @@ class GeoSchemaService
             'description' => $program->summary ?: strip_tags(substr($program->content, 0, 200)),
             'provider' => [
                 '@type' => 'EducationalOrganization',
-                'name' => Setting::get('academy_name', 'Apex Academy & IETS'),
+                'name' => Setting::get('academy_name', config('app.name', 'Academy')),
                 'sameAs' => url('/'),
             ],
             'hasCourseInstance' => [
@@ -96,7 +96,7 @@ class GeoSchemaService
             'jobTitle' => $teacher->designation,
             'worksFor' => [
                 '@type' => 'EducationalOrganization',
-                'name' => Setting::get('academy_name', 'Apex Academy & IETS'),
+                'name' => Setting::get('academy_name', config('app.name', 'Academy')),
             ],
             'description' => strip_tags(substr($teacher->bio, 0, 250)),
             'image' => $teacher->profile_image ? asset('storage/' . $teacher->profile_image) : null,
@@ -141,11 +141,11 @@ class GeoSchemaService
             'image' => $blog->featured_image ? asset('storage/' . $blog->featured_image) : null,
             'author' => [
                 '@type' => 'Person',
-                'name' => $blog->author ? $blog->author->name : Setting::get('academy_name', 'Apex Academy'),
+                'name' => $blog->author ? $blog->author->name : Setting::get('academy_name', config('app.name', 'Academy')),
             ],
             'publisher' => [
                 '@type' => 'EducationalOrganization',
-                'name' => Setting::get('academy_name', 'Apex Academy & IETS'),
+                'name' => Setting::get('academy_name', config('app.name', 'Academy')),
                 'logo' => [
                     '@type' => 'ImageObject',
                     'url' => asset('storage/' . Setting::get('academy_logo', 'logo.png')),

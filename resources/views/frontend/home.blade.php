@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Apex Academy & IETS — World-Class Academic & IELTS Coaching')
+@section('title', ($globalSettings['academy_name'] ?? 'Academy') . ' — World-Class Academic & IELTS Coaching')
 @section('meta_description', 'Empowering Students Through Modern Education, AI-Assisted IELTS Preparation, Expert Faculty, and State-of-the-Art Infrastructure.')
 
 @section('schema_json')
@@ -120,13 +120,13 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div class="space-y-6">
                     <span class="text-xs font-extrabold uppercase tracking-wider text-brand-600 bg-brand-50 border border-brand-200 px-3 py-1 rounded-full">
-                        {{ $intro ? $intro->subtitle : 'Welcome to Apex Academy' }}
+                        {{ $intro ? $intro->subtitle : ('Welcome to ' . ($globalSettings['academy_name'] ?? 'Our Academy')) }}
                     </span>
                     <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
                         {{ $intro ? $intro->title : 'A Center of Educational Excellence & Language Mastery' }}
                     </h2>
                     <p class="text-base text-slate-600 leading-relaxed">
-                        {{ $intro ? $intro->content : 'Apex Academy & IETS Center brings together globally certified educators, state-of-the-art multimedia facilities, and specialized curricula designed to propel students into top international universities and career pathways.' }}
+                        {{ $intro ? $intro->content : (($globalSettings['academy_name'] ?? 'Our Academy') . ' brings together globally certified educators, state-of-the-art multimedia facilities, and specialized curricula designed to propel students into top international universities and career pathways.') }}
                     </p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">

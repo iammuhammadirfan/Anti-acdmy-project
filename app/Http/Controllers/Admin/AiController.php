@@ -35,9 +35,9 @@ class AiController extends Controller
             'provider' => Setting::get('ai_provider', 'gemini'),
             'api_key' => Setting::get('ai_api_key', ''),
             'model' => Setting::get('ai_model', 'gemini-1.5-flash'),
-            'system_prompt' => Setting::get('ai_system_prompt', "You are Apex Academy & IETS's dedicated AI academic counselor and admissions advisor. Respond politely and accurately to students in their chosen language (English, Urdu, or Roman Urdu)."),
-            'chatbot_name' => Setting::get('ai_chatbot_name', 'Apex AI Counselor'),
-            'welcome_message' => Setting::get('ai_welcome_message', 'Hello! Welcome to Apex Academy & IETS. How can I help you today with courses, faculty, or appointment booking?'),
+            'system_prompt' => Setting::get('ai_system_prompt', "You are " . (Setting::get('academy_name') ?: config('app.name', 'Academy')) . "'s dedicated AI academic counselor and admissions advisor. Respond politely and accurately to students in their chosen language (English, Urdu, or Roman Urdu)."),
+            'chatbot_name' => Setting::get('ai_chatbot_name', (Setting::get('academy_name') ?: config('app.name', 'Academy')) . ' AI Advisor'),
+            'welcome_message' => Setting::get('ai_welcome_message', 'Hello! Welcome to ' . (Setting::get('academy_name') ?: config('app.name', 'Academy')) . '. How can I help you today with courses, faculty, or appointment booking?'),
             'is_enabled' => Setting::get('ai_is_enabled', '1'),
         ];
 

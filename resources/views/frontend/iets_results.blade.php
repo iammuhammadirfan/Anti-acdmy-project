@@ -6,7 +6,7 @@
     $heroSubtitle = \App\Models\Setting::get('results_page_subtitle', 'Authentic standardized result cards earned by our candidates. Filter by IELTS, PTE, or TOEFL to view genuine scorecards.');
 @endphp
 
-@section('title', $heroTitle . ' — ' . config('app.name', 'Apex Academy'))
+@section('title', $heroTitle . ' — ' . ($globalSettings['academy_name'] ?? config('app.name', 'Academy')))
 @section('meta_description', $heroSubtitle)
 
 @section('content')

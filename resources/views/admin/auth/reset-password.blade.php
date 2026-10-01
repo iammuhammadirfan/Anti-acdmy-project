@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Set New Password — {{ \App\Models\Setting::get('academy_name', 'Apex Academy') }}</title>
-
     @php
         $siteLogo = $globalSettings['academy_logo'] ?? \App\Models\Setting::get('academy_logo');
-        $siteName = $globalSettings['academy_name'] ?? \App\Models\Setting::get('academy_name', 'Apex Academy & IETS');
+        $siteName = $globalSettings['academy_name'] ?? \App\Models\Setting::get('academy_name', 'Academy');
     @endphp
+    <title>Set New Password — {{ $siteName }}</title>
 
     @if(!empty($siteLogo))
         <link rel="icon" type="image/png" href="{{ asset('storage/' . $siteLogo) }}">

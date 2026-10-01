@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\PageSectionController;
 use App\Http\Controllers\Admin\HistoryTimelineController;
+use App\Http\Controllers\Admin\AboutSettingController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\ClassroomController;
 use App\Http\Controllers\Admin\CampusGalleryController;
@@ -153,8 +154,11 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::post('/sections/{section}/toggle', [PageSectionController::class, 'toggle'])->name('admin.sections.toggle');
     });
 
-    // History Timeline
+    // About Page Content Settings & History Timeline
     Route::middleware(['module.permission:about'])->group(function () {
+        Route::get('/about-settings', [AboutSettingController::class, 'index'])->name('admin.about.index');
+        Route::post('/about-settings', [AboutSettingController::class, 'update'])->name('admin.about.update');
+
         Route::get('/timelines', [HistoryTimelineController::class, 'index'])->name('admin.timelines.index');
         Route::get('/timelines/create', [HistoryTimelineController::class, 'create'])->name('admin.timelines.create');
         Route::post('/timelines', [HistoryTimelineController::class, 'store'])->name('admin.timelines.store');

@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Admin Dashboard') — Apex Academy &amp; IETS</title>
-
     @php
         $siteLogo = $globalSettings['academy_logo'] ?? \App\Models\Setting::get('academy_logo');
-        $siteName = $globalSettings['academy_name'] ?? \App\Models\Setting::get('academy_name', 'Apex Academy & IETS');
+        $siteName = $globalSettings['academy_name'] ?? \App\Models\Setting::get('academy_name', 'Academy');
     @endphp
+    <title>@yield('title', 'Admin Dashboard') — {{ $siteName }}</title>
 
     @if(!empty($siteLogo))
         <link rel="icon" type="image/png" href="{{ asset('storage/' . $siteLogo) }}">
@@ -91,8 +90,8 @@
                         </div>
                     @endif
                     <div>
-                        <span class="font-extrabold text-white text-base tracking-tight block">Apex Admin</span>
-                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block truncate max-w-[130px]">{{ $siteName }}</span>
+                        <span class="font-extrabold text-white text-base tracking-tight block truncate max-w-[140px]">{{ $siteName }}</span>
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Admin Portal</span>
                     </div>
                 </a>
                 <button @click="sidebarOpen = false" class="md:hidden text-slate-400 hover:text-white">
@@ -256,6 +255,11 @@
                 @endif
 
                 @if(auth()->user()->canAccessSection('about'))
+                <a href="{{ route('admin.about.index') }}" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.about*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                    <i data-lucide="info" class="w-4 h-4"></i>
+                    <span>About Page Content</span>
+                </a>
                 <a href="{{ route('admin.timelines.index') }}" 
                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.timelines*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
                     <i data-lucide="history" class="w-4 h-4"></i>

@@ -11,6 +11,9 @@
         <button @click="tab = 'results'" :class="tab === 'results' ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl transition shadow-sm flex items-center gap-1.5">
             <span>🏆 Results Page (Hall of Fame)</span>
         </button>
+        <a href="{{ route('admin.about.index') }}" class="px-4 py-2 rounded-xl transition shadow-sm bg-white text-slate-600 hover:bg-slate-50 flex items-center gap-1.5 shrink-0 border border-slate-200">
+            <span>📖 About Page Content</span>
+        </a>
         <button @click="tab = 'social'" :class="tab === 'social' ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl transition shadow-sm">Social Channels</button>
         <button @click="tab = 'email'" :class="tab === 'email' ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl transition shadow-sm">SMTP Email Server</button>
         <button @click="tab = 'whatsapp'" :class="tab === 'whatsapp' ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl transition shadow-sm">WhatsApp Business API</button>
@@ -200,7 +203,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Sender Name (From Name)</label>
-                    <input type="text" name="mail_from_name" value="{{ $settings['mail_from_name'] }}" placeholder="Apex Academy & IETS Center" required
+                    <input type="text" name="mail_from_name" value="{{ $settings['mail_from_name'] }}" placeholder="Official Academy Name" required
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                 </div>
                 <div>

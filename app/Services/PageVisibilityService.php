@@ -30,7 +30,7 @@ class PageVisibilityService
                 'url' => '/about',
                 'icon' => 'info',
                 'badge' => 'Core',
-                'description' => 'Institution mission, vision, methodology, and why students choose Apex Academy.',
+                'description' => 'Institution mission, vision, methodology, and why students choose our academy.',
             ],
             'history' => [
                 'key' => 'history',

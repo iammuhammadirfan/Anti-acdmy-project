@@ -88,6 +88,8 @@ class AppointmentSlotService
                     'is_disabled' => !$isAvailable,
                     'is_available' => $isAvailable,
                     'status_text' => $statusText,
+                    'duration_minutes' => (int) ($slot->duration_minutes ?: 60),
+                    'formatted_duration' => $slot->formatted_duration,
                     'type' => 'iets_test',
                 ];
             }
