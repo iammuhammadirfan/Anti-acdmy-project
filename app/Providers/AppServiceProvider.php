@@ -42,6 +42,25 @@ class AppServiceProvider extends ServiceProvider
                 View::composer('*', function ($view) {
                     $view->with('globalSettings', Setting::pluck('value', 'key')->toArray());
                 });
+
+                View::composer('layouts.admin', function ($view) {
+                    if (Schema::hasTable('appointments')) {
+                        $recentBookings = \App\Models\Appointment::query()
+                            ->latest('id')
+                            ->take(8)
+                            ->get();
+
+                        $unreadCount = \App\Models\Appointment::query()
+                            ->where(function($q) {
+                                $q->where('status', 'pending')
+                                  ->orWhere('created_at', '>=', now()->subHours(48));
+                            })
+                            ->count();
+
+                        $view->with('adminRecentBookings', $recentBookings);
+                        $view->with('adminUnreadBookingsCount', $unreadCount);
+                    }
+                });
             }
         } catch (\Throwable $e) {
             // Silently ignore if DB connection is not initialized

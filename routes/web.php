@@ -347,6 +347,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
         Route::post('/settings/test-smtp', [SettingController::class, 'testSmtp'])->name('admin.settings.test_smtp');
+        Route::post('/settings/test-whatsapp', [SettingController::class, 'testWhatsApp'])->name('admin.settings.test_whatsapp');
     });
 
     // Website Page Visibility Manager & Audit Logs (Super Admin Exclusive)

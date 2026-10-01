@@ -122,7 +122,10 @@ class NotificationService
         // 2. Send Admin Notification Alert
         $this->sendAdminAppointmentEmail($appointment, $appName);
 
-        // 3. Send WhatsApp Notification
+        // 3. Send Admin WhatsApp Alert via CallMeBot (Free Gateway)
+        $this->sendAdminCallMeBotWhatsApp($appointment, $appName);
+
+        // 4. Send WhatsApp Notification to Student
         $regNumber = $appointment->registration_number ?: $appointment->booking_code;
         $dateFormatted = $appointment->appointment_date ? $appointment->appointment_date->format('M d, Y') : '';
         if ($isIets) {
@@ -467,5 +470,88 @@ HTML;
         }
 
         return false;
+    }
+
+    /**
+     * Send instant WhatsApp alert to Admin phone via CallMeBot (Free Gateway)
+     */
+    public function sendAdminCallMeBotWhatsApp(Appointment $appointment, ?string $appName = null): bool
+    {
+        try {
+            $enabled = Setting::get('callmebot_enabled', '1');
+            if ($enabled === '0' || $enabled === false) {
+                return false;
+            }
+
+            $adminPhone = Setting::get('admin_whatsapp_phone', Setting::get('contact_whatsapp'));
+            $apiKey = Setting::get('callmebot_api_key');
+
+            if (empty($adminPhone) || empty($apiKey)) {
+                Log::info('[CallMeBot WhatsApp] Skipped: Admin WhatsApp number or API key is not configured.');
+                return false;
+            }
+
+            $cleanPhone = preg_replace('/[^0-9]/', '', $adminPhone);
+            if (empty($cleanPhone)) {
+                return false;
+            }
+
+            $appName = $appName ?: Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+            $regNumber = $appointment->registration_number ?: $appointment->booking_code;
+            $typeLabel = ($appointment->type === 'iets_test') ? 'IETS Mock Test' : 'Counseling Session';
+            $dateStr = $appointment->appointment_date ? $appointment->appointment_date->format('D, M d, Y') : 'N/A';
+            $testOrPurpose = $appointment->test_type ?: ($appointment->purpose ?: 'Campus Counseling');
+
+            $message = "🔔 *NEW BOOKING ALERT!*\n"
+                     . "🏛 *{$appName}*\n"
+                     . "━━━━━━━━━━━━━━━━━━\n"
+                     . "👤 *Student:* {$appointment->name}\n"
+                     . "📋 *Type:* {$typeLabel}\n"
+                     . "🎯 *Details:* {$testOrPurpose}\n"
+                     . "📅 *Date:* {$dateStr}\n"
+                     . "⏰ *Slot:* {$appointment->time_slot}\n"
+                     . "🆔 *Reg ID:* {$regNumber}\n"
+                     . "📞 *Phone:* {$appointment->phone}\n";
+
+            if (!empty($appointment->whatsapp) && $appointment->whatsapp !== $appointment->phone) {
+                $message .= "💬 *WhatsApp:* {$appointment->whatsapp}\n";
+            }
+            if (!empty($appointment->email)) {
+                $message .= "✉️ *Email:* {$appointment->email}\n";
+            }
+
+            $message .= "━━━━━━━━━━━━━━━━━━\n"
+                      . "🌐 Login to Admin Panel to manage this booking.";
+
+            return $this->dispatchCallMeBot($cleanPhone, $apiKey, $message);
+        } catch (\Throwable $e) {
+            Log::warning('[CallMeBot WhatsApp] Alert failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Dispatch HTTP request to CallMeBot free WhatsApp gateway
+     */
+    public function dispatchCallMeBot(string $cleanPhone, string $apiKey, string $message): bool
+    {
+        try {
+            $response = Http::timeout(8)->get('https://api.callmebot.com/whatsapp.php', [
+                'phone' => $cleanPhone,
+                'text' => $message,
+                'apikey' => trim($apiKey),
+            ]);
+
+            if ($response->successful()) {
+                Log::info("[CallMeBot WhatsApp] Alert dispatched to {$cleanPhone}.");
+                return true;
+            }
+
+            Log::warning("[CallMeBot WhatsApp] Gateway returned {$response->status()}: " . substr($response->body(), 0, 150));
+            return false;
+        } catch (\Throwable $e) {
+            Log::error('[CallMeBot WhatsApp] Connection exception: ' . $e->getMessage());
+            return false;
+        }
     }
 }

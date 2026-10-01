@@ -42,6 +42,9 @@ class SettingController extends Controller
             'twilio_sid' => Setting::get('twilio_sid', ''),
             'twilio_token' => Setting::get('twilio_token', ''),
             'twilio_from_whatsapp' => Setting::get('twilio_from_whatsapp', ''),
+            'callmebot_enabled' => Setting::get('callmebot_enabled', '1'),
+            'admin_whatsapp_phone' => Setting::get('admin_whatsapp_phone', '923235502570'),
+            'callmebot_api_key' => Setting::get('callmebot_api_key', ''),
             'smtp_host' => Setting::get('smtp_host', config('mail.mailers.smtp.host', '127.0.0.1')),
             'smtp_port' => Setting::get('smtp_port', config('mail.mailers.smtp.port', 587)),
             'smtp_username' => Setting::get('smtp_username', ''),
@@ -90,6 +93,15 @@ class SettingController extends Controller
             Setting::set('twilio_from_whatsapp', $request->twilio_from_whatsapp, 'whatsapp');
             if ($request->filled('twilio_token')) {
                 Setting::set('twilio_token', $request->twilio_token, 'whatsapp', true);
+            }
+
+            // CallMeBot Free WhatsApp Gateway for Admin
+            Setting::set('callmebot_enabled', $request->has('callmebot_enabled') ? '1' : '0', 'whatsapp');
+            if ($request->filled('admin_whatsapp_phone')) {
+                Setting::set('admin_whatsapp_phone', preg_replace('/[^0-9]/', '', $request->admin_whatsapp_phone), 'whatsapp');
+            }
+            if ($request->filled('callmebot_api_key')) {
+                Setting::set('callmebot_api_key', trim($request->callmebot_api_key), 'whatsapp', true);
             }
         } elseif ($group === 'email') {
             Setting::set('smtp_host', $request->smtp_host, 'email');
@@ -173,4 +185,71 @@ HTML;
             ], 422);
         }
     }
+
+    /**
+     * Send an instant test WhatsApp message to verify CallMeBot credentials
+     */
+    public function testWhatsApp(Request $request)
+    {
+        $request->validate([
+            'admin_phone' => 'required',
+            'api_key' => 'required',
+        ]);
+
+        $rawPhone = $request->admin_phone;
+        $cleanPhone = preg_replace('/[^0-9]/', '', $rawPhone);
+        $apiKey = trim($request->api_key);
+        $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+
+        if (empty($cleanPhone) || empty($apiKey)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please provide both your WhatsApp number (with country code) and your CallMeBot API key.',
+            ], 422);
+        }
+
+        $nowStr = now()->format('h:i A, d M Y');
+        $testMsg = "✅ *CallMeBot Test Alert*\n\n"
+                 . "🏛 *{$appName}*\n"
+                 . "Congratulations! Your Admin WhatsApp alert system is 100% active.\n\n"
+                 . "Whenever a candidate books an IETS test or counseling session, you will instantly receive full booking details here!\n\n"
+                 . "🕒 *Sent at:* {$nowStr}";
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(10)->get('https://api.callmebot.com/whatsapp.php', [
+                'phone' => $cleanPhone,
+                'text' => $testMsg,
+                'apikey' => $apiKey,
+            ]);
+
+            $body = $response->body();
+            $lowerBody = strtolower($body);
+
+            // CallMeBot returns 200 with text, or 401/400 if bad key/phone
+            if ($response->successful() && !str_contains($lowerBody, 'error') && !str_contains($lowerBody, 'apikey is invalid') && !str_contains($lowerBody, 'not allowed')) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "WhatsApp test alert successfully sent to +{$cleanPhone}! Please check your WhatsApp app right now.",
+                ]);
+            }
+
+            $cleanErr = strip_tags($body);
+            if (empty($cleanErr)) {
+                $cleanErr = "HTTP {$response->status()} Gateway error";
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => "CallMeBot returned: {$cleanErr}. Please ensure you sent 'I allow callmebot to send me messages' on WhatsApp and your phone number includes country code without + or 00.",
+            ], 422);
+        } catch (\Throwable $e) {
+            Log::error('CallMeBot Test Dispatch Error: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'CallMeBot Connection Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }
+

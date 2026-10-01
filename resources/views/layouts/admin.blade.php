@@ -383,6 +383,96 @@
                         <span>View Website</span>
                     </a>
 
+                    <!-- Notification Bell Icon & Dropdown -->
+                    <div class="relative" x-data="{ bellOpen: false, dismissed: false }">
+                        <button @click="bellOpen = !bellOpen; if(bellOpen) { $nextTick(() => lucide.createIcons()); }" 
+                                class="relative p-2 text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-xl transition cursor-pointer flex items-center justify-center"
+                                title="Booking Notifications & Alerts"
+                                aria-label="View notifications">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            @if(!empty($adminUnreadBookingsCount) && $adminUnreadBookingsCount > 0)
+                            <span x-show="!dismissed" class="absolute top-1 right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow ring-2 ring-white animate-pulse">
+                                {{ $adminUnreadBookingsCount > 99 ? '99+' : $adminUnreadBookingsCount }}
+                            </span>
+                            @endif
+                        </button>
+
+                        <!-- Notification Dropdown Menu -->
+                        <div x-show="bellOpen" 
+                             x-cloak
+                             @click.away="bellOpen = false"
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 scale-95 -translate-y-2"
+                             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 scale-95 -translate-y-2"
+                             class="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200/90 z-50 overflow-hidden">
+                            
+                            <!-- Dropdown Header -->
+                            <div class="p-3.5 px-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="bell" class="w-4 h-4 text-brand-400"></i>
+                                    <span class="font-bold text-sm">Booking Alerts</span>
+                                    @if(!empty($adminUnreadBookingsCount) && $adminUnreadBookingsCount > 0)
+                                    <span class="bg-rose-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-xs">
+                                        {{ $adminUnreadBookingsCount }} New
+                                    </span>
+                                    @endif
+                                </div>
+                                <button @click="dismissed = true" class="text-[11px] text-slate-300 hover:text-white transition underline cursor-pointer" title="Dismiss badge">
+                                    Mark as read
+                                </button>
+                            </div>
+
+                            <!-- Bookings List -->
+                            <div class="max-h-[380px] overflow-y-auto divide-y divide-slate-100">
+                                @forelse($adminRecentBookings ?? [] as $booking)
+                                @php
+                                    $isIets = ($booking->type === 'iets_test');
+                                    $reg = $booking->registration_number ?: $booking->booking_code;
+                                @endphp
+                                <a href="{{ route('admin.scheduling.booking.show', $booking->id) }}" 
+                                   class="block p-3.5 hover:bg-slate-50/90 transition group">
+                                    <div class="flex items-start gap-3">
+                                        <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold {{ $isIets ? 'bg-violet-100 text-violet-700 border border-violet-200' : 'bg-blue-100 text-blue-700 border border-blue-200' }}">
+                                            {{ $isIets ? 'IETS' : 'COUN' }}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center justify-between gap-1 mb-0.5">
+                                                <span class="font-bold text-xs text-slate-900 truncate group-hover:text-brand-600 transition">{{ $booking->name }}</span>
+                                                <span class="text-[10px] text-slate-400 shrink-0">{{ $booking->created_at ? $booking->created_at->diffForHumans(null, true, true) : '' }}</span>
+                                            </div>
+                                            <p class="text-[11px] text-slate-600 truncate mb-1">
+                                                {{ $booking->test_type ?: ($booking->purpose ?: ($isIets ? 'Mock Test' : 'Counseling')) }}
+                                            </p>
+                                            <div class="flex items-center gap-2 text-[10px] text-slate-500">
+                                                <span class="font-mono bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-semibold">{{ $reg }}</span>
+                                                <span>•</span>
+                                                <span>{{ $booking->appointment_date ? $booking->appointment_date->format('M d') : '' }} ({{ $booking->time_slot }})</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                @empty
+                                <div class="p-8 text-center text-slate-400">
+                                    <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
+                                    <p class="text-xs font-semibold text-slate-600">No recent bookings</p>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">New test and counseling registrations will appear here automatically.</p>
+                                </div>
+                                @endforelse
+                            </div>
+
+                            <!-- Dropdown Footer -->
+                            <div class="p-2.5 bg-slate-50 border-t border-slate-100 text-center">
+                                <a href="{{ route('admin.scheduling.bookings') }}" class="text-xs font-bold text-brand-600 hover:text-brand-700 transition flex items-center justify-center gap-1">
+                                    <span>View All Bookings &amp; Schedules</span>
+                                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Profile Link -->
                     <a href="{{ route('admin.profile') }}" class="flex items-center gap-2 hover:bg-slate-50 p-1.5 rounded-lg transition text-slate-700">
                         <div class="w-7 h-7 rounded-full bg-brand-600 text-white font-bold flex items-center justify-center text-xs shrink-0">
