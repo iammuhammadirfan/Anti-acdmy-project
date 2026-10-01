@@ -4,10 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
-
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Transport\BrevoApiTransport;
-
 use Illuminate\Support\Facades\View;
 use App\Models\Setting;
 
@@ -29,10 +27,11 @@ class AppServiceProvider extends ServiceProvider
         Mail::extend('brevo', function () {
             return new BrevoApiTransport(config('services.brevo.key', ''));
         });
-        if ($this->app->environment('production'))
-            { 
-                \URL::forceScheme('https');
-            }
+
+        if ($this->app->environment('production')) { 
+            \URL::forceScheme('https');
+        }
+
         Schema::defaultStringLength(191);
 
         try {
@@ -50,20 +49,38 @@ class AppServiceProvider extends ServiceProvider
 
                 View::composer('layouts.admin', function ($view) {
                     if (Schema::hasTable('appointments')) {
-                        $recentBookings = \App\Models\Appointment::query()
-                            ->latest('id')
-                            ->take(8)
-                            ->get();
+                        try {
+                            $clearedAt = Setting::get('admin_notifications_cleared_at') 
+                                ?: session()->get('admin_notifications_cleared_at');
 
-                        $unreadCount = \App\Models\Appointment::query()
-                            ->where(function($q) {
-                                $q->where('status', 'pending')
-                                  ->orWhere('created_at', '>=', now()->subHours(48));
-                            })
-                            ->count();
+                            $raw = Setting::get('admin_read_booking_ids', '[]');
+                            $readIds = is_string($raw) ? json_decode($raw, true) : (is_array($raw) ? $raw : []);
+                            if (!is_array($readIds)) {
+                                $readIds = [];
+                            }
+                            $sessionRead = session()->get('admin_read_booking_ids', []);
+                            if (is_array($sessionRead)) {
+                                $readIds = array_unique(array_merge($readIds, $sessionRead));
+                            }
 
-                        $view->with('adminRecentBookings', $recentBookings);
-                        $view->with('adminUnreadBookingsCount', $unreadCount);
+                            $unreadQuery = \App\Models\Appointment::query()
+                                ->when($clearedAt, function ($q) use ($clearedAt) {
+                                    $q->where('created_at', '>', $clearedAt);
+                                })
+                                ->when(!empty($readIds), function ($q) use ($readIds) {
+                                    $q->whereNotIn('id', $readIds);
+                                })
+                                ->latest('id');
+
+                            $recentBookings = $unreadQuery->take(10)->get();
+                            $unreadCount = $recentBookings->count();
+
+                            $view->with('adminRecentBookings', $recentBookings);
+                            $view->with('adminUnreadBookingsCount', $unreadCount);
+                        } catch (\Throwable $e) {
+                            $view->with('adminRecentBookings', collect());
+                            $view->with('adminUnreadBookingsCount', 0);
+                        }
                     }
                 });
             }

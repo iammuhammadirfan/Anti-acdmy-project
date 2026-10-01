@@ -479,7 +479,18 @@ class SchedulingController extends Controller
      */
     public function showBooking(Appointment $booking)
     {
-        // Available alternative slots for rescheduling
+        try {
+            $raw = Setting::get('admin_read_booking_ids', '[]');
+            $readIds = is_string($raw) ? json_decode($raw, true) : (is_array($raw) ? $raw : []);
+            if (!is_array($readIds)) {
+                $readIds = [];
+            }
+            if (!in_array($booking->id, $readIds)) {
+                $readIds[] = $booking->id;
+                Setting::set('admin_read_booking_ids', json_encode(array_values(array_slice($readIds, -200))));
+            }
+        } catch (\Throwable $e) {}
+
         $availableSlots = AppointmentSlot::where('type', $booking->type)
             ->where('slot_date', '>=', Carbon::today()->toDateString())
             ->where('is_active', true)
