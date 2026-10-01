@@ -94,7 +94,7 @@ class NotificationService
     {
         $this->configureDynamicSmtp();
 
-        $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+        $appName = Setting::get('academy_name', config('app.name', 'Academy'));
         $isIets = ($appointment->type === 'iets_test');
 
         $templateSlug = $isIets ? 'iets_confirmation' : 'counseling_confirmation';
@@ -144,7 +144,7 @@ class NotificationService
     {
         $this->configureDynamicSmtp();
 
-        $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+        $appName = Setting::get('academy_name', config('app.name', 'Academy'));
         $regNumber = $appointment->registration_number ?: $appointment->booking_code;
 
         $renderData = [
@@ -214,7 +214,7 @@ class NotificationService
     {
         $this->configureDynamicSmtp();
 
-        $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+        $appName = Setting::get('academy_name', config('app.name', 'Academy'));
         $template = EmailTemplate::getTemplate('rescheduled');
 
         $renderData = [
@@ -248,7 +248,7 @@ class NotificationService
     {
         $this->configureDynamicSmtp();
 
-        $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+        $appName = Setting::get('academy_name', config('app.name', 'Academy'));
         $template = EmailTemplate::getTemplate('reminder');
 
         $renderData = [
@@ -373,7 +373,7 @@ HTML;
         $adminEmail = Setting::get('admin_email') 
             ?: Setting::get('contact_email') 
             ?: config('mail.from.address', 'admin@antiacademy.edu');
-        $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+        $appName = Setting::get('academy_name', config('app.name', 'Academy'));
         $fromAddress = Setting::get('mail_from_address', config('mail.from.address'));
         $fromName = Setting::get('mail_from_name', $appName);
 
@@ -417,7 +417,7 @@ HTML;
 
         $this->configureDynamicSmtp();
 
-        $appName = Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+        $appName = Setting::get('academy_name', config('app.name', 'Academy'));
         $fromAddress = Setting::get('mail_from_address', config('mail.from.address'));
         $fromName = Setting::get('mail_from_name', $appName);
 
@@ -496,7 +496,7 @@ HTML;
                 return false;
             }
 
-            $appName = $appName ?: Setting::get('academy_name', config('app.name', 'Apex Academy & IETS Center'));
+            $appName = $appName ?: Setting::get('academy_name', config('app.name', 'Academy'));
             $regNumber = $appointment->registration_number ?: $appointment->booking_code;
             $typeLabel = ($appointment->type === 'iets_test') ? 'IETS Mock Test' : 'Counseling Session';
             $dateStr = $appointment->appointment_date ? $appointment->appointment_date->format('D, M d, Y') : 'N/A';

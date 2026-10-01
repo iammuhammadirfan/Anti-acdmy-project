@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @php
-    $siteName = \App\Models\Setting::get('academy_name', 'Apex Academy & IETS Center');
-    $siteLogo = \App\Models\Setting::get('academy_logo');
-    $siteAddress = \App\Models\Setting::get('contact_address', '124 Academic Boulevard, Knowledge Park');
-    $sitePhone = \App\Models\Setting::get('contact_phone', '+1 (555) 234-5678');
-    $siteEmail = \App\Models\Setting::get('contact_email', 'admissions@apexacademy.edu');
+    $siteName = $globalSettings['academy_name'] ?? \App\Models\Setting::get('academy_name', 'Academy');
+    $siteLogo = $globalSettings['academy_logo'] ?? \App\Models\Setting::get('academy_logo');
+    $siteAddress = $globalSettings['contact_address'] ?? \App\Models\Setting::get('contact_address', '124 Academic Boulevard, Knowledge Park');
+    $sitePhone = $globalSettings['contact_phone'] ?? \App\Models\Setting::get('contact_phone', '+1 (555) 234-5678');
+    $siteEmail = $globalSettings['contact_email'] ?? \App\Models\Setting::get('contact_email', 'info@antiacademy.edu');
     $regCode = $appointment->registration_number ?: $appointment->booking_code;
     $isIets = $appointment->type === 'iets_test';
 @endphp

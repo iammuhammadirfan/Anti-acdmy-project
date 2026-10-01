@@ -9,7 +9,7 @@
         <!-- Header -->
         <div style="background-color: #0f172a; padding: 24px; text-align: center;">
             <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.5px;">
-                {{ \App\Models\Setting::get('academy_name', 'Apex Academy') }}
+                {{ \App\Models\Setting::get('academy_name', 'Academy') }}
             </h1>
             <p style="color: #94a3b8; margin: 4px 0 0; font-size: 12px;">Staff &amp; Management Security Portal</p>
         </div>
@@ -47,7 +47,7 @@
 
         <!-- Footer -->
         <div style="background-color: #f8fafc; padding: 16px 24px; text-align: center; border-top: 1px solid #e2e8f0; font-size: 11px; color: #94a3b8;">
-            &copy; {{ date('Y') }} {{ \App\Models\Setting::get('academy_name', 'Apex Academy') }}. All rights reserved.
+            &copy; {{ date('Y') }} {{ \App\Models\Setting::get('academy_name', config('app.name', 'Academy')) }}. All rights reserved.
         </div>
     </div>
 </body>

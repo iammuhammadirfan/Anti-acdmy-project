@@ -175,7 +175,7 @@ class SchedulingController extends Controller
             'start_time' => 'required|string',
             'end_time' => 'nullable|string',
             'capacity' => 'required|integer|min:1|max:50',
-            'duration_minutes' => 'nullable|integer|min:15|max:240',
+            'duration_minutes' => 'nullable|integer|min:15|max:480',
             'notes' => 'nullable|string',
         ]);
 
@@ -240,7 +240,7 @@ class SchedulingController extends Controller
             'type' => 'required|in:counseling,iets_test',
             'start_time' => 'required',
             'end_time' => 'required',
-            'duration_minutes' => 'required|integer|min:15|max:180',
+            'duration_minutes' => 'required|integer|min:15|max:480',
             'capacity' => 'required|integer|min:1|max:50',
         ]);
 
@@ -301,18 +301,30 @@ class SchedulingController extends Controller
             'capacity' => 'required|integer|min:1|max:50',
             'start_time' => 'required|string',
             'end_time' => 'nullable|string',
+            'duration_minutes' => 'nullable|integer|min:15|max:480',
             'is_active' => 'required|boolean',
             'notes' => 'nullable|string',
         ]);
 
         $startTime = AppointmentSlot::normalizeTime($request->start_time);
-        $endTime = $request->end_time ? AppointmentSlot::normalizeTime($request->end_time) : $slot->end_time;
+        $duration = $request->filled('duration_minutes') ? (int) $request->duration_minutes : null;
+
+        if ($request->filled('end_time')) {
+            $endTime = AppointmentSlot::normalizeTime($request->end_time);
+        } elseif ($duration) {
+            $endTime = Carbon::parse($slot->slot_date->toDateString() . ' ' . $startTime)->addMinutes($duration)->format('h:i A');
+        } else {
+            $endTime = $slot->end_time;
+        }
 
         if ($endTime) {
             $startCarbon = Carbon::parse($slot->slot_date->toDateString() . ' ' . $startTime);
             $endCarbon = Carbon::parse($slot->slot_date->toDateString() . ' ' . $endTime);
             if ($endCarbon->lte($startCarbon)) {
                 return back()->with('error', "End time ({$endTime}) must be strictly after start time ({$startTime}).")->withInput();
+            }
+            if (!$duration) {
+                $duration = $startCarbon->diffInMinutes($endCarbon);
             }
         }
 
@@ -327,6 +339,7 @@ class SchedulingController extends Controller
             'capacity' => $request->capacity,
             'start_time' => $startTime,
             'end_time' => $endTime,
+            'duration_minutes' => $duration ?: ($slot->duration_minutes ?: 60),
             'is_active' => $request->is_active,
             'notes' => $request->notes,
         ]);

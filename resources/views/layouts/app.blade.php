@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Apex Academy & IETS — World-Class Academic & IELTS Coaching')</title>
-    <meta name="description" content="@yield('meta_description', 'Apex Academy & IETS provides premier higher education prep, IELTS band coaching with AI evaluation, modern multimedia classrooms, and distinguished faculty.')">
+    <title>@yield('title', ($globalSettings['academy_name'] ?? 'Academy') . ' — World-Class Academic & IELTS Coaching')</title>
+    <meta name="description" content="@yield('meta_description', ($globalSettings['academy_name'] ?? 'Academy') . ' provides premier higher education prep, IELTS band coaching with AI evaluation, modern multimedia classrooms, and distinguished faculty.')">
     <meta name="keywords" content="@yield('meta_keywords', 'IELTS, IETS, Academy, English Preparation, Band 8, Academic Coaching, Study Abroad')">
     <link rel="canonical" href="@yield('canonical_url', url()->current())">
     <meta name="robots" content="@yield('robots_meta', 'index, follow')">
 
     <!-- Open Graph & Social Cards -->
-    <meta property="og:title" content="@yield('og_title', config('app.name', 'Apex Academy & IETS'))">
+    <meta property="og:title" content="@yield('og_title', $globalSettings['academy_name'] ?? config('app.name', 'Academy'))">
     <meta property="og:description" content="@yield('og_description', 'Empowering Students Through Modern Education & IELTS Excellence.')">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="website">
     <meta property="og:image" content="@yield('og_image', asset('images/og-default.jpg'))">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('twitter_title', config('app.name', 'Apex Academy & IETS'))">
+    <meta name="twitter:title" content="@yield('twitter_title', $globalSettings['academy_name'] ?? config('app.name', 'Academy'))">
     <meta name="twitter:description" content="@yield('twitter_description', 'Empowering Students Through Modern Education & IELTS Excellence.')">
 
     <!-- Google Fonts & Tailwind CDN -->
@@ -69,7 +69,7 @@
 
     @php
         $siteLogo = $globalSettings['academy_logo'] ?? \App\Models\Setting::get('academy_logo');
-        $siteName = $globalSettings['academy_name'] ?? \App\Models\Setting::get('academy_name', 'Apex Academy & IETS');
+        $siteName = $globalSettings['academy_name'] ?? \App\Models\Setting::get('academy_name', 'Academy');
         $sitePhone = $globalSettings['contact_phone'] ?? \App\Models\Setting::get('contact_phone', '+1 (555) 234-5678');
         $siteEmail = $globalSettings['contact_email'] ?? \App\Models\Setting::get('contact_email', 'info@antiacademy.edu');
         $siteAddress = $globalSettings['contact_address'] ?? \App\Models\Setting::get('contact_address', '124 Academic Boulevard, Knowledge Park');
@@ -438,7 +438,7 @@
 
             <div class="mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
                 <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
-                    <p>&copy; {{ date('Y') }} Apex Academy &amp; IETS Management System. All rights reserved.</p>
+                    <p>&copy; {{ date('Y') }} {{ $siteName }} Management System. All rights reserved.</p>
                     <span class="hidden sm:inline text-slate-700">•</span>
                     <a href="https://wa.me/923235502570" 
                        target="_blank" 
@@ -501,7 +501,7 @@
         <!-- Chatbot Trigger Button Container -->
         <div class="pointer-events-auto relative">
             <button @click="toggleChat()" 
-                    aria-label="Apex AI Assistant"
+                    aria-label="{{ $siteName }} AI Assistant"
                     class="relative group w-14 h-14 rounded-full bg-gradient-to-r from-brand-600 to-brand-800 text-white flex items-center justify-center shadow-xl shadow-brand-500/40 hover:scale-105 active:scale-95 transition transform">
                 <i data-lucide="bot" class="w-7 h-7" x-show="!isOpen"></i>
                 <i data-lucide="x" class="w-7 h-7" x-show="isOpen" x-cloak></i>
@@ -530,7 +530,7 @@
                         <i data-lucide="bot" class="w-5 h-5"></i>
                     </div>
                     <div>
-                        <h4 class="font-bold text-sm leading-tight">Apex AI Academic Counselor</h4>
+                        <h4 class="font-bold text-sm leading-tight">{{ $globalSettings['ai_chatbot_name'] ?? ($siteName . ' AI Counselor') }}</h4>
                         <span class="text-[11px] text-emerald-400 flex items-center gap-1">
                             <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
                             Online • Action &amp; Booking Enabled
@@ -550,7 +550,7 @@
                         <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                     </div>
                     <div class="bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-tl-sm p-3 shadow-sm max-w-[85%]">
-                        <p>Hello! Welcome to <strong>Apex Academy &amp; IETS</strong>. I can assist you with courses, teacher schedules, admissions, or check live appointment slots for tomorrow. What would you like to know?</p>
+                        <p>{{ $globalSettings['ai_welcome_message'] ?? ('Hello! Welcome to ' . $siteName . '. I can assist you with courses, teacher schedules, admissions, or check live appointment slots for tomorrow. What would you like to know?') }}</p>
                     </div>
                 </div>
 

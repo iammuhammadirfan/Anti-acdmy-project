@@ -13,6 +13,12 @@
     currentSlotTitle: '',
     selectedSlots: [],
     allSlotIds: {{ json_encode($slots->pluck('id')->toArray()) }},
+    createDuration: '60',
+    createCustomMinutes: '',
+    createStartTime: '09:00 AM',
+    createEndTime: '10:00 AM',
+    editDuration: '60',
+    editCustomMinutes: '',
     toggleAll(event) {
         if (event.target.checked) {
             this.selectedSlots = [...this.allSlotIds];
@@ -29,8 +35,66 @@
         } else {
             this.selectedSlots.push(id);
         }
+    },
+    calculateEndTime(startTimeStr, minutes) {
+        if (!startTimeStr || !minutes) return '';
+        let match = startTimeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+        if (!match) return '';
+        let hours = parseInt(match[1]);
+        let mins = parseInt(match[2]);
+        let ampm = match[3] ? match[3].toUpperCase() : null;
+        if (ampm === 'PM' && hours < 12) hours += 12;
+        if (ampm === 'AM' && hours === 12) hours = 0;
+        
+        let totalMinutes = hours * 60 + mins + parseInt(minutes);
+        let newHours = Math.floor(totalMinutes / 60) % 24;
+        let newMins = totalMinutes % 60;
+        let newAmpm = newHours >= 12 ? 'PM' : 'AM';
+        let displayHours = newHours % 12;
+        if (displayHours === 0) displayHours = 12;
+        let formattedHours = displayHours < 10 ? '0' + displayHours : '' + displayHours;
+        let formattedMins = newMins < 10 ? '0' + newMins : '' + newMins;
+        return `${formattedHours}:${formattedMins} ${newAmpm}`;
+    },
+    applyCreateDuration() {
+        let mins = this.createDuration === 'custom' ? parseInt(this.createCustomMinutes) : parseInt(this.createDuration);
+        if (mins && mins > 0) {
+            let calculated = this.calculateEndTime(this.createStartTime, mins);
+            if (calculated) this.createEndTime = calculated;
+        }
+    },
+    applyEditDuration() {
+        let mins = this.editDuration === 'custom' ? parseInt(this.editCustomMinutes) : parseInt(this.editDuration);
+        if (mins && mins > 0) {
+            let calculated = this.calculateEndTime(this.editSlotData.start_time, mins);
+            if (calculated) this.editSlotData.end_time = calculated;
+            this.editSlotData.duration_minutes = mins;
+        }
+    },
+    formatDurationDisplay(val) {
+        let mins = parseInt(val);
+        if (!mins) return '';
+        if (mins < 60) return mins + ' Mins';
+        let h = Math.floor(mins / 60);
+        let m = mins % 60;
+        if (m === 0) return h + (h === 1 ? ' Hour' : ' Hours');
+        return h + 'h ' + m + 'm';
+    },
+    openEdit(slot) {
+        this.editSlotData = { ...slot };
+        let d = String(slot.duration_minutes || 60);
+        let presets = ['30','45','60','90','120','150','180','210','240'];
+        if (presets.includes(d)) {
+            this.editDuration = d;
+            this.editCustomMinutes = '';
+        } else {
+            this.editDuration = 'custom';
+            this.editCustomMinutes = d;
+        }
+        this.editModal = true;
     }
-}">
+}"
+x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlotData.start_time', () => applyEditDuration())">
 
     <!-- Header Actions -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -169,7 +233,12 @@
                                 <div class="font-mono font-extrabold text-slate-900 text-sm">
                                     {{ $slot->start_time }} – {{ $slot->end_time ?: 'TBD' }}
                                 </div>
-                                <span class="text-[10px] text-slate-400 font-semibold">{{ $slot->duration_minutes }} minutes exam slot</span>
+                                <div class="mt-1">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 text-[10px] font-bold">
+                                        <i data-lucide="clock" class="w-3 h-3 text-emerald-600"></i>
+                                        <span>{{ $slot->formatted_duration }}</span>
+                                    </span>
+                                </div>
                             </td>
                             <td class="py-3.5 px-4 whitespace-nowrap">
                                 <span class="font-bold text-slate-800 text-sm">{{ $cap }} Students</span>
@@ -211,7 +280,7 @@
                             <td class="py-3.5 px-4 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-1.5">
                                     <button type="button" 
-                                            @click="editSlotData = {{ json_encode($slot) }}; editModal = true"
+                                            @click="openEdit({{ json_encode($slot) }})"
                                             class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition"
                                             title="Edit Slot Capacity &amp; Range">
                                         <i data-lucide="edit" class="w-3.5 h-3.5"></i>
@@ -275,12 +344,46 @@
                     </div>
                 </div>
 
+                <!-- Slot Duration Selector (30m, 45m, 1h, 1:30h, 2h, 2:30h, 3h, 3:30h, 4h, Custom) -->
+                <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 space-y-2">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5">
+                            <i data-lucide="timer" class="w-4 h-4 text-emerald-600"></i>
+                            Test Slot Duration (Exam Length) *
+                        </span>
+                        <span class="text-[11px] font-extrabold text-emerald-700" x-text="formatDurationDisplay(createDuration === 'custom' ? createCustomMinutes : createDuration)"></span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <select name="duration_minutes" x-model="createDuration" @change="applyCreateDuration()"
+                                class="col-span-2 px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="30">30 Minutes</option>
+                            <option value="45">45 Minutes</option>
+                            <option value="60">1 Hour (60 mins)</option>
+                            <option value="90">1:30 Hour (90 mins)</option>
+                            <option value="120">2 Hours (120 mins)</option>
+                            <option value="150">2:30 Hours (150 mins / 2.5 hrs)</option>
+                            <option value="180">3 Hours (180 mins)</option>
+                            <option value="210">3:30 Hours (210 mins / 3.5 hrs)</option>
+                            <option value="240">4 Hours (240 mins)</option>
+                            <option value="custom">Custom Duration (Mins)...</option>
+                        </select>
+                        <div x-show="createDuration === 'custom'" x-cloak>
+                            <input type="number" x-model="createCustomMinutes" @input="applyCreateDuration()" min="15" max="480" placeholder="e.g. 75"
+                                   class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-center focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div x-show="createDuration !== 'custom'" class="flex items-center justify-center px-2 py-1 bg-emerald-100/70 text-emerald-800 rounded-xl text-[11px] font-extrabold">
+                            <span x-text="createDuration + ' Mins'"></span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400">Selecting duration automatically calculates the End Time from Start Time.</p>
+                </div>
+
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <x-watch-time-picker name="start_time" value="09:00 AM" label="Start Time *" required placeholder="09:00 AM" />
+                        <x-watch-time-picker name="start_time" model="createStartTime" value="09:00 AM" label="Start Time *" required placeholder="09:00 AM" />
                     </div>
                     <div>
-                        <x-watch-time-picker name="end_time" value="10:00 AM" label="End Time *" required placeholder="10:00 AM" />
+                        <x-watch-time-picker name="end_time" model="createEndTime" value="10:00 AM" label="End Time *" required placeholder="10:00 AM" />
                     </div>
                 </div>
 
@@ -337,6 +440,40 @@
                             <option :value="0">Disabled (Blocked)</option>
                         </select>
                     </div>
+                </div>
+
+                <!-- Slot Duration Selector in Edit Modal -->
+                <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 space-y-2">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5">
+                            <i data-lucide="timer" class="w-4 h-4 text-emerald-600"></i>
+                            Test Slot Duration (Exam Length) *
+                        </span>
+                        <span class="text-[11px] font-extrabold text-emerald-700" x-text="formatDurationDisplay(editDuration === 'custom' ? editCustomMinutes : editDuration)"></span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <select name="duration_minutes" x-model="editDuration" @change="applyEditDuration()"
+                                class="col-span-2 px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="30">30 Minutes</option>
+                            <option value="45">45 Minutes</option>
+                            <option value="60">1 Hour (60 mins)</option>
+                            <option value="90">1:30 Hour (90 mins)</option>
+                            <option value="120">2 Hours (120 mins)</option>
+                            <option value="150">2:30 Hours (150 mins / 2.5 hrs)</option>
+                            <option value="180">3 Hours (180 mins)</option>
+                            <option value="210">3:30 Hours (210 mins / 3.5 hrs)</option>
+                            <option value="240">4 Hours (240 mins)</option>
+                            <option value="custom">Custom Duration (Mins)...</option>
+                        </select>
+                        <div x-show="editDuration === 'custom'" x-cloak>
+                            <input type="number" x-model="editCustomMinutes" @input="applyEditDuration()" min="15" max="480" placeholder="e.g. 75"
+                                   class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-center focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div x-show="editDuration !== 'custom'" class="flex items-center justify-center px-2 py-1 bg-emerald-100/70 text-emerald-800 rounded-xl text-[11px] font-extrabold">
+                            <span x-text="editDuration + ' Mins'"></span>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400">Updating duration recalculates the slot end time.</p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Academy History & Milestones — Apex Academy')
-@section('meta_description', 'Trace the historical journey and key achievements of Apex Academy & IETS from founding to AI-assisted modern education.')
+@section('title', 'Academy History & Milestones — ' . ($globalSettings['academy_name'] ?? 'Academy'))
+@section('meta_description', 'Trace the historical journey and key achievements of ' . ($globalSettings['academy_name'] ?? 'our academy') . ' from founding to AI-assisted modern education.')
 
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
@@ -11,7 +11,7 @@
             Our Legacy
         </span>
         <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">Institutional Timeline &amp; Milestones</h1>
-        <p class="text-sm text-slate-600 max-w-xl mx-auto">Explore how Apex Academy evolved into a pioneer of IELTS coaching and student success.</p>
+        <p class="text-sm text-slate-600 max-w-xl mx-auto">Explore how {{ $globalSettings['academy_name'] ?? 'our academy' }} evolved into a pioneer of IELTS coaching and student success.</p>
     </div>
 
     <!-- Vertical Timeline -->

@@ -152,7 +152,8 @@ class AiAgentService
                 foreach ($programs as $p) {
                     $lines[] = "📘 **{$p->title}**\n{$p->summary}";
                 }
-                $reply = "Apex Academy offers comprehensive IETS / IELTS preparation modules:\n\n" .
+                $academyName = Setting::get('academy_name') ?: config('app.name', 'Our Academy');
+                $reply = "{$academyName} offers comprehensive IETS / IELTS preparation modules:\n\n" .
                          implode("\n\n", $lines) .
                          "\n\nWe feature AI-powered band score evaluation and mock exams. Learn more on our [IETS Program Page](/iets) or check student band score achievements on [IETS Results](/iets/results)!";
 
@@ -183,7 +184,8 @@ class AiAgentService
         if (!empty($apiKey)) {
             try {
                 $context = $this->buildAcademyContext();
-                $fullSystemPrompt = ($systemPrompt ?: "You are Apex Academy's expert AI Academic Counselor and Admissions Advisor. Answer accurately, politely, and guide students in English, Urdu or Roman Urdu depending on the user's language.") . "\n\nAcademy Knowledge Base:\n" . $context;
+                $academyName = Setting::get('academy_name') ?: config('app.name', 'the academy');
+                $fullSystemPrompt = ($systemPrompt ?: "You are {$academyName}'s expert AI Academic Counselor and Admissions Advisor. Answer accurately, politely, and guide students in English, Urdu or Roman Urdu depending on the user's language.") . "\n\nAcademy Knowledge Base:\n" . $context;
 
                 // 1. Google Gemini API (100% Free Tier on Google AI Studio)
                 if ($provider === 'gemini') {
@@ -298,7 +300,7 @@ class AiAgentService
 
         // Greetings & pleasantries
         if (preg_match('/^(hi|hello|hey|salam|assalam|aoa|hy|hola|good morning|good afternoon|good evening|kese ho|kaise ho)\b/i', $q)) {
-            $name = Setting::get('academy_name', 'Apex Academy & IETS');
+            $name = Setting::get('academy_name', config('app.name', 'Academy'));
             return "Walaikum Assalam / Hello! Welcome to **{$name}**! 👋\n\nI am your 24/7 AI Academic Advisor. How can I assist you today? You can ask me about:\n• **IETS & IELTS Prep Modules & Test Dates**\n• **Class Schedules & Faculty Details**\n• **Booking a Free Counseling Session**\n• **Admissions & Fee Details**";
         }
 
@@ -357,7 +359,7 @@ class AiAgentService
             return "👨‍🏫 **Expert Faculty**:\nOur faculty consists of certified language specialists and master degree holders with 8+ years of IELTS/IETS coaching experience.\n\nMeet our faculty team and view their qualifications on the [Teachers Directory](/teachers)!";
         }
 
-        $academyName = Setting::get('academy_name', 'Apex Academy & IETS');
+        $academyName = Setting::get('academy_name', config('app.name', 'Academy'));
         return "Thank you for reaching out to **{$academyName}**!\n\nI can help you with anything related to our academy:\n• **IETS & English Courses**: [View Programs](/iets)\n• **Book Test / Counseling**: [Book Appointment](/appointments)\n• **Verified Student Scores**: [View Results](/iets/results)\n• **Campus Facilities**: [View Classrooms & Labs](/classrooms)\n• **Contact Us**: [Contact Page](/contact)\n\nFeel free to ask any specific question about courses, teachers, or schedules!";
     }
 
@@ -366,7 +368,7 @@ class AiAgentService
      */
     protected function buildAcademyContext(): string
     {
-        $name = Setting::get('academy_name', 'Apex Academy & IETS');
+        $name = Setting::get('academy_name', config('app.name', 'Academy'));
         $phone = Setting::get('contact_phone', '+1 (555) 234-5678');
         $email = Setting::get('contact_email', 'info@antiacademy.edu');
         $address = Setting::get('contact_address', '124 Academic Boulevard, Knowledge Park');

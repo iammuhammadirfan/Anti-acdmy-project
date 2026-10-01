@@ -39,8 +39,13 @@ class AppServiceProvider extends ServiceProvider
             if (!$this->app->runningInConsole() && Schema::hasTable('settings')) {
                 app(\App\Services\NotificationService::class)->configureDynamicSmtp();
 
-                View::composer('*', function ($view) {
-                    $view->with('globalSettings', Setting::pluck('value', 'key')->toArray());
+                $allSettings = Setting::pluck('value', 'key')->toArray();
+                if (!empty($allSettings['academy_name'])) {
+                    config(['app.name' => $allSettings['academy_name']]);
+                }
+
+                View::composer('*', function ($view) use ($allSettings) {
+                    $view->with('globalSettings', $allSettings);
                 });
 
                 View::composer('layouts.admin', function ($view) {
