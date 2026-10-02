@@ -19,18 +19,24 @@
             <p class="text-xs text-slate-500">Automatically generated 1-on-1 counseling appointment slots. Independent from IETS test sessions.</p>
         </div>
         <div class="flex items-center gap-2">
+            @if(auth()->user()->hasPermission('scheduling_counseling', 'edit'))
             <button type="button" @click="configModal = true" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
                 <i data-lucide="sliders" class="w-4 h-4"></i>
                 <span>Configure Counseling Schedule</span>
             </button>
+            @endif
+            @if(auth()->user()->hasPermission('scheduling_counseling', 'delete'))
             <a href="{{ route('admin.scheduling.slots', ['type' => 'counseling']) }}" class="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition" title="Select and bulk delete counseling slots">
                 <i data-lucide="trash-2" class="w-4 h-4"></i>
                 <span>Select &amp; Delete Counseling Slots</span>
             </a>
+            @endif
+            @if(auth()->user()->hasPermission('appointments', 'view'))
             <a href="{{ route('admin.scheduling.bookings', ['type' => 'counseling']) }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
                 <i data-lucide="users" class="w-4 h-4"></i>
                 <span>Counseling Bookings</span>
             </a>
+            @endif
         </div>
     </div>
 

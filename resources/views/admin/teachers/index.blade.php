@@ -10,10 +10,12 @@
             <h2 class="text-lg font-bold text-slate-900">Academic Faculty</h2>
             <p class="text-xs text-slate-500">Manage instructor profiles, qualifications, subjects, and social links.</p>
         </div>
+        @if(auth()->user()->hasPermission('teachers', 'create'))
         <a href="{{ route('admin.teachers.create') }}" class="inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md shadow-brand-500/20 transition shrink-0 self-start sm:self-auto">
             <i data-lucide="plus" class="w-4 h-4"></i>
             <span>Add New Teacher</span>
         </a>
+        @endif
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -56,14 +58,20 @@
                 </div>
 
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                    @if(auth()->user()->hasPermission('teachers', 'edit'))
                     <a href="{{ route('admin.teachers.edit', $teacher) }}" class="text-xs font-bold text-brand-600 hover:text-brand-800 flex items-center gap-1">
                         <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Edit Profile
                     </a>
+                    @else
+                    <span></span>
+                    @endif
+                    @if(auth()->user()->hasPermission('teachers', 'delete'))
                     <form action="{{ route('admin.teachers.destroy', $teacher) }}" method="POST" onsubmit="return confirm('Delete this teacher profile?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="text-xs font-semibold text-red-500 hover:text-red-700">Delete</button>
                     </form>
+                    @endif
                 </div>
             </div>
         @empty

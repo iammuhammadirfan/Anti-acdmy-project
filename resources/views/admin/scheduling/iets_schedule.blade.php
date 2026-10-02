@@ -109,14 +109,18 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
             <p class="text-xs text-slate-500">Create official IETS test slots with custom time ranges (e.g. 9:00 AM – 10:00 AM). Overlapping slots are strictly blocked.</p>
         </div>
         <div class="flex items-center gap-2">
+            @if(auth()->user()->hasPermission('scheduling_iets', 'create'))
             <button type="button" @click="createModal = true" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
                 <i data-lucide="plus-circle" class="w-4 h-4"></i>
                 <span>Create IETS Test Slot</span>
             </button>
+            @endif
+            @if(auth()->user()->hasPermission('appointments', 'view'))
             <a href="{{ route('admin.scheduling.bookings', ['type' => 'iets_test']) }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
                 <i data-lucide="users" class="w-4 h-4"></i>
                 <span>View IETS Bookings</span>
             </a>
+            @endif
         </div>
     </div>
 
@@ -140,6 +144,7 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
     </div>
 
     <!-- Bulk Delete Action Bar (appears when 1 or more IETS slots are selected) -->
+    @if(auth()->user()->hasPermission('scheduling_iets', 'delete'))
     <div x-show="selectedSlots.length > 0" x-cloak 
          class="bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-4 transition-all">
         <div class="flex items-center gap-3">
@@ -176,6 +181,7 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
             </form>
         </div>
     </div>
+    @endif
 
     <!-- IETS Slots Table -->
     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
@@ -269,6 +275,7 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
                                 </span>
                             </td>
                             <td class="py-3.5 px-4 whitespace-nowrap">
+                                @if(auth()->user()->hasPermission('scheduling_iets', 'edit'))
                                 <form action="{{ route('admin.scheduling.slot.toggle', $slot) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase transition
@@ -276,15 +283,23 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
                                         {{ $slot->is_active ? 'Active' : 'Disabled' }}
                                     </button>
                                 </form>
+                                @else
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase {{ $slot->is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500' }}">
+                                    {{ $slot->is_active ? 'Active' : 'Disabled' }}
+                                </span>
+                                @endif
                             </td>
                             <td class="py-3.5 px-4 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-1.5">
+                                    @if(auth()->user()->hasPermission('scheduling_iets', 'edit'))
                                     <button type="button" 
                                             @click="openEdit({{ json_encode($slot) }})"
                                             class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition"
                                             title="Edit Slot Capacity &amp; Range">
                                         <i data-lucide="edit" class="w-3.5 h-3.5"></i>
                                     </button>
+                                    @endif
+                                    @if(auth()->user()->hasPermission('scheduling_iets', 'delete'))
                                     <form action="{{ route('admin.scheduling.slot.destroy', $slot) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this IETS slot?');">
                                         @csrf
                                         @method('DELETE')
@@ -292,6 +307,7 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
                                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

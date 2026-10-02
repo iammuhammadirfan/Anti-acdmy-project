@@ -63,21 +63,28 @@
 
         <!-- Dynamic Website Section Assignment Matrix -->
         <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-4">
-            <div>
-                <h3 class="font-bold text-slate-900 text-base">Dynamic Module &amp; Section Assignment</h3>
-                <p class="text-xs text-slate-500">Super Admin can customize which sections this staff user can view, edit, create, delete, and publish.</p>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-base">Dynamic Module &amp; Section Assignment</h3>
+                    <p class="text-xs text-slate-500">Super Admin can customize which sections this staff user can view, edit, create, delete, and publish.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="toggleColumn('view', true)" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition">Select All View</button>
+                    <button type="button" onclick="toggleAllMatrix(true)" class="px-2.5 py-1 bg-brand-50 hover:bg-brand-100 text-brand-700 text-xs font-bold rounded-lg transition">Select All Full</button>
+                    <button type="button" onclick="toggleAllMatrix(false)" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg transition">Clear All</button>
+                </div>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
+                <table class="w-full text-left text-sm" id="permission-matrix">
                     <thead class="bg-slate-50 text-slate-600 uppercase font-semibold text-[11px] tracking-wider border-y border-slate-200">
                         <tr>
                             <th class="py-3 px-4">Module / Section</th>
-                            <th class="py-3 px-4 text-center">View</th>
-                            <th class="py-3 px-4 text-center">Create</th>
-                            <th class="py-3 px-4 text-center">Edit</th>
-                            <th class="py-3 px-4 text-center">Delete</th>
-                            <th class="py-3 px-4 text-center">Publish</th>
+                            <th class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100" onclick="toggleColumnHeader('view')">View</th>
+                            <th class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100" onclick="toggleColumnHeader('create')">Create</th>
+                            <th class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100" onclick="toggleColumnHeader('edit')">Edit</th>
+                            <th class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100" onclick="toggleColumnHeader('delete')">Delete</th>
+                            <th class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100" onclick="toggleColumnHeader('publish')">Publish</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -85,26 +92,37 @@
                             @php
                                 $perm = $userPermissions->get($key);
                             @endphp
-                            <tr class="hover:bg-slate-50/50">
-                                <td class="py-3 px-4 font-semibold text-slate-900">{{ $label }}</td>
+                            <tr class="hover:bg-slate-50/50 {{ in_array($key, ['appointments', 'scheduling_iets', 'scheduling_counseling']) ? 'bg-amber-50/20' : '' }}" data-module="{{ $key }}">
+                                <td class="py-3 px-4 font-semibold text-slate-900">
+                                    <div class="flex items-center gap-2">
+                                        @if($key === 'scheduling_iets')
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800">IETS</span>
+                                        @elseif($key === 'scheduling_counseling')
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-blue-100 text-blue-800">Counseling</span>
+                                        @elseif($key === 'appointments')
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-purple-100 text-purple-800">Bookings</span>
+                                        @endif
+                                        <span>{{ $label }}</span>
+                                    </div>
+                                </td>
                                 <td class="py-3 px-4 text-center">
-                                    <input type="checkbox" name="sections[{{ $key }}][view]" value="1" 
+                                    <input type="checkbox" name="sections[{{ $key }}][view]" value="1" data-action="view"
                                            {{ $perm && $perm->can_view ? 'checked' : '' }} class="rounded text-brand-600">
                                 </td>
                                 <td class="py-3 px-4 text-center">
-                                    <input type="checkbox" name="sections[{{ $key }}][create]" value="1" 
+                                    <input type="checkbox" name="sections[{{ $key }}][create]" value="1" data-action="create" onchange="autoEnableView(this)"
                                            {{ $perm && $perm->can_create ? 'checked' : '' }} class="rounded text-brand-600">
                                 </td>
                                 <td class="py-3 px-4 text-center">
-                                    <input type="checkbox" name="sections[{{ $key }}][edit]" value="1" 
+                                    <input type="checkbox" name="sections[{{ $key }}][edit]" value="1" data-action="edit" onchange="autoEnableView(this)"
                                            {{ $perm && $perm->can_edit ? 'checked' : '' }} class="rounded text-brand-600">
                                 </td>
                                 <td class="py-3 px-4 text-center">
-                                    <input type="checkbox" name="sections[{{ $key }}][delete]" value="1" 
+                                    <input type="checkbox" name="sections[{{ $key }}][delete]" value="1" data-action="delete" onchange="autoEnableView(this)"
                                            {{ $perm && $perm->can_delete ? 'checked' : '' }} class="rounded text-brand-600">
                                 </td>
                                 <td class="py-3 px-4 text-center">
-                                    <input type="checkbox" name="sections[{{ $key }}][publish]" value="1" 
+                                    <input type="checkbox" name="sections[{{ $key }}][publish]" value="1" data-action="publish" onchange="autoEnableView(this)"
                                            {{ $perm && $perm->can_publish ? 'checked' : '' }} class="rounded text-brand-600">
                                 </td>
                             </tr>
@@ -120,4 +138,39 @@
         </div>
     </form>
 </div>
+
+<script>
+function autoEnableView(el) {
+    if (el.checked) {
+        const row = el.closest('tr');
+        const viewCheckbox = row.querySelector('input[data-action="view"]');
+        if (viewCheckbox) {
+            viewCheckbox.checked = true;
+        }
+    }
+}
+
+function toggleColumn(action, state) {
+    document.querySelectorAll(`#permission-matrix input[data-action="${action}"]`).forEach(cb => {
+        cb.checked = state;
+    });
+}
+
+function toggleColumnHeader(action) {
+    const cbs = document.querySelectorAll(`#permission-matrix input[data-action="${action}"]`);
+    const anyUnchecked = Array.from(cbs).some(cb => !cb.checked);
+    cbs.forEach(cb => {
+        cb.checked = anyUnchecked;
+        if (anyUnchecked && action !== 'view') {
+            autoEnableView(cb);
+        }
+    });
+}
+
+function toggleAllMatrix(state) {
+    document.querySelectorAll('#permission-matrix input[type="checkbox"]').forEach(cb => {
+        cb.checked = state;
+    });
+}
+</script>
 @endsection
