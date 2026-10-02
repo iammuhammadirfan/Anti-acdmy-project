@@ -27,6 +27,7 @@ class SettingController extends Controller
         $settings = [
             'academy_name' => Setting::get('academy_name', config('app.name', 'Academy')),
             'academy_logo' => Setting::get('academy_logo', ''),
+            'site_favicon' => Setting::get('site_favicon', ''),
             'contact_email' => Setting::get('contact_email', 'info@antiacademy.edu'),
             'contact_phone' => Setting::get('contact_phone', '+1 (555) 234-5678'),
             'contact_whatsapp' => Setting::get('contact_whatsapp', '+15552345678'),
@@ -67,6 +68,13 @@ class SettingController extends Controller
         $group = $request->get('group', 'general');
 
         if ($group === 'general') {
+            $request->validate([
+                'favicon_file' => 'nullable|file|mimes:png,ico,jpg,jpeg,webp,svg|max:1024',
+            ], [
+                'favicon_file.mimes' => 'The favicon must be a valid image file (png, ico, jpg, webp, svg).',
+                'favicon_file.max' => 'The favicon size must not exceed 1MB (1024 KB).',
+            ]);
+
             Setting::set('academy_name', $request->academy_name, 'general');
             Setting::set('contact_email', $request->contact_email, 'general');
             Setting::set('contact_phone', $request->contact_phone, 'general');
@@ -76,6 +84,37 @@ class SettingController extends Controller
             if ($request->hasFile('logo_file')) {
                 $media = $this->mediaService->upload($request->file('logo_file'), 'settings', 'Logo');
                 Setting::set('academy_logo', $media->file_path, 'general');
+            }
+
+            if ($request->hasFile('favicon_file')) {
+                // Delete old favicon file if present
+                $oldFavicon = Setting::get('site_favicon');
+                if (!empty($oldFavicon)) {
+                    $oldStoragePath = storage_path('app/public/' . $oldFavicon);
+                    $oldPublicPath = public_path('storage/' . $oldFavicon);
+                    if (file_exists($oldStoragePath)) {
+                        @unlink($oldStoragePath);
+                    }
+                    if (file_exists($oldPublicPath)) {
+                        @unlink($oldPublicPath);
+                    }
+                }
+
+                $media = $this->mediaService->upload($request->file('favicon_file'), 'settings', 'Favicon');
+                Setting::set('site_favicon', $media->file_path, 'general');
+            } elseif ($request->boolean('remove_favicon')) {
+                $oldFavicon = Setting::get('site_favicon');
+                if (!empty($oldFavicon)) {
+                    $oldStoragePath = storage_path('app/public/' . $oldFavicon);
+                    $oldPublicPath = public_path('storage/' . $oldFavicon);
+                    if (file_exists($oldStoragePath)) {
+                        @unlink($oldStoragePath);
+                    }
+                    if (file_exists($oldPublicPath)) {
+                        @unlink($oldPublicPath);
+                    }
+                }
+                Setting::set('site_favicon', '', 'general');
             }
         } elseif ($group === 'social') {
             Setting::set('social_facebook', $request->social_facebook, 'social');

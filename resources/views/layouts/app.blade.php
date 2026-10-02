@@ -81,10 +81,7 @@
         $cleanWhatsapp = preg_replace('/[^0-9]/', '', (string)$siteWhatsapp) ?: '15552345678';
     @endphp
 
-    @if(!empty($siteLogo))
-        <link rel="icon" type="image/png" href="{{ asset('storage/' . $siteLogo) }}">
-        <link rel="apple-touch-icon" href="{{ asset('storage/' . $siteLogo) }}">
-    @endif
+    @include('partials.favicon')
 
     <style>
         [x-cloak] { display: none !important; }
