@@ -197,61 +197,7 @@
         </section>
     @endif
 
-    <!-- 4. IETS Program Section -->
-    <section class="bg-gradient-to-b from-slate-100 to-white py-20 border-y border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-            <div class="text-center max-w-2xl mx-auto space-y-3">
-                <span class="text-xs font-extrabold uppercase tracking-wider text-brand-600 bg-brand-50 border border-brand-200 px-3 py-1 rounded-full">
-                    Official Exam Preparation
-                </span>
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900">Comprehensive IETS / IELTS Modules</h2>
-                <p class="text-sm text-slate-600">Tailored study programs with intensive 1-on-1 speaking clinics, computer-delivered mock tests, and AI evaluation.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                @forelse($ietsPrograms as $prog)
-                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 flex flex-col justify-between">
-                        <div>
-                            <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-4">
-                                <i data-lucide="book-open" class="w-6 h-6"></i>
-                            </div>
-                            <h4 class="font-bold text-slate-900 text-lg mb-2">{{ $prog->title }}</h4>
-                            <p class="text-xs text-slate-500 line-clamp-3 mb-4">{{ $prog->summary }}</p>
-
-                            @if($prog->features)
-                                <ul class="space-y-1.5 text-xs text-slate-600 border-t border-slate-100 pt-3">
-                                    @foreach(array_slice($prog->features, 0, 3) as $feat)
-                                        <li class="flex items-center gap-2">
-                                            <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 shrink-0"></i>
-                                            <span class="truncate">{{ $feat }}</span>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            @endif
-                        </div>
-
-                        <div class="pt-6 border-t border-slate-100 mt-4">
-                            <a href="{{ route('iets') }}" class="text-xs font-bold text-brand-600 hover:text-brand-800 flex items-center justify-between">
-                                <span>Module Details</span>
-                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                            </a>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-span-full py-8 text-center text-slate-400">Programs configured dynamically via Admin Panel.</div>
-                @endforelse
-            </div>
-
-            <div class="text-center pt-4">
-                <a href="{{ route('iets') }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm px-6 py-3 rounded-xl shadow transition">
-                    <span>Explore Full IETS Curriculum</span>
-                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- 5. Student Result Cards Slider (IELTS, PTE, TOEFL) -->
+    <!-- 4. Student Result Cards Slider (IELTS, PTE, TOEFL) -->
     <section class="py-16 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden"
              x-data="{
                 activeTab: 'ALL',
@@ -452,6 +398,60 @@
                         Open High-Res Card
                     </a>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. IETS Program Section -->
+    <section class="bg-gradient-to-b from-slate-100 to-white py-20 border-y border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div class="text-center max-w-2xl mx-auto space-y-3">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-brand-600 bg-brand-50 border border-brand-200 px-3 py-1 rounded-full">
+                    Official Exam Preparation
+                </span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900">Comprehensive IETS / IELTS Modules</h2>
+                <p class="text-sm text-slate-600">Tailored study programs with intensive 1-on-1 speaking clinics, computer-delivered mock tests, and AI evaluation.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                @forelse($ietsPrograms as $prog)
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-4">
+                                <i data-lucide="book-open" class="w-6 h-6"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-lg mb-2">{{ $prog->title }}</h4>
+                            <p class="text-xs text-slate-500 line-clamp-3 mb-4">{{ $prog->summary }}</p>
+
+                            @if($prog->features)
+                                <ul class="space-y-1.5 text-xs text-slate-600 border-t border-slate-100 pt-3">
+                                    @foreach(array_slice($prog->features, 0, 3) as $feat)
+                                        <li class="flex items-center gap-2">
+                                            <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 shrink-0"></i>
+                                            <span class="truncate">{{ $feat }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+
+                        <div class="pt-6 border-t border-slate-100 mt-4">
+                            <a href="{{ route('iets') }}" class="text-xs font-bold text-brand-600 hover:text-brand-800 flex items-center justify-between">
+                                <span>Module Details</span>
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-full py-8 text-center text-slate-400">Programs configured dynamically via Admin Panel.</div>
+                @endforelse
+            </div>
+
+            <div class="text-center pt-4">
+                <a href="{{ route('iets') }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm px-6 py-3 rounded-xl shadow transition">
+                    <span>Explore Full IETS Curriculum</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
             </div>
         </div>
     </section>
