@@ -11,8 +11,6 @@
 
 @section('content')
 <div x-data="{
-    activeCategory: '{{ $type ? strtoupper($type) : 'ALL' }}',
-    searchQuery: '{{ addslashes($search ?? '') }}',
     modalOpen: false,
     modalImg: '',
     modalTitle: '',
@@ -24,29 +22,6 @@
         this.modalScore = score;
         this.modalCategory = cat;
         this.modalOpen = true;
-    },
-    setCategory(cat) {
-        this.activeCategory = cat;
-        const url = new URL(window.location);
-        if (cat === 'ALL') {
-            url.searchParams.delete('type');
-        } else {
-            url.searchParams.set('type', cat);
-        }
-        window.history.replaceState({}, '', url);
-    },
-    matches(cat, name, score) {
-        const catUpper = (cat || '').toUpperCase();
-        if (this.activeCategory !== 'ALL' && !catUpper.includes(this.activeCategory)) {
-            return false;
-        }
-        if (!this.searchQuery || !this.searchQuery.trim()) {
-            return true;
-        }
-        const q = this.searchQuery.toLowerCase().trim();
-        return (name || '').toLowerCase().includes(q) ||
-               (score || '').toLowerCase().includes(q) ||
-               catUpper.toLowerCase().includes(q);
     }
 }">
 
@@ -95,79 +70,85 @@
     <!-- 2. Portions Filter & Main Cards Grid (Anchor id: results-filter) -->
     <section id="results-filter" class="py-12 sm:py-16 bg-slate-950 scroll-mt-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-            <!-- Filter Bar & Search (Instant in-place filtering with ZERO scroll jump) -->
+            <!-- Filter Bar & Search -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xl">
                 <!-- 3 Portion Category Buttons -->
                 <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" @click.prevent="setCategory('ALL')"
-                            :class="activeCategory === 'ALL' ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'"
-                            class="px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all">
+                    <a href="{{ route('iets.results', array_filter(['search' => $search])) }}"
+                       class="px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all {{ empty($type) || strtoupper($type) === 'ALL' ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800' }}">
                         All ({{ $totalCount }})
-                    </button>
+                    </a>
 
-                    <button type="button" @click.prevent="setCategory('IELTS')"
-                            :class="activeCategory === 'IELTS' ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'"
-                            class="px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+                    <a href="{{ route('iets.results', array_filter(['type' => 'IELTS', 'search' => $search])) }}"
+                       class="px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 {{ strtoupper($type ?? '') === 'IELTS' ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800' }}">
                         <span class="w-2 h-2 rounded-full bg-red-400"></span>
                         IELTS ({{ $ieltsCount }})
-                    </button>
+                    </a>
 
-                    <button type="button" @click.prevent="setCategory('PTE')"
-                            :class="activeCategory === 'PTE' ? 'bg-amber-600 text-white shadow-md shadow-amber-600/30' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'"
-                            class="px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+                    <a href="{{ route('iets.results', array_filter(['type' => 'PTE', 'search' => $search])) }}"
+                       class="px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 {{ strtoupper($type ?? '') === 'PTE' ? 'bg-amber-600 text-white shadow-md shadow-amber-600/30' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800' }}">
                         <span class="w-2 h-2 rounded-full bg-amber-400"></span>
                         PTE Pearson ({{ $pteCount }})
-                    </button>
+                    </a>
 
-                    <button type="button" @click.prevent="setCategory('TOEFL')"
-                            :class="activeCategory === 'TOEFL' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'"
-                            class="px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+                    <a href="{{ route('iets.results', array_filter(['type' => 'TOEFL', 'search' => $search])) }}"
+                       class="px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 {{ strtoupper($type ?? '') === 'TOEFL' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800' }}">
                         <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
                         TOEFL iBT ({{ $toeflCount }})
-                    </button>
+                    </a>
                 </div>
 
-                <!-- Live Search Box (Instant Live Filtering As You Type - Zero Reload) -->
-                <div class="flex items-center gap-2 w-full lg:w-auto">
+                <!-- Search Box -->
+                <form method="GET" action="{{ route('iets.results') }}" class="flex items-center gap-2 w-full lg:w-auto">
+                    @if(!empty($type) && strtoupper($type) !== 'ALL')
+                        <input type="hidden" name="type" value="{{ $type }}">
+                    @endif
                     <div class="relative flex-1 lg:w-72">
                         <input type="text"
-                               x-model.debounce.150ms="searchQuery"
+                               name="search"
+                               value="{{ $search ?? '' }}"
                                placeholder="Search student name or score..."
                                class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-8 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500">
                         <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-3"></i>
-                        <button type="button" x-show="searchQuery" @click="searchQuery = ''" class="absolute right-2.5 top-2.5 text-slate-400 hover:text-white">
-                            <i data-lucide="x" class="w-4 h-4"></i>
-                        </button>
+                        @if(!empty($search))
+                            <a href="{{ route('iets.results', array_filter(['type' => $type])) }}" class="absolute right-2.5 top-2.5 text-slate-400 hover:text-white">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </a>
+                        @endif
                     </div>
 
-                    <button type="button" x-show="searchQuery || activeCategory !== 'ALL'"
-                            @click="searchQuery = ''; setCategory('ALL');"
-                            class="px-3.5 py-2.5 text-xs text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl font-semibold transition shrink-0">
-                        Reset
+                    <button type="submit" class="px-4 py-2.5 text-xs text-white bg-brand-600 hover:bg-brand-500 rounded-xl font-bold transition shrink-0">
+                        Search
                     </button>
-                </div>
+                    @if(!empty($search) || (!empty($type) && strtoupper($type) !== 'ALL'))
+                        <a href="{{ route('iets.results') }}"
+                           class="px-3.5 py-2.5 text-xs text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl font-semibold transition shrink-0">
+                            Reset
+                        </a>
+                    @endif
+                </form>
             </div>
 
             <!-- Active Filter Notification Bar -->
-            <div class="flex items-center justify-between text-xs text-slate-400 px-1" x-show="activeCategory !== 'ALL' || searchQuery">
+            @if((!empty($type) && strtoupper($type) !== 'ALL') || !empty($search))
+            <div class="flex items-center justify-between text-xs text-slate-400 px-1">
                 <div>
                     Active Filter:
-                    <span class="font-bold text-white" x-text="activeCategory === 'ALL' ? 'All Tests' : activeCategory"></span>
-                    <span x-show="searchQuery"> &bull; Searching for: "<span class="text-brand-400 font-semibold" x-text="searchQuery"></span>"</span>
+                    <span class="font-bold text-white">{{ !empty($type) && strtoupper($type) !== 'ALL' ? $type : 'All Tests' }}</span>
+                    @if(!empty($search))
+                        &bull; Searching for: "<span class="text-brand-400 font-semibold">{{ $search }}</span>"
+                    @endif
                 </div>
-                <button type="button" @click="searchQuery = ''; setCategory('ALL');" class="text-brand-400 hover:underline font-semibold">
+                <a href="{{ route('iets.results') }}" class="text-brand-400 hover:underline font-semibold">
                     Clear All
-                </button>
+                </a>
             </div>
+            @endif
 
             <!-- Result Cards Grid (Fully Responsive: 1 col on mobile, 2 on sm, 3 on md, 4 on lg) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6">
-                @forelse($allCards as $item)
+                @forelse($results as $item)
                     <div class="group bg-slate-900 rounded-2xl border border-slate-800 hover:border-blue-500/50 shadow-xl hover:shadow-2xl hover:shadow-blue-500/10 overflow-hidden transition-all duration-300 flex flex-col justify-between cursor-pointer"
-                         x-show="matches('{{ $item->category }}', '{{ addslashes($item->student_name) }}', '{{ $item->overall_band }}')"
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 scale-95"
-                         x-transition:enter-end="opacity-100 scale-100"
                          @click="openModal('{{ $item->card_image_url }}', '{{ addslashes($item->student_name) }}', '{{ $item->overall_band }}', '{{ $item->category }}')">
 
                         <!-- Card Top Bar (Keeps badges separate from the scorecard image so NOTHING is blocked) -->
@@ -230,10 +211,17 @@
                     <div class="col-span-full text-center py-16 bg-slate-900/50 rounded-2xl border border-slate-800 text-slate-400 space-y-2">
                         <i data-lucide="inbox" class="w-12 h-12 mx-auto text-slate-600"></i>
                         <h4 class="text-base font-bold text-white">No scorecards found</h4>
-                        <p class="text-xs text-slate-500">No student result cards uploaded yet.</p>
+                        <p class="text-xs text-slate-500">No student result cards match your criteria.</p>
                     </div>
                 @endforelse
             </div>
+
+            <!-- Pagination Controls -->
+            @if($results->hasPages())
+                <div class="pt-8 flex justify-center">
+                    {{ $results->links() }}
+                </div>
+            @endif
         </div>
     </section>
 
