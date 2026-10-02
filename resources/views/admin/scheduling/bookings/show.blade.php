@@ -136,12 +136,22 @@
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Select Alternative Available Slot *</label>
                         <select name="new_slot_id" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
                             <option value="">-- Choose New Date &amp; Slot --</option>
-                            @foreach($availableSlots as $altSlot)
+                            @forelse($availableSlots as $altSlot)
                                 <option value="{{ $altSlot->id }}">
-                                    {{ $altSlot->slot_date->format('M d, Y') }} — {{ $altSlot->start_time }} (Capacity: {{ $altSlot->appointments_count }}/{{ $altSlot->capacity }})
+                                    [{{ $altSlot->type === 'counseling' ? 'Campus Counseling' : 'IETS Test' }}] {{ $altSlot->slot_date->format('D, M d, Y') }} — {{ $altSlot->start_time }} ({{ $altSlot->capacity - $altSlot->appointments_count }} seats left of {{ $altSlot->capacity }})
                                 </option>
-                            @endforeach
+                            @empty
+                                <option value="" disabled>No active future slots with available seats found</option>
+                            @endforelse
                         </select>
+                        @if($availableSlots->isEmpty())
+                            <p class="text-[11px] text-amber-600 mt-1.5 flex items-center justify-between">
+                                <span>No upcoming active slots with free capacity found.</span>
+                                <a href="{{ route('admin.scheduling.slots') }}" class="font-bold underline text-brand-600 hover:text-brand-800">
+                                    + Create New Slot
+                                </a>
+                            </p>
+                        @endif
                     </div>
 
                     <div>

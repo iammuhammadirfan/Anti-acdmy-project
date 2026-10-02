@@ -107,7 +107,7 @@
             </div>
         </div>
 
-        <form action="{{ route('appointments.book') }}" method="POST" class="space-y-8">
+        <form action="{{ route('appointments.book') }}" method="POST" @submit="isSubmitting = true" class="space-y-8">
             @csrf
 
             <!-- Hidden input for appointment type -->
@@ -334,7 +334,7 @@
             </div>
 
             <!-- Step 3: Student Details & Test Specifications -->
-            <div class="space-y-5 pt-4 border-t border-slate-100" x-show="selectedSlot">
+            <div id="booking-form-step3" class="space-y-5 pt-4 border-t border-slate-100 scroll-mt-6" x-show="selectedSlot">
                 <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
                     <span class="w-6 h-6 rounded-full bg-brand-600 text-white font-bold text-xs flex items-center justify-center">3</span>
                     <h3 class="font-bold text-slate-900 text-base"
@@ -442,21 +442,58 @@
                         <div>Selected: <strong class="text-slate-900" x-text="selectedDate + ' at ' + selectedSlot"></strong></div>
                         <div class="text-[11px] text-brand-600 font-semibold" 
                              x-text="appointmentType === 'iets_test' ? 'Enrollment number will be generated automatically' : 'Instant confirmation via email'"></div>
-                    </div>
-
-                    <button type="submit" 
-                            :class="appointmentType === 'iets_test' 
-                                ? 'bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 shadow-emerald-500/25' 
-                                : 'bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 shadow-brand-500/25'"
-                            class="w-full sm:w-auto text-white font-extrabold text-sm px-8 py-3.5 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                        <i data-lucide="check-circle" class="w-4 h-4"></i>
-                        <span x-text="appointmentType === 'iets_test' ? 'Register for IETS Mock Test' : 'Confirm Counseling Booking'">
-                            Confirm Appointment Booking
-                        </span>
+                                  <button type="submit" 
+                            :disabled="!selectedSlot || isSubmitting"
+                            :class="[
+                                isSubmitting ? 'opacity-80 cursor-wait' : '',
+                                appointmentType === 'iets_test' 
+                                    ? 'bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 shadow-emerald-500/25' 
+                                    : 'bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 shadow-brand-500/25'
+                            ]"
+                            class="w-full sm:w-auto text-white font-extrabold text-sm px-8 py-3.5 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2.5">
+                        <template x-if="isSubmitting">
+                            <span class="flex items-center gap-2">
+                                <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>Securing Booking &amp; Sending Details...</span>
+                            </span>
+                        </template>
+                        <template x-if="!isSubmitting">
+                            <span class="flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                <span x-text="appointmentType === 'iets_test' ? 'Register for IETS Mock Test' : 'Confirm Counseling Booking'">
+                                    Confirm Appointment Booking
+                                </span>
+                            </span>
+                        </template>
                     </button>
                 </div>
             </div>
         </form>
+
+        <!-- Loading Animation Overlay when Form is Submitting -->
+        <div x-show="isSubmitting" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100">
+            <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center space-y-4 shadow-2xl border border-slate-100">
+                <div class="relative w-16 h-16 mx-auto">
+                    <div class="absolute inset-0 rounded-full border-4 border-slate-100"></div>
+                    <div class="absolute inset-0 rounded-full border-4 border-brand-600 border-t-transparent animate-spin"></div>
+                    <div class="absolute inset-2 rounded-full border-4 border-emerald-500 border-b-transparent animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
+                </div>
+                <div class="space-y-1">
+                    <h4 class="font-black text-slate-900 text-lg">Securing Your Booking</h4>
+                    <p class="text-xs text-slate-500">Please wait a moment while we reserve your seat and dispatch your confirmation notifications.</p>
+                </div>
+                <div class="flex items-center justify-center gap-1.5 text-[11px] text-brand-600 font-bold uppercase tracking-wider">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand-600 animate-ping"></span>
+                    <span>Processing details...</span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -471,6 +508,7 @@
             selectedSlotId: null,
             availableSlots: [],
             loadingSlots: false,
+            isSubmitting: false,
             init() {
                 this.fetchSlots();
             },
@@ -488,6 +526,12 @@
                 }
                 this.selectedSlot = slot.time;
                 this.selectedSlotId = slot.id || null;
+                this.$nextTick(() => {
+                    const target = document.getElementById('booking-form-step3');
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
             },
             async fetchSlots() {
                 if (!this.selectedDate) return;
