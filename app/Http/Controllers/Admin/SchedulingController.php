@@ -523,15 +523,17 @@ class SchedulingController extends Controller
             }
         } catch (\Throwable $e) {}
 
-        $availableSlots = AppointmentSlot::where('type', $booking->type)
-            ->where('slot_date', '>=', Carbon::today()->toDateString())
-            ->where('is_active', true)
+        $availableSlots = AppointmentSlot::where('is_active', true)
+            ->whereDate('slot_date', '>=', Carbon::today()->toDateString())
             ->withCount(['appointments' => function ($q) {
                 $q->whereNotIn('status', ['cancelled']);
             }])
+            ->orderByRaw("CASE WHEN type = ? THEN 0 ELSE 1 END", [$booking->type ?? ''])
+            ->orderBy('slot_date', 'asc')
+            ->orderBy('start_time', 'asc')
             ->get()
             ->filter(function ($s) use ($booking) {
-                return $s->id !== $booking->slot_id && $s->appointments_count < $s->capacity;
+                return ($booking->slot_id ? $s->id !== $booking->slot_id : true) && $s->appointments_count < $s->capacity;
             });
 
         return view('admin.scheduling.bookings.show', compact('booking', 'availableSlots'));
@@ -606,6 +608,9 @@ class SchedulingController extends Controller
         $booking->slot_id = $newSlot->id;
         $booking->appointment_date = $newSlot->slot_date;
         $booking->time_slot = $newSlot->start_time;
+        if (!empty($newSlot->type)) {
+            $booking->type = $newSlot->type;
+        }
         if ($request->filled('admin_notes')) {
             $booking->admin_notes = ($booking->admin_notes ? $booking->admin_notes . "\n" : '') . "Rescheduled from {$oldDate} {$oldTime}: " . $request->admin_notes;
         }
