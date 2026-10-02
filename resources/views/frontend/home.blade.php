@@ -273,6 +273,50 @@
                 </div>
             </div>
 
+<style>
+    /* Prevent raw unformatted cards from blowing up before Swiper JS initializes */
+    .home-results-swiper:not(.swiper-initialized) {
+        display: none !important;
+    }
+</style>
+
+            <!-- Animated Loader & Skeleton Cards (Displays while Swiper is initializing) -->
+            <div id="home-results-loader" class="space-y-6">
+                <div class="py-4 flex flex-col items-center justify-center space-y-3">
+                    <div class="relative w-12 h-12">
+                        <div class="absolute inset-0 rounded-full border-4 border-slate-800"></div>
+                        <div class="absolute inset-0 rounded-full border-4 border-brand-500 border-t-transparent animate-spin"></div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs sm:text-sm font-bold text-white tracking-wide flex items-center justify-center gap-1.5">
+                            <span>Loading Verified Scorecards</span>
+                            <span class="flex gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-brand-400 animate-bounce"></span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-brand-400 animate-bounce [animation-delay:0.2s]"></span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-brand-400 animate-bounce [animation-delay:0.4s]"></span>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-pulse">
+                    @for($i = 0; $i < 4; $i++)
+                        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="h-5 w-16 bg-slate-800 rounded-full"></div>
+                                <div class="h-5 w-12 bg-slate-800 rounded-lg"></div>
+                            </div>
+                            <div class="w-full aspect-[4/5] bg-slate-800/60 rounded-xl flex items-center justify-center">
+                                <i data-lucide="image" class="w-8 h-8 text-slate-700"></i>
+                            </div>
+                            <div class="flex items-center justify-between pt-1">
+                                <div class="h-4 w-28 bg-slate-800 rounded"></div>
+                                <div class="h-4 w-10 bg-slate-800 rounded"></div>
+                            </div>
+                        </div>
+                    @endfor
+                </div>
+            </div>
+
             <!-- Swiper Slider Container -->
             <div class="swiper home-results-swiper !overflow-visible">
                 <div class="swiper-wrapper">
@@ -355,8 +399,8 @@
 
             <!-- Bottom CTA Link -->
             <div class="flex items-center justify-center pt-2">
-                <a href="{{ route('iets.results') }}" class="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold border border-slate-700 hover:border-slate-600 transition flex items-center gap-2 shadow-lg">
-                    <span>Explore Full Hall of Fame Gallery (IELTS, PTE & TOEFL)</span>
+                <a href="{{ route('iets.results') }}" class="px-8 py-3.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-brand-600/30 transition transform hover:-translate-y-0.5 flex items-center gap-2.5">
+                    <span>See More Results (View Full Hall of Fame)</span>
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
             </div>
@@ -695,7 +739,21 @@
                         spaceBetween: 28,
                     },
                 },
+                on: {
+                    init: function () {
+                        const loader = document.getElementById('home-results-loader');
+                        if (loader) {
+                            loader.style.display = 'none';
+                        }
+                    }
+                }
             });
+
+            // Ensure loader is hidden once Swiper is created
+            const loader = document.getElementById('home-results-loader');
+            if (loader) {
+                loader.style.display = 'none';
+            }
         }
     });
 </script>

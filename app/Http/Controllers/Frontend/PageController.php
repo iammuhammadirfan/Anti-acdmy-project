@@ -94,13 +94,7 @@ class PageController extends Controller
             });
         }
 
-        $results = $query->paginate(24)->withQueryString();
-        $allCards = IetsResult::latest('test_date')->latest('id')->get();
-
-        $featuredSlider = IetsResult::featured()->latest('test_date')->latest('id')->limit(12)->get();
-        if ($featuredSlider->isEmpty()) {
-            $featuredSlider = $allCards->take(12);
-        }
+        $results = $query->paginate(12)->withQueryString();
 
         $ieltsCount = IetsResult::where('test_type', 'LIKE', '%IELTS%')->count();
         $pteCount = IetsResult::where('test_type', 'LIKE', '%PTE%')->count();
@@ -111,12 +105,10 @@ class PageController extends Controller
 
         return view('frontend.iets_results', compact(
             'results',
-            'allCards',
             'band',
             'type',
             'search',
             'seo',
-            'featuredSlider',
             'ieltsCount',
             'pteCount',
             'toeflCount',
