@@ -5,14 +5,29 @@ namespace App\Services;
 use App\Models\Media;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class MediaUploadService
 {
+    private function assertSafeUploadFilename(UploadedFile $file): void
+    {
+        $name = rtrim($file->getClientOriginalName(), " .");
+
+        // Check every suffix so a second extension cannot hide a script type.
+        if (preg_match('/(?:^|\.)(?:php[0-9]*|phtml|pht|phar|cgi|pl|py|rb|sh|bash|htaccess|htpasswd)(?:\.|$)/i', $name)) {
+            throw ValidationException::withMessages([
+                'file' => 'Executable scripts and server configuration files cannot be uploaded.',
+            ]);
+        }
+    }
+
     /**
      * Upload an uploaded file into storage/app/public and create Media entry
      */
     public function upload(UploadedFile $file, string $folder = 'uploads', ?string $altText = null): Media
     {
+        $this->assertSafeUploadFilename($file);
+
         $mime = $file->getMimeType();
         $type = 'document';
         if (str_starts_with($mime, 'image/')) {
@@ -61,6 +76,8 @@ class MediaUploadService
      */
     public function uploadStandardResultCard(UploadedFile $file, string $folder = 'results/cards', ?string $altText = null, int $targetW = 800, int $targetH = 1000): Media
     {
+        $this->assertSafeUploadFilename($file);
+
         $origName = $file->getClientOriginalName();
         $ext = strtolower($file->getClientOriginalExtension());
         $baseName = Str::slug(pathinfo($origName, PATHINFO_FILENAME)) . '-' . time();
@@ -116,7 +133,7 @@ class MediaUploadService
 
                     imagecopyresampled($dstImg, $srcImg, 0, 0, $cropX, $cropY, $targetW, $targetH, $cropW, $cropH);
                     imagejpeg($dstImg, $destFullPath, 92);
-
+                    @chmod($destFullPath, 0644);
                     imagedestroy($srcImg);
                     imagedestroy($dstImg);
 
@@ -138,6 +155,7 @@ class MediaUploadService
             @mkdir($publicDir, 0755, true);
         }
         @copy($destFullPath, $publicStorageCopy);
+        @chmod($publicStorageCopy, 0644);
 
         $fileSize = file_exists($destFullPath) ? filesize($destFullPath) : $file->getSize();
 
