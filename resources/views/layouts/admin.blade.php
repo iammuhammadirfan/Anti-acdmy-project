@@ -121,6 +121,7 @@
                     <span>Dashboard</span>
                 </a>
 
+                @if(auth()->user()->canAccessAnySection(['teachers', 'iets', 'iets_results', 'classrooms', 'gallery']))
                 <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Academics &amp; IETS</div>
 
                 @if(auth()->user()->canAccessSection('teachers'))
@@ -162,7 +163,9 @@
                     <span>Campus Gallery</span>
                 </a>
                 @endif
+                @endif
 
+                @if(auth()->user()->canAccessAnySection(['appointments', 'scheduling_iets', 'scheduling_counseling', 'calendar', 'contact']))
                 <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Scheduling &amp; Admissions</div>
 
                 @if(auth()->user()->canAccessAnySection(['appointments', 'scheduling_iets', 'scheduling_counseling', 'calendar']))
@@ -177,11 +180,13 @@
                     </button>
 
                     <div x-show="open" x-cloak class="pl-4 pr-1 py-1 space-y-1 text-xs">
+                        @if(auth()->user()->canAccessAnySection(['scheduling_iets', 'scheduling_counseling']))
                         <a href="{{ route('admin.scheduling.dashboard') }}" 
                            class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.dashboard') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
                             <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
                             <span>Scheduling Dashboard</span>
                         </a>
+                        @endif
 
                         @if(auth()->user()->canAccessSection('calendar'))
                         <a href="{{ route('admin.scheduling.calendar') }}" 
@@ -207,7 +212,7 @@
                         </a>
                         @endif
 
-                        @if(auth()->user()->canAccessAnySection(['scheduling_iets', 'scheduling_counseling', 'appointments']))
+                        @if(auth()->user()->canAccessAnySection(['scheduling_iets', 'scheduling_counseling']))
                         <a href="{{ route('admin.scheduling.slots') }}" 
                            class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.slots') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
                             <i data-lucide="clock" class="w-3.5 h-3.5"></i>
@@ -223,7 +228,7 @@
                         </a>
                         @endif
 
-                        @if(auth()->user()->canAccessAnySection(['appointments', 'students']))
+                        @if(auth()->user()->canAccessSection('students'))
                         <a href="{{ route('admin.scheduling.students') }}" 
                            class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.students') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
                             <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
@@ -259,7 +264,9 @@
                     </div>
                 </a>
                 @endif
+                @endif
 
+                @if(auth()->user()->canAccessAnySection(['sliders', 'homepage', 'about', 'students', 'videos', 'blog', 'faq', 'media']))
                 <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Content Management</div>
 
                 @if(auth()->user()->canAccessSection('sliders'))
@@ -330,7 +337,9 @@
                     <span>Media Library</span>
                 </a>
                 @endif
+                @endif
 
+                @if(auth()->user()->canAccessAnySection(['seo', 'ai', 'users', 'settings']) || auth()->user()->isSuperAdmin())
                 <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">System &amp; Intelligence</div>
 
                 @if(auth()->user()->canAccessSection('seo'))
@@ -388,6 +397,7 @@
                     <i data-lucide="activity" class="w-4 h-4"></i>
                     <span>Activity Audit Logs</span>
                 </a>
+                @endif
                 @endif
             </nav>
         </aside>

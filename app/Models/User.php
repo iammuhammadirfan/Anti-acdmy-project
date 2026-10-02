@@ -76,43 +76,21 @@ class User extends Authenticatable
             return true;
         }
 
-        // First check custom section permissions assigned directly to this user
-        $sectionPerm = $this->sectionPermissions()->where('module', $module)->first();
-        if ($sectionPerm) {
-            $field = 'can_' . $action;
-            if (isset($sectionPerm->{$field})) {
-                return (bool) $sectionPerm->{$field};
-            }
-        }
-
-        // Backward compatibility for scheduling sub-modules
-        if (in_array($module, ['scheduling_iets', 'scheduling_counseling'])) {
-            $parentPerm = $this->sectionPermissions()->where('module', 'appointments')->first();
-            if ($parentPerm) {
+        // If user has custom section permissions defined, they are STRICT.
+        // Unchecked modules in custom permissions MUST NOT fall back to roles.
+        if ($this->sectionPermissions()->exists()) {
+            $sectionPerm = $this->sectionPermissions()->where('module', $module)->first();
+            if ($sectionPerm) {
                 $field = 'can_' . $action;
-                if (isset($parentPerm->{$field})) {
-                    return (bool) $parentPerm->{$field};
-                }
+                return !empty($sectionPerm->{$field});
             }
+            return false;
         }
 
-        // Fallback to role permissions
-        $hasRolePerm = $this->roles()->whereHas('permissions', function ($q) use ($module, $action) {
+        // Fallback to role permissions ONLY if user has NO custom section permissions at all
+        return $this->roles()->whereHas('permissions', function ($q) use ($module, $action) {
             $q->where('module', $module)->where('action', $action);
         })->exists();
-
-        if ($hasRolePerm) {
-            return true;
-        }
-
-        // Fallback to role permissions for parent module
-        if (in_array($module, ['scheduling_iets', 'scheduling_counseling'])) {
-            return $this->roles()->whereHas('permissions', function ($q) use ($action) {
-                $q->where('module', 'appointments')->where('action', $action);
-            })->exists();
-        }
-
-        return false;
     }
 
     public function canAccessSection(string $module, string $action = 'view'): bool
