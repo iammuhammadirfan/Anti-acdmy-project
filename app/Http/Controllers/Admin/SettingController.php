@@ -102,6 +102,16 @@ class SettingController extends Controller
 
                 $media = $this->mediaService->upload($request->file('favicon_file'), 'settings', 'Favicon');
                 Setting::set('site_favicon', $media->file_path, 'general');
+
+                // Also sync root public/favicon.ico so crawlers (Google/Bing) fetching /favicon.ico directly get the brand icon
+                try {
+                    $uploadedFullPath = storage_path('app/public/' . $media->file_path);
+                    if (file_exists($uploadedFullPath)) {
+                        @copy($uploadedFullPath, public_path('favicon.ico'));
+                    }
+                } catch (\Throwable $e) {
+                    // ignore
+                }
             } elseif ($request->boolean('remove_favicon')) {
                 $oldFavicon = Setting::get('site_favicon');
                 if (!empty($oldFavicon)) {
