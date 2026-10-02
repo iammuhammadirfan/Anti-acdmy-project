@@ -9,10 +9,7 @@
     @endphp
     <title>@yield('title', 'Admin Dashboard') — {{ $siteName }}</title>
 
-    @if(!empty($siteLogo))
-        <link rel="icon" type="image/png" href="{{ asset('storage/' . $siteLogo) }}">
-        <link rel="apple-touch-icon" href="{{ asset('storage/' . $siteLogo) }}">
-    @endif
+    @include('partials.favicon')
 
     <!-- Google Fonts & Tailwind CDN -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -584,6 +581,20 @@
                             <i data-lucide="alert-triangle" class="w-5 h-5 text-red-600"></i>
                             <span class="font-medium text-sm">{{ session('error') }}</span>
                         </div>
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl text-red-800 shadow-sm space-y-1">
+                        <div class="flex items-center gap-2.5 font-bold text-sm">
+                            <i data-lucide="alert-triangle" class="w-5 h-5 text-red-600"></i>
+                            <span>Please check the following errors:</span>
+                        </div>
+                        <ul class="list-disc list-inside text-xs pl-7 space-y-0.5 text-red-700 font-medium">
+                            @foreach($errors->all() as $err)
+                                <li>{{ $err }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 @endif
 

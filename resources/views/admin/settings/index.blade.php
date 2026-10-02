@@ -59,15 +59,70 @@
                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
             </div>
 
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Academy Logo</label>
-                @if($settings['academy_logo'])
-                    <div class="mb-3 w-32 h-16 rounded-xl border border-slate-200 p-2 flex items-center justify-center bg-slate-50">
-                        <img src="{{ asset('storage/' . $settings['academy_logo']) }}" class="max-h-full">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-1">
+                <!-- Academy Logo -->
+                <div class="bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Academy Logo</label>
+                    @if(!empty($settings['academy_logo']))
+                        <div class="mb-3 w-40 h-16 rounded-xl border border-slate-200 p-2 flex items-center justify-center bg-white shadow-xs">
+                            <img src="{{ asset('storage/' . $settings['academy_logo']) }}" class="max-h-full max-w-full object-contain">
+                        </div>
+                    @endif
+                    <input type="file" name="logo_file" accept="image/*"
+                           class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer">
+                    <p class="text-[11px] text-slate-400 mt-1.5">Appears in header, navbar, and email templates.</p>
+                </div>
+
+                <!-- Site Favicon -->
+                <div class="bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                        Site Favicon
+                        <span class="text-[10px] lowercase font-normal text-slate-400">(browser tab &amp; Google icon)</span>
+                    </label>
+
+                    <div class="flex items-center gap-4 mb-3">
+                        <div class="w-14 h-14 rounded-xl border border-slate-200 p-2 flex items-center justify-center bg-white shadow-xs relative shrink-0">
+                            @if(!empty($settings['site_favicon']))
+                                @php
+                                    $fav = ltrim($settings['site_favicon'], '/\\');
+                                    $favUrl = str_starts_with($fav, 'http') ? $fav : (str_starts_with($fav, 'storage/') || str_starts_with($fav, 'uploads/') ? asset($fav) : asset('storage/' . $fav));
+                                @endphp
+                                <img src="{{ $favUrl }}?v={{ time() }}" alt="Current Favicon" class="w-10 h-10 object-contain">
+                            @else
+                                <img src="{{ asset('favicon.ico') }}" alt="Default Favicon" class="w-8 h-8 object-contain opacity-60">
+                            @endif
+                        </div>
+                        <div class="text-xs">
+                            @if(!empty($settings['site_favicon']))
+                                <span class="inline-flex items-center gap-1 text-emerald-700 font-semibold text-[11px] bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 mb-1">
+                                    <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    Custom Favicon Active
+                                </span>
+                                <div class="text-[11px] text-slate-500 truncate max-w-[200px]" title="{{ $settings['site_favicon'] }}">
+                                    {{ basename($settings['site_favicon']) }}
+                                </div>
+                            @else
+                                <span class="inline-flex items-center text-slate-600 text-[11px] bg-slate-200/70 px-2 py-0.5 rounded-md mb-1 font-medium">
+                                    Default Favicon (favicon.ico)
+                                </span>
+                                <p class="text-[11px] text-slate-400">Upload a custom icon for Google search and browser tabs.</p>
+                            @endif
+                        </div>
                     </div>
-                @endif
-                <input type="file" name="logo_file" accept="image/*"
-                       class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer">
+
+                    <input type="file" name="favicon_file" accept=".png,.ico,.jpg,.jpeg,.webp,.svg,image/png,image/x-icon,image/vnd.microsoft.icon,image/jpeg,image/webp,image/svg+xml"
+                           class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer">
+                    <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
+                        Recommended: Square image <strong class="text-slate-700 font-semibold">(512&times;512 px)</strong>. Formats: <span class="text-slate-700 font-medium">PNG, ICO, JPG, WEBP, SVG</span> (Max 1MB).
+                    </p>
+
+                    @if(!empty($settings['site_favicon']))
+                        <label class="inline-flex items-center gap-2 mt-2.5 text-xs text-rose-600 hover:text-rose-700 cursor-pointer">
+                            <input type="checkbox" name="remove_favicon" value="1" class="rounded border-slate-300 text-rose-600 focus:ring-rose-500">
+                            <span>Revert to default favicon.ico</span>
+                        </label>
+                    @endif
+                </div>
             </div>
 
             <div class="flex justify-end pt-3 border-t border-slate-100">
