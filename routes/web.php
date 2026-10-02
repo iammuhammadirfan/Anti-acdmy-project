@@ -285,10 +285,10 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::delete('/scheduling/slots/{slot}', [SchedulingController::class, 'destroySlot'])->name('admin.scheduling.slot.destroy');
         Route::post('/scheduling/slots/bulk-destroy', [SchedulingController::class, 'bulkDestroySlots'])->name('admin.scheduling.slots.bulk-destroy');
 
-        Route::get('/scheduling/bookings', [SchedulingController::class, 'bookings'])->name('admin.scheduling.bookings');
-        Route::get('/scheduling/counseling', [SchedulingController::class, 'counselingSchedule'])->name('admin.scheduling.counseling');
-        Route::get('/scheduling/iets', [SchedulingController::class, 'ietsSchedule'])->name('admin.scheduling.iets');
-        Route::get('/scheduling/bookings/{booking}', [SchedulingController::class, 'showBooking'])->name('admin.scheduling.booking.show');
+        Route::get('/scheduling/bookings', [SchedulingController::class, 'bookings'])->name('admin.scheduling.bookings')->middleware('module.permission:appointments,view');
+        Route::get('/scheduling/counseling', [SchedulingController::class, 'counselingSchedule'])->name('admin.scheduling.counseling')->middleware('module.permission:scheduling_counseling,view');
+        Route::get('/scheduling/iets', [SchedulingController::class, 'ietsSchedule'])->name('admin.scheduling.iets')->middleware('module.permission:scheduling_iets,view');
+        Route::get('/scheduling/bookings/{booking}', [SchedulingController::class, 'showBooking'])->name('admin.scheduling.booking.show')->middleware('module.permission:appointments,view');
         Route::post('/scheduling/bookings/{booking}/status', [SchedulingController::class, 'updateBookingStatus'])->name('admin.scheduling.booking.status');
         Route::post('/scheduling/bookings/{booking}/reschedule', [SchedulingController::class, 'rescheduleBooking'])->name('admin.scheduling.booking.reschedule');
         Route::delete('/scheduling/bookings/{booking}', [SchedulingController::class, 'destroyBooking'])->name('admin.scheduling.booking.destroy');

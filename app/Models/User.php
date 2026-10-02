@@ -85,14 +85,53 @@ class User extends Authenticatable
             }
         }
 
+        // Backward compatibility for scheduling sub-modules
+        if (in_array($module, ['scheduling_iets', 'scheduling_counseling'])) {
+            $parentPerm = $this->sectionPermissions()->where('module', 'appointments')->first();
+            if ($parentPerm) {
+                $field = 'can_' . $action;
+                if (isset($parentPerm->{$field})) {
+                    return (bool) $parentPerm->{$field};
+                }
+            }
+        }
+
         // Fallback to role permissions
-        return $this->roles()->whereHas('permissions', function ($q) use ($module, $action) {
+        $hasRolePerm = $this->roles()->whereHas('permissions', function ($q) use ($module, $action) {
             $q->where('module', $module)->where('action', $action);
         })->exists();
+
+        if ($hasRolePerm) {
+            return true;
+        }
+
+        // Fallback to role permissions for parent module
+        if (in_array($module, ['scheduling_iets', 'scheduling_counseling'])) {
+            return $this->roles()->whereHas('permissions', function ($q) use ($action) {
+                $q->where('module', 'appointments')->where('action', $action);
+            })->exists();
+        }
+
+        return false;
     }
 
     public function canAccessSection(string $module, string $action = 'view'): bool
     {
         return $this->hasPermission($module, $action);
+    }
+
+    public function canAccessAnySection(array $modules, string $action = 'view'): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        foreach ($modules as $mod) {
+            if ($this->hasPermission($mod, $action)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

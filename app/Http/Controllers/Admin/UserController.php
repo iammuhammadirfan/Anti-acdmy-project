@@ -25,8 +25,10 @@ class UserController extends Controller
         'videos' => 'Videos & Vlogs',
         'blog' => 'Blog & News',
         'faq' => 'FAQs Management',
-        'appointments' => 'Appointment Bookings',
-        'calendar' => 'Calendar & Slots',
+        'appointments' => 'Appointment Bookings (View, Edit, Reschedule, Delete)',
+        'scheduling_iets' => 'IETS Test Slots (View, Create, Edit, Delete)',
+        'scheduling_counseling' => 'Counseling Slots (View, Create, Edit, Delete)',
+        'calendar' => 'Calendar & Date Blocking',
         'contact' => 'Contact Inquiries',
         'media' => 'Media Library',
         'seo' => 'Technical SEO & Sitemaps',
@@ -75,16 +77,34 @@ class UserController extends Controller
 
         // Save dynamic section permissions
         if ($request->has('sections')) {
-            foreach ($request->sections as $module => $actions) {
-                UserSectionPermission::create([
-                    'user_id' => $user->id,
-                    'module' => $module,
-                    'can_view' => isset($actions['view']),
-                    'can_create' => isset($actions['create']),
-                    'can_edit' => isset($actions['edit']),
-                    'can_delete' => isset($actions['delete']),
-                    'can_publish' => isset($actions['publish']),
-                ]);
+            $sections = $request->input('sections', []);
+            $hasAnyCustom = false;
+            foreach ($sections as $acts) {
+                if (!empty($acts)) {
+                    $hasAnyCustom = true;
+                    break;
+                }
+            }
+
+            if ($hasAnyCustom) {
+                foreach (self::$modules as $moduleKey => $label) {
+                    $actions = $sections[$moduleKey] ?? [];
+                    $canCreate = !empty($actions['create']);
+                    $canEdit = !empty($actions['edit']);
+                    $canDelete = !empty($actions['delete']);
+                    $canPublish = !empty($actions['publish']);
+                    $canView = !empty($actions['view']) || $canCreate || $canEdit || $canDelete || $canPublish;
+
+                    UserSectionPermission::create([
+                        'user_id' => $user->id,
+                        'module' => $moduleKey,
+                        'can_view' => $canView,
+                        'can_create' => $canCreate,
+                        'can_edit' => $canEdit,
+                        'can_delete' => $canDelete,
+                        'can_publish' => $canPublish,
+                    ]);
+                }
             }
         }
 
@@ -132,16 +152,34 @@ class UserController extends Controller
         // Sync module section permissions
         $user->sectionPermissions()->delete();
         if ($request->has('sections')) {
-            foreach ($request->sections as $module => $actions) {
-                UserSectionPermission::create([
-                    'user_id' => $user->id,
-                    'module' => $module,
-                    'can_view' => isset($actions['view']),
-                    'can_create' => isset($actions['create']),
-                    'can_edit' => isset($actions['edit']),
-                    'can_delete' => isset($actions['delete']),
-                    'can_publish' => isset($actions['publish']),
-                ]);
+            $sections = $request->input('sections', []);
+            $hasAnyCustom = false;
+            foreach ($sections as $acts) {
+                if (!empty($acts)) {
+                    $hasAnyCustom = true;
+                    break;
+                }
+            }
+
+            if ($hasAnyCustom) {
+                foreach (self::$modules as $moduleKey => $label) {
+                    $actions = $sections[$moduleKey] ?? [];
+                    $canCreate = !empty($actions['create']);
+                    $canEdit = !empty($actions['edit']);
+                    $canDelete = !empty($actions['delete']);
+                    $canPublish = !empty($actions['publish']);
+                    $canView = !empty($actions['view']) || $canCreate || $canEdit || $canDelete || $canPublish;
+
+                    UserSectionPermission::create([
+                        'user_id' => $user->id,
+                        'module' => $moduleKey,
+                        'can_view' => $canView,
+                        'can_create' => $canCreate,
+                        'can_edit' => $canEdit,
+                        'can_delete' => $canDelete,
+                        'can_publish' => $canPublish,
+                    ]);
+                }
             }
         }
 

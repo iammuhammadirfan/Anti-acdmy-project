@@ -169,6 +169,11 @@ class SchedulingController extends Controller
      */
     public function storeSlot(Request $request)
     {
+        $targetModule = $request->type === 'iets_test' ? 'scheduling_iets' : 'scheduling_counseling';
+        if (!auth()->user()->canAccessSection($targetModule, 'create')) {
+            abort(403, "You do not have permission to create {$targetModule}.");
+        }
+
         $request->validate([
             'type' => 'required|in:counseling,iets_test',
             'slot_date' => 'required|date',
@@ -235,6 +240,11 @@ class SchedulingController extends Controller
      */
     public function batchGenerateSlots(Request $request)
     {
+        $targetModule = $request->type === 'iets_test' ? 'scheduling_iets' : 'scheduling_counseling';
+        if (!auth()->user()->canAccessSection($targetModule, 'create')) {
+            abort(403, "You do not have permission to create {$targetModule}.");
+        }
+
         $request->validate([
             'slot_date' => 'required|date',
             'type' => 'required|in:counseling,iets_test',
@@ -297,6 +307,11 @@ class SchedulingController extends Controller
      */
     public function updateSlot(Request $request, AppointmentSlot $slot)
     {
+        $targetModule = $slot->type === 'iets_test' ? 'scheduling_iets' : 'scheduling_counseling';
+        if (!auth()->user()->canAccessSection($targetModule, 'edit')) {
+            abort(403, "You do not have permission to edit {$targetModule}.");
+        }
+
         $request->validate([
             'capacity' => 'required|integer|min:1|max:50',
             'start_time' => 'required|string',
@@ -354,6 +369,11 @@ class SchedulingController extends Controller
      */
     public function toggleSlot(AppointmentSlot $slot)
     {
+        $targetModule = $slot->type === 'iets_test' ? 'scheduling_iets' : 'scheduling_counseling';
+        if (!auth()->user()->canAccessSection($targetModule, 'edit')) {
+            abort(403, "You do not have permission to edit {$targetModule}.");
+        }
+
         $slot->is_active = !$slot->is_active;
         $slot->save();
 
@@ -367,6 +387,11 @@ class SchedulingController extends Controller
      */
     public function destroySlot(AppointmentSlot $slot)
     {
+        $targetModule = $slot->type === 'iets_test' ? 'scheduling_iets' : 'scheduling_counseling';
+        if (!auth()->user()->canAccessSection($targetModule, 'delete')) {
+            abort(403, "You do not have permission to delete {$targetModule}.");
+        }
+
         $activeBookings = $slot->appointments()->whereNotIn('status', ['cancelled'])->count();
         if ($activeBookings > 0) {
             return back()->with('error', "Cannot delete slot: {$activeBookings} active student bookings are currently assigned to it. Please reschedule or cancel the bookings first.");
@@ -383,6 +408,13 @@ class SchedulingController extends Controller
      */
     public function bulkDestroySlots(Request $request)
     {
+        $slotIds = $request->input('slot_ids', []);
+        $sample = AppointmentSlot::whereIn('id', $slotIds)->first();
+        $targetModule = ($sample && $sample->type === 'iets_test') ? 'scheduling_iets' : 'scheduling_counseling';
+        if (!auth()->user()->canAccessSection($targetModule, 'delete')) {
+            abort(403, "You do not have permission to delete {$targetModule}.");
+        }
+
         $request->validate([
             'slot_ids' => 'required|array|min:1',
             'slot_ids.*' => 'integer|exists:appointment_slots,id',
@@ -510,6 +542,10 @@ class SchedulingController extends Controller
      */
     public function updateBookingStatus(Request $request, Appointment $booking)
     {
+        if (!auth()->user()->canAccessSection('appointments', 'edit')) {
+            abort(403, "You do not have permission to edit appointment bookings.");
+        }
+
         $request->validate([
             'status' => 'required|in:pending,confirmed,cancelled,completed,no_show',
             'admin_notes' => 'nullable|string',
@@ -540,6 +576,10 @@ class SchedulingController extends Controller
      */
     public function rescheduleBooking(Request $request, Appointment $booking)
     {
+        if (!auth()->user()->canAccessSection('appointments', 'edit')) {
+            abort(403, "You do not have permission to edit appointment bookings.");
+        }
+
         $request->validate([
             'new_slot_id' => 'required|exists:appointment_slots,id',
             'admin_notes' => 'nullable|string',
@@ -584,6 +624,10 @@ class SchedulingController extends Controller
      */
     public function destroyBooking(Appointment $booking)
     {
+        if (!auth()->user()->canAccessSection('appointments', 'delete')) {
+            abort(403, "You do not have permission to delete appointment bookings.");
+        }
+
         $code = $booking->registration_number ?: $booking->booking_code;
         $name = $booking->name;
 
@@ -599,6 +643,10 @@ class SchedulingController extends Controller
      */
     public function bulkDestroyBookings(Request $request)
     {
+        if (!auth()->user()->canAccessSection('appointments', 'delete')) {
+            abort(403, "You do not have permission to delete appointment bookings.");
+        }
+
         if ($request->boolean('all')) {
             $query = Appointment::query();
             if ($request->filled('type')) $query->where('type', $request->type);

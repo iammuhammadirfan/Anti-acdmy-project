@@ -165,7 +165,7 @@
 
                 <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Scheduling &amp; Admissions</div>
 
-                @if(auth()->user()->canAccessSection('appointments'))
+                @if(auth()->user()->canAccessAnySection(['appointments', 'scheduling_iets', 'scheduling_counseling', 'calendar']))
                 <div x-data="{ open: {{ request()->routeIs('admin.scheduling*') || request()->routeIs('admin.appointments*') ? 'true' : 'false' }} }" class="space-y-1">
                     <button type="button" @click="open = !open" 
                             class="w-full flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.scheduling*') || request()->routeIs('admin.appointments*') ? 'bg-slate-800 text-white font-bold' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
@@ -182,46 +182,70 @@
                             <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
                             <span>Scheduling Dashboard</span>
                         </a>
+
+                        @if(auth()->user()->canAccessSection('calendar'))
                         <a href="{{ route('admin.scheduling.calendar') }}" 
                            class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.calendar') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
                             <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
                             <span>Calendar</span>
                         </a>
+                        @endif
+
+                        @if(auth()->user()->canAccessSection('scheduling_counseling'))
                         <a href="{{ route('admin.scheduling.counseling') }}" 
                            class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.counseling') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
                             <i data-lucide="messages-square" class="w-3.5 h-3.5"></i>
                             <span>Counseling Appointments</span>
                         </a>
+                        @endif
+
+                        @if(auth()->user()->canAccessSection('scheduling_iets'))
                         <a href="{{ route('admin.scheduling.iets') }}" 
                            class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.iets') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
                             <i data-lucide="file-check-2" class="w-3.5 h-3.5"></i>
                             <span>IETS Test Schedule</span>
                         </a>
+                        @endif
+
+                        @if(auth()->user()->canAccessAnySection(['scheduling_iets', 'scheduling_counseling', 'appointments']))
                         <a href="{{ route('admin.scheduling.slots') }}" 
                            class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.slots') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
                             <i data-lucide="clock" class="w-3.5 h-3.5"></i>
                             <span>Slot Management</span>
                         </a>
+                        @endif
+
+                        @if(auth()->user()->canAccessSection('appointments'))
                         <a href="{{ route('admin.scheduling.bookings') }}" 
                            class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.bookings') && !request()->routeIs('admin.scheduling.counseling') && !request()->routeIs('admin.scheduling.iets') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
                             <i data-lucide="users" class="w-3.5 h-3.5"></i>
                             <span>Bookings</span>
                         </a>
+                        @endif
+
+                        @if(auth()->user()->canAccessAnySection(['appointments', 'students']))
                         <a href="{{ route('admin.scheduling.students') }}" 
                            class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.students') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
                             <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
                             <span>Students</span>
                         </a>
+                        @endif
+
+                        @if(auth()->user()->canAccessSection('appointments', 'edit'))
                         <a href="{{ route('admin.scheduling.emails') }}" 
                            class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.email*') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
                             <i data-lucide="mail" class="w-3.5 h-3.5"></i>
                             <span>Email Notifications</span>
                         </a>
+                        @endif
+
+                        @if(auth()->user()->canAccessSection('settings') || auth()->user()->canAccessSection('appointments', 'edit'))
                         <a href="{{ route('admin.scheduling.settings') }}" 
                            class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.settings') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
                             <i data-lucide="settings" class="w-3.5 h-3.5"></i>
                             <span>Settings</span>
                         </a>
+                        @endif
                     </div>
                 </div>
                 @endif

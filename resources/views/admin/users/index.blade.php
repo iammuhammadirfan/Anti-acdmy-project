@@ -10,11 +10,13 @@
             <h2 class="text-lg font-bold text-slate-900">System Users &amp; Staff</h2>
             <p class="text-xs text-slate-500">Manage administrator accounts, roles, and granular module section permissions.</p>
         </div>
+        @if(auth()->user()->hasPermission('users', 'create'))
         <a href="{{ route('admin.users.create') }}" 
            class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md shadow-brand-500/20 transition">
             <i data-lucide="user-plus" class="w-4 h-4"></i>
             <span>Add New Staff User</span>
         </a>
+        @endif
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
@@ -64,6 +66,7 @@
                                 @endif
                             </td>
                             <td class="py-3.5 px-4">
+                                @if(auth()->user()->hasPermission('users', 'edit'))
                                 <form action="{{ route('admin.users.toggle', $user) }}" method="POST" class="inline">
                                     @csrf
                                     <button type="submit" 
@@ -72,8 +75,14 @@
                                         {{ $user->is_active ? 'Active' : 'Disabled' }}
                                     </button>
                                 </form>
+                                @else
+                                <span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase {{ $user->is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $user->is_active ? 'Active' : 'Disabled' }}
+                                </span>
+                                @endif
                             </td>
                             <td class="py-3.5 px-5 text-right whitespace-nowrap">
+                                @if(auth()->user()->hasPermission('users', 'edit'))
                                 <button type="button" 
                                         onclick="openResetModal('{{ $user->id }}', '{{ addslashes($user->name) }}', '{{ $user->email }}')" 
                                         class="p-1.5 text-slate-500 hover:text-amber-600 inline-block transition" 
@@ -83,7 +92,8 @@
                                 <a href="{{ route('admin.users.edit', $user) }}" class="p-1.5 text-slate-500 hover:text-brand-600 inline-block transition" title="Edit User">
                                     <i data-lucide="edit-3" class="w-4 h-4"></i>
                                 </a>
-                                @if($user->id !== auth()->id())
+                                @endif
+                                @if($user->id !== auth()->id() && auth()->user()->hasPermission('users', 'delete'))
                                     <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this staff user?');">
                                         @csrf
                                         @method('DELETE')

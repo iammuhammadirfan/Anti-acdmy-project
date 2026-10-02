@@ -40,6 +40,7 @@
             <p class="text-xs text-slate-500">Configure appointment dates, times, and maximum student capacities (default 15 for IETS).</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
+            @if(auth()->user()->canAccessAnySection(['scheduling_iets', 'scheduling_counseling', 'appointments'], 'create'))
             <button type="button" @click="createModal = true" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
                 <i data-lucide="plus" class="w-4 h-4"></i>
                 <span>Add Single Slot</span>
@@ -48,6 +49,7 @@
                 <i data-lucide="calendar-plus" class="w-4 h-4"></i>
                 <span>Batch Generate Day</span>
             </button>
+            @endif
         </div>
     </div>
 
@@ -83,6 +85,7 @@
     </div>
 
     <!-- Bulk Delete Action Bar (appears when 1 or more slots are selected) -->
+    @if(auth()->user()->canAccessAnySection(['scheduling_iets', 'scheduling_counseling', 'appointments'], 'delete'))
     <div x-show="selectedSlots.length > 0" x-cloak 
          class="bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-4 transition-all">
         <div class="flex items-center gap-3">
@@ -119,6 +122,7 @@
             </form>
         </div>
     </div>
+    @endif
 
     <!-- Slots Table -->
     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
@@ -213,6 +217,10 @@
                                 @endif
                             </td>
                             <td class="py-3.5 px-4 whitespace-nowrap">
+                                @php
+                                    $slotModule = $slot->type === 'iets_test' ? 'scheduling_iets' : 'scheduling_counseling';
+                                @endphp
+                                @if(auth()->user()->canAccessSection($slotModule, 'edit'))
                                 <form action="{{ route('admin.scheduling.slot.toggle', $slot) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase transition
@@ -220,15 +228,23 @@
                                         {{ $slot->is_active ? 'Active' : 'Disabled' }}
                                     </button>
                                 </form>
+                                @else
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase {{ $slot->is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500' }}">
+                                    {{ $slot->is_active ? 'Active' : 'Disabled' }}
+                                </span>
+                                @endif
                             </td>
                             <td class="py-3.5 px-4 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-1.5">
+                                    @if(auth()->user()->canAccessSection($slotModule, 'edit'))
                                     <button type="button" 
                                             @click="editSlotData = {{ json_encode($slot) }}; editModal = true"
                                             class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition"
                                             title="Edit Slot Capacity &amp; Time">
                                         <i data-lucide="edit" class="w-3.5 h-3.5"></i>
                                     </button>
+                                    @endif
+                                    @if(auth()->user()->canAccessSection($slotModule, 'delete'))
                                     <form action="{{ route('admin.scheduling.slot.destroy', $slot) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this slot?');">
                                         @csrf
                                         @method('DELETE')
@@ -236,6 +252,7 @@
                                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

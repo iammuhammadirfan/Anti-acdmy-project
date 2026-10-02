@@ -9,6 +9,7 @@
         <a href="{{ route('admin.scheduling.bookings') }}" class="text-xs text-slate-500 hover:text-brand-600 flex items-center gap-1 font-semibold">
             <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to All Bookings
         </a>
+        @if(auth()->user()->hasPermission('appointments', 'delete'))
         <form action="{{ route('admin.scheduling.booking.destroy', $booking) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this booking for {{ addslashes($booking->name) }} ({{ $booking->registration_number ?: $booking->booking_code }})?');">
             @csrf
             @method('DELETE')
@@ -17,6 +18,7 @@
                 <span>Delete Booking</span>
             </button>
         </form>
+        @endif
     </div>
 
     <!-- Main Grid -->
@@ -118,6 +120,7 @@
             </div>
 
             <!-- Reschedule Section -->
+            @if(auth()->user()->hasPermission('appointments', 'edit'))
             <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                     <div>
@@ -153,11 +156,13 @@
                     </button>
                 </form>
             </div>
+            @endif
         </div>
 
         <!-- Status Management Column (1 col) -->
         <div class="space-y-6">
             <!-- Update Status Box -->
+            @if(auth()->user()->hasPermission('appointments', 'edit'))
             <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
                 <h4 class="font-bold text-slate-900 text-sm">Update Booking Status</h4>
                 <p class="text-xs text-slate-500">
@@ -188,6 +193,7 @@
                     </button>
                 </form>
             </div>
+            @endif
 
             <!-- Booking Meta Card -->
             <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 text-xs text-slate-500 space-y-2.5">

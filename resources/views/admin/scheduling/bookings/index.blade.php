@@ -32,7 +32,7 @@
             <p class="text-xs text-slate-500">Track registrations with unique enrollment numbers, manage statuses, and delete or reschedule slots.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-            @if($bookings->total() > 0)
+            @if($bookings->total() > 0 && auth()->user()->hasPermission('appointments', 'delete'))
                 <form action="{{ route('admin.scheduling.bookings.bulk-destroy') }}" method="POST" onsubmit="return confirm('DANGER: Are you sure you want to permanently delete ALL {{ $bookings->total() }} bookings matching current filter? This action CANNOT be undone!');" class="inline">
                     @csrf
                     <input type="hidden" name="all" value="1">
@@ -50,10 +50,12 @@
                 <i data-lucide="download" class="w-4 h-4"></i>
                 <span>Export CSV</span>
             </a>
+            @if(auth()->user()->canAccessAnySection(['scheduling_iets', 'scheduling_counseling', 'appointments']))
             <a href="{{ route('admin.scheduling.slots') }}" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
                 <i data-lucide="calendar" class="w-4 h-4"></i>
                 <span>Manage Slots</span>
             </a>
+            @endif
         </div>
     </div>
 
@@ -217,8 +219,9 @@
                             <td class="py-3.5 px-4 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-1.5">
                                     <a href="{{ route('admin.scheduling.booking.show', $b) }}" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-xs font-bold transition">
-                                        Manage &rarr;
+                                        {{ auth()->user()->hasPermission('appointments', 'edit') ? 'Manage →' : 'View →' }}
                                     </a>
+                                    @if(auth()->user()->hasPermission('appointments', 'delete'))
                                     <form action="{{ route('admin.scheduling.booking.destroy', $b) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete booking for {{ addslashes($b->name) }} ({{ $b->registration_number ?: $b->booking_code }})?');" class="inline">
                                         @csrf
                                         @method('DELETE')
@@ -226,6 +229,7 @@
                                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
