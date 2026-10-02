@@ -45,16 +45,27 @@
                 </div>
             </div>
 
-            <!-- Role Checkboxes -->
+            <!-- Role Toggles (ON / OFF switches) -->
             <div class="pt-4 border-t border-slate-100">
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">Assign Roles</label>
-                <div class="flex flex-wrap gap-4">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Assign Roles</label>
+                        <p class="text-[11px] text-slate-500">Toggle roles ON or OFF to grant or revoke system roles.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     @foreach($roles as $role)
-                        <label class="flex items-center gap-2 cursor-pointer bg-slate-50 px-3.5 py-2 rounded-xl border border-slate-200 text-sm">
-                            <input type="checkbox" name="roles[]" value="{{ $role->id }}" 
-                                   {{ in_array($role->id, $userRoleIds) ? 'checked' : '' }}
-                                   class="rounded text-brand-600 focus:ring-brand-500">
-                            <span class="font-semibold text-slate-800">{{ $role->name }}</span>
+                        @php
+                            $isAssigned = in_array($role->id, $userRoleIds);
+                        @endphp
+                        <label class="flex items-center justify-between p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300 transition-all cursor-pointer shadow-xs select-none">
+                            <span class="font-semibold text-sm text-slate-800 pr-2">{{ $role->name }}</span>
+                            <div class="relative inline-flex items-center shrink-0">
+                                <input type="checkbox" name="roles[]" value="{{ $role->id }}" 
+                                       {{ $isAssigned ? 'checked' : '' }}
+                                       class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                            </div>
                         </label>
                     @endforeach
                 </div>
