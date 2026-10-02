@@ -287,6 +287,14 @@ class NotificationService
             $fromName = Setting::get('mail_from_name', Setting::get('academy_name', config('mail.from.name')));
             $currentYear = date('Y');
 
+            $contactBits = array_filter([
+                Setting::get('contact_address'),
+                Setting::get('contact_phone'),
+                Setting::get('contact_email'),
+                config('app.url'),
+            ]);
+            $contactLine = e(implode(' | ', $contactBits));
+
             $logoHtml = '';
             $academyLogo = Setting::get('academy_logo');
             if (!empty($academyLogo)) {
@@ -309,7 +317,8 @@ class NotificationService
             {$htmlBody}
         </div>
         <div style="background: #f8fafc; padding: 16px; text-align: center; color: #94a3b8; font-size: 11px; border-top: 1px solid #e2e8f0;">
-            &copy; {$currentYear} {$appName}. All rights reserved. &bull; This is an automated notification.
+            {$contactLine}<br>
+            &copy; {$currentYear} {$appName}. All rights reserved.
         </div>
     </div>
 </body>
@@ -320,8 +329,11 @@ HTML;
                 if (!empty($fromAddress)) {
                     $mail->from($fromAddress, $fromName);
                 }
+                $finalSubject = str_contains(strtolower($subject), strtolower($appName))
+                    ? $subject
+                    : "{$subject} - {$appName}";
                 $mail->to($recipientEmail, $recipientName)
-                     ->subject("{$subject} - {$appName}");
+                     ->subject($finalSubject);
             });
         } catch (\Exception $e) {
             Log::warning("HTML email to {$recipientEmail} failed: " . $e->getMessage());
