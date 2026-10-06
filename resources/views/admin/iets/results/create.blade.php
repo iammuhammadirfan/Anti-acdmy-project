@@ -60,9 +60,10 @@
 
                 <div>
                     <label class="block text-xs uppercase font-bold text-slate-700 mb-2">Overall Score / Band *</label>
-                    <input type="text" name="overall_score" value="{{ old('overall_score') }}" required placeholder="e.g. Band 8.0 or 79/90" 
+                    <input type="text" name="overall_score" value="{{ old('overall_score', old('overall_band')) }}" required placeholder="e.g. Band 8.0 or 79/90" 
                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-brand-500">
                     @error('overall_score') <p class="text-rose-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    @error('overall_band') <p class="text-rose-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>

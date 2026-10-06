@@ -48,12 +48,21 @@ class IetsResultController extends Controller
     {
         $request->validate([
             'student_name' => 'required|string|max:191',
-            'test_type' => 'required|string|in:IELTS,PTE,TOEFL',
-            'overall_band' => 'required|string|max:50',
+            'test_type' => 'required|string|max:100',
+            'overall_band' => 'required_without:overall_score|nullable|string|max:50',
+            'overall_score' => 'required_without:overall_band|nullable|string|max:50',
             'result_image_file' => 'required|image|max:10240',
             'test_date' => 'nullable|date',
             'description' => 'nullable|string|max:500',
             'is_featured' => 'nullable',
+            'score_listening' => 'nullable|numeric',
+            'score_reading' => 'nullable|numeric',
+            'score_writing' => 'nullable|numeric',
+            'score_speaking' => 'nullable|numeric',
+            'listening_score' => 'nullable|numeric',
+            'reading_score' => 'nullable|numeric',
+            'writing_score' => 'nullable|numeric',
+            'speaking_score' => 'nullable|numeric',
         ]);
 
         $cardImg = null;
@@ -66,10 +75,16 @@ class IetsResultController extends Controller
             $cardImg = $media->file_path;
         }
 
+        $overallBand = $request->overall_band ?: $request->overall_score;
+
         $result = IetsResult::create([
             'student_name' => $request->student_name,
             'test_type' => $request->test_type,
-            'overall_band' => $request->overall_band,
+            'overall_band' => $overallBand,
+            'listening_score' => $request->score_listening ?: $request->listening_score,
+            'reading_score' => $request->score_reading ?: $request->reading_score,
+            'writing_score' => $request->score_writing ?: $request->writing_score,
+            'speaking_score' => $request->score_speaking ?: $request->speaking_score,
             'result_image' => $cardImg,
             'student_image' => $cardImg, // backward compatibility
             'certificate_image' => $cardImg,
@@ -92,12 +107,21 @@ class IetsResultController extends Controller
     {
         $request->validate([
             'student_name' => 'required|string|max:191',
-            'test_type' => 'required|string|in:IELTS,PTE,TOEFL',
-            'overall_band' => 'required|string|max:50',
+            'test_type' => 'required|string|max:100',
+            'overall_band' => 'required_without:overall_score|nullable|string|max:50',
+            'overall_score' => 'required_without:overall_band|nullable|string|max:50',
             'result_image_file' => 'nullable|image|max:10240',
             'test_date' => 'nullable|date',
             'description' => 'nullable|string|max:500',
             'is_featured' => 'nullable',
+            'score_listening' => 'nullable|numeric',
+            'score_reading' => 'nullable|numeric',
+            'score_writing' => 'nullable|numeric',
+            'score_speaking' => 'nullable|numeric',
+            'listening_score' => 'nullable|numeric',
+            'reading_score' => 'nullable|numeric',
+            'writing_score' => 'nullable|numeric',
+            'speaking_score' => 'nullable|numeric',
         ]);
 
         if ($request->hasFile('result_image_file')) {
@@ -111,9 +135,15 @@ class IetsResultController extends Controller
             $result->certificate_image = $media->file_path;
         }
 
+        $overallBand = $request->overall_band ?: $request->overall_score;
+
         $result->student_name = $request->student_name;
         $result->test_type = $request->test_type;
-        $result->overall_band = $request->overall_band;
+        $result->overall_band = $overallBand;
+        $result->listening_score = $request->score_listening ?: $request->listening_score;
+        $result->reading_score = $request->score_reading ?: $request->reading_score;
+        $result->writing_score = $request->score_writing ?: $request->writing_score;
+        $result->speaking_score = $request->score_speaking ?: $request->speaking_score;
         $result->test_date = $request->test_date ?: $result->test_date;
         $result->description = $request->description;
         $result->is_featured = $request->boolean('is_featured', false);
