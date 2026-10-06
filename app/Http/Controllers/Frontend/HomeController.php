@@ -9,6 +9,7 @@ use App\Models\Faq;
 use App\Models\IetsProgram;
 use App\Models\IetsResult;
 use App\Models\PageSection;
+use App\Models\Review;
 use App\Models\SeoMeta;
 use App\Models\Slider;
 use App\Models\Statistic;
@@ -36,6 +37,7 @@ class HomeController extends Controller
         $videos = Video::active()->latest('published_at')->limit(3)->get();
         $blogs = Blog::published()->limit(3)->get();
         $faqs = Faq::active()->limit(6)->get();
+        $reviews = Review::approved()->ordered()->limit(10)->get();
 
         $seo = SeoMeta::getForPage('home');
         $orgSchema = $geoService->getOrganizationSchema();
@@ -55,6 +57,7 @@ class HomeController extends Controller
             'videos',
             'blogs',
             'faqs',
+            'reviews',
             'seo',
             'orgSchema',
             'faqSchema'

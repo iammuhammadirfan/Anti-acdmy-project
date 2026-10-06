@@ -50,7 +50,7 @@ class NotificationService
                 $password = Setting::get('smtp_password');
                 $encryption = Setting::get('smtp_encryption', 'tls');
                 $fromAddress = Setting::get('mail_from_address', config('mail.from.address'));
-                $fromName = Setting::get('mail_from_name', Setting::get('academy_name', config('mail.from.name')));
+                $fromName = Setting::get('mail_from_name') ?: Setting::get('academy_name', 'Prime Iets College');
 
                 config([
                     'mail.default' => 'smtp',
@@ -74,7 +74,7 @@ class NotificationService
                 }
             } else {
                 $fromAddress = Setting::get('mail_from_address');
-                $fromName = Setting::get('mail_from_name');
+                $fromName = Setting::get('mail_from_name') ?: Setting::get('academy_name', 'Prime Iets College');
                 if (!empty($fromAddress)) {
                     config(['mail.from.address' => $fromAddress]);
                 }

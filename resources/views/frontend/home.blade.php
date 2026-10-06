@@ -659,7 +659,95 @@
         </div>
     </section>
 
-    <!-- 9. FAQ Section -->
+    <!-- 9. Student Reviews & Testimonials Section (Interactive Slider) -->
+    @if(isset($reviews) && $reviews->isNotEmpty())
+    <section class="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 py-20 text-white relative overflow-hidden">
+        <div class="absolute -top-32 -right-32 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative z-10">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full">
+                        <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+                        <span>Student Testimonials & Reviews</span>
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-3">What Our Students Say</h2>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl">
+                        Real experiences and feedback from students who mastered IELTS, PTE, and spoken English with our faculty.
+                    </p>
+                </div>
+                
+                <div class="flex items-center gap-3 shrink-0">
+                    <a href="{{ route('contact') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition transform hover:-translate-y-0.5">
+                        <i data-lucide="message-square-plus" class="w-4 h-4"></i>
+                        <span>Write a Review</span>
+                    </a>
+                    <div class="flex items-center gap-1.5 ml-2">
+                        <button id="home-review-prev" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition shadow cursor-pointer" aria-label="Previous Review">
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                        </button>
+                        <button id="home-review-next" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition shadow cursor-pointer" aria-label="Next Review">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Swiper -->
+            <div class="swiper home-reviews-swiper !pb-12">
+                <div class="swiper-wrapper">
+                    @foreach($reviews as $rev)
+                        <div class="swiper-slide h-auto">
+                            <div class="bg-slate-800/80 backdrop-blur-md border border-slate-700/80 rounded-2xl p-6 sm:p-7 h-full flex flex-col justify-between shadow-xl hover:border-amber-500/40 transition group">
+                                <div>
+                                    <!-- Top Rating & Quote Icon -->
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="flex items-center gap-1 text-amber-400">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <svg class="w-4 h-4 {{ $i <= $rev->rating ? 'fill-amber-400 text-amber-400' : 'text-slate-600' }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+                                                </svg>
+                                            @endfor
+                                        </div>
+                                        <div class="w-8 h-8 rounded-full bg-slate-700/60 text-slate-400 flex items-center justify-center">
+                                            <i data-lucide="quote" class="w-4 h-4 text-amber-400"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Review Text -->
+                                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed italic line-clamp-4 mb-6">
+                                        "{{ $rev->review }}"
+                                    </p>
+                                </div>
+
+                                <!-- Reviewer Info -->
+                                <div class="pt-4 border-t border-slate-700/60 flex items-center gap-3.5">
+                                    <div class="w-11 h-11 rounded-full bg-gradient-to-br from-brand-500 to-indigo-600 text-white font-extrabold flex items-center justify-center text-sm shadow-md shrink-0">
+                                        {{ substr($rev->name, 0, 1) }}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <h4 class="font-bold text-white text-sm truncate group-hover:text-amber-400 transition-colors">{{ $rev->name }}</h4>
+                                        <div class="flex items-center gap-2 mt-0.5">
+                                            <span class="text-[11px] text-amber-400 font-semibold truncate">{{ $rev->course ?: 'Student' }}</span>
+                                            <span class="text-slate-500 text-[10px]">•</span>
+                                            <span class="text-[10px] text-emerald-400 flex items-center gap-0.5">
+                                                <i data-lucide="badge-check" class="w-3 h-3"></i> Verified
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="swiper-pagination !-bottom-1"></div>
+            </div>
+        </div>
+    </section>
+    @endif
+
+    <!-- 10. FAQ Section -->
     <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div class="text-center space-y-2">
             <span class="text-xs font-extrabold uppercase tracking-wider text-brand-600 bg-brand-50 border border-brand-200 px-3 py-1 rounded-full">Frequently Asked Questions</span>
@@ -754,6 +842,36 @@
             if (loader) {
                 loader.style.display = 'none';
             }
+
+            // Home Reviews Swiper
+            window.homeReviewSwiper = new Swiper('.home-reviews-swiper', {
+                slidesPerView: 1.15,
+                spaceBetween: 20,
+                loop: true,
+                autoplay: {
+                    delay: 4000,
+                    disableOnInteraction: false,
+                    pauseOnMouseEnter: true,
+                },
+                pagination: {
+                    el: '.home-reviews-swiper .swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '#home-review-next',
+                    prevEl: '#home-review-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                    },
+                    1024: {
+                        slidesPerView: 3,
+                        spaceBetween: 24,
+                    },
+                }
+            });
         }
     });
 </script>

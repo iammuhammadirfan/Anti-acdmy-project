@@ -37,14 +37,37 @@
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                 </div>
                 <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Academy Subtitle / Tagline</label>
+                    <input type="text" name="academy_tagline" value="{{ $settings['academy_tagline'] ?? '' }}" placeholder="&amp; IETS Center"
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <p class="text-[11px] text-slate-400 mt-1">Shown below academy logo/name in header (e.g. &amp; IETS Center).</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                        Campus / Office Timings (Contact &amp; Footer)
+                    </label>
+                    <input type="text" name="academy_timings" value="{{ $settings['academy_timings'] ?? 'Mon - Sat: 8:00 AM - 7:00 PM' }}" placeholder="Mon - Sat: 8:00 AM - 7:00 PM"
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <p class="text-[11px] text-slate-400 mt-1">Website footer aur contact page dono jagah yehi timing show hogi.</p>
+                </div>
+                <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Public Contact Email</label>
                     <input type="email" name="contact_email" value="{{ $settings['contact_email'] }}" required
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Telephone</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Primary Telephone</label>
                     <input type="text" name="contact_phone" value="{{ $settings['contact_phone'] }}" required
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                        Add Footer Second Phone Number 
+                        <span class="text-[10px] lowercase font-normal text-slate-400">(optional)</span>
+                    </label>
+                    <input type="text" name="contact_phone_2" value="{{ $settings['contact_phone_2'] ?? '' }}" placeholder="+1 (555) 987-6543"
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <p class="text-[11px] text-slate-400 mt-1">Optional. Agar add karenge to website footer me 2nd phone number show hoga, warna sirf 1st number show hoga.</p>
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">WhatsApp Contact Number</label>
