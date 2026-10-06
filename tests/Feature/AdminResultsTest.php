@@ -30,8 +30,8 @@ class AdminResultsTest extends TestCase
         $user = User::first();
         $response = $this->actingAs($user)->get('/admin/iets/results/create');
         $response->assertStatus(200);
-        $response->assertSee('Upload Official Result Card Banner');
-        $response->assertSee('Student Name');
+        $response->assertSee('Upload New Student Result Poster');
+        $response->assertSee('Student Full Name');
         $response->assertSee('IELTS');
         $response->assertSee('PTE');
         $response->assertSee('TOEFL');

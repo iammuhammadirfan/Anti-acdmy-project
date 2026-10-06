@@ -63,6 +63,37 @@ class IetsResult extends Model
     }
 
     /**
+     * Alias for overall_band.
+     */
+    public function getOverallScoreAttribute(): ?string
+    {
+        return $this->overall_band;
+    }
+
+    /**
+     * Get associative array of sub-scores.
+     */
+    public function getScoresBreakdownAttribute(): ?array
+    {
+        $breakdown = array_filter([
+            'Listening' => $this->listening_score,
+            'Reading' => $this->reading_score,
+            'Writing' => $this->writing_score,
+            'Speaking' => $this->speaking_score,
+        ], fn($v) => !is_null($v) && $v !== '');
+
+        return !empty($breakdown) ? $breakdown : null;
+    }
+
+    /**
+     * Status attribute fallback.
+     */
+    public function getStatusAttribute(): bool
+    {
+        return true;
+    }
+
+    /**
      * Normalize test category to IELTS, PTE, or TOEFL.
      */
     public function getCategoryAttribute(): string
@@ -77,3 +108,4 @@ class IetsResult extends Model
         return 'IELTS';
     }
 }
+
