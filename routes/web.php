@@ -38,6 +38,7 @@ use App\Http\Controllers\Admin\SeoController;
 use App\Http\Controllers\Admin\AiController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\PageVisibilityController;
 use App\Http\Controllers\Admin\NotificationController;
 
@@ -75,6 +76,7 @@ Route::get('/appointments/success', [AppointmentBookingController::class, 'succe
 
 Route::get('/contact', [ContactFrontendController::class, 'index'])->name('contact')->middleware('page.visible:contact');
 Route::post('/contact/submit', [ContactFrontendController::class, 'submit'])->name('contact.submit')->middleware('page.visible:contact');
+Route::post('/reviews/submit', [ContactFrontendController::class, 'submitReview'])->name('reviews.submit');
 
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/terms-and-conditions', [PageController::class, 'terms'])->name('terms');
@@ -270,6 +272,17 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::put('/faqs/{faq}', [FaqController::class, 'update'])->name('admin.faqs.update');
         Route::post('/faqs/{faq}/toggle', [FaqController::class, 'toggle'])->name('admin.faqs.toggle');
         Route::delete('/faqs/{faq}', [FaqController::class, 'destroy'])->name('admin.faqs.destroy');
+    });
+
+    // Student Reviews & Testimonials
+    Route::middleware(['module.permission:settings'])->group(function () {
+        Route::get('/reviews', [ReviewController::class, 'index'])->name('admin.reviews.index');
+        Route::get('/reviews/create', [ReviewController::class, 'create'])->name('admin.reviews.create');
+        Route::post('/reviews', [ReviewController::class, 'store'])->name('admin.reviews.store');
+        Route::get('/reviews/{review}/edit', [ReviewController::class, 'edit'])->name('admin.reviews.edit');
+        Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('admin.reviews.update');
+        Route::post('/reviews/{review}/toggle', [ReviewController::class, 'toggle'])->name('admin.reviews.toggle');
+        Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
     });
 
     // Scheduling & Appointment Management (Dynamic Section RBAC)

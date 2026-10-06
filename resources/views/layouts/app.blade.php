@@ -70,7 +70,10 @@
     @php
         $siteLogo = $globalSettings['academy_logo'] ?? \App\Models\Setting::get('academy_logo');
         $siteName = $globalSettings['academy_name'] ?? \App\Models\Setting::get('academy_name', 'Academy');
+        $siteTagline = $globalSettings['academy_tagline'] ?? \App\Models\Setting::get('academy_tagline', '& IETS Center');
         $sitePhone = $globalSettings['contact_phone'] ?? \App\Models\Setting::get('contact_phone', '+1 (555) 234-5678');
+        $sitePhone2 = $globalSettings['contact_phone_2'] ?? \App\Models\Setting::get('contact_phone_2', '');
+        $siteTimings = $globalSettings['academy_timings'] ?? \App\Models\Setting::get('academy_timings', 'Mon - Sat: 8:00 AM - 7:00 PM');
         $siteEmail = $globalSettings['contact_email'] ?? \App\Models\Setting::get('contact_email', 'info@antiacademy.edu');
         $siteAddress = $globalSettings['contact_address'] ?? \App\Models\Setting::get('contact_address', '124 Academic Boulevard, Knowledge Park');
         $fbLink = $globalSettings['social_facebook'] ?? \App\Models\Setting::get('social_facebook', 'https://facebook.com');
@@ -86,11 +89,17 @@
     <style>
         [x-cloak] { display: none !important; }
         html, body {
-            overflow-x: hidden !important;
-            max-width: 100vw;
+            overflow-x: clip !important;
+        }
+        .site-sticky-top {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            width: 100%;
         }
         .glassmorphism {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
@@ -142,7 +151,7 @@
         }
     </style>
 </head>
-<body class="font-sans antialiased text-slate-800 bg-slate-50 min-h-screen flex flex-col selection:bg-brand-500 selection:text-white overflow-x-hidden" x-data="{ mobileMenu: false }">
+<body class="font-sans antialiased text-slate-800 bg-slate-50 min-h-screen flex flex-col selection:bg-brand-500 selection:text-white" x-data="{ mobileMenu: false }">
 
     @if(!empty($isAdminPreview))
         <div class="bg-gradient-to-r from-amber-600 via-amber-700 to-amber-600 text-white text-xs font-bold py-2 px-4 text-center shadow flex items-center justify-center gap-2">
@@ -152,16 +161,16 @@
         </div>
     @endif
 
-    <!-- Top Announcement Bar -->
-    <div class="bg-brand-950 text-slate-300 text-xs py-2 px-4 border-b border-slate-800 no-print">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-            <div class="flex items-center gap-4">
-                <span class="flex items-center gap-1.5"><i data-lucide="phone" class="w-3.5 h-3.5 text-accent-500"></i> {{ $sitePhone }}</span>
-                <span class="flex items-center gap-1.5 hidden md:flex"><i data-lucide="mail" class="w-3.5 h-3.5 text-accent-500"></i> {{ $siteEmail }}</span>
-                <span class="hidden lg:inline text-slate-500">|</span>
-                <span class="hidden lg:inline text-slate-400">Admissions Open for Spring {{ date('Y') }} IETS & Language Batches</span>
+    <!-- Top Announcement Bar (Static at top of page, does NOT stick on scroll) -->
+    <div class="bg-brand-950 text-slate-300 text-xs py-1.5 sm:py-2 px-3 sm:px-6 2xl:px-8 border-b border-slate-800/90 no-print">
+        <div class="max-w-[1600px] mx-auto flex flex-col sm:flex-row justify-between items-center gap-1.5 sm:gap-2">
+            <div class="flex items-center gap-3 sm:gap-4 flex-wrap justify-center sm:justify-start">
+                <a href="tel:{{ $sitePhone }}" class="flex items-center gap-1.5 hover:text-white transition"><i data-lucide="phone" class="w-3.5 h-3.5 text-accent-500 shrink-0"></i> <span>{{ $sitePhone }}</span></a>
+                <a href="mailto:{{ $siteEmail }}" class="items-center gap-1.5 hover:text-white transition hidden md:flex"><i data-lucide="mail" class="w-3.5 h-3.5 text-accent-500 shrink-0"></i> <span>{{ $siteEmail }}</span></a>
+                <span class="hidden lg:inline text-slate-600">|</span>
+                <span class="hidden lg:inline text-slate-400">Admissions Open for Spring {{ date('Y') }} IETS &amp; Language Batches</span>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 shrink-0">
                 <a href="{{ route('appointments') }}" class="text-accent-500 hover:text-accent-400 font-semibold flex items-center gap-1">
                     <i data-lucide="calendar" class="w-3 h-3"></i> Book Appointment
                 </a>
@@ -171,132 +180,134 @@
         </div>
     </div>
 
-    <!-- Main Navigation Header -->
-    <header class="sticky top-0 z-40 glassmorphism border-b border-slate-200/80 transition-all duration-300 no-print">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <!-- Brand Logo (Only logo slightly bigger: h-14 w-14 instead of h-12 w-12, layout perfectly preserved) -->
-                <a href="{{ route('home') }}" class="flex items-center gap-3 group shrink-0">
-                    @if(!empty($siteLogo))
-                        <div class="h-14 w-14 rounded-xl bg-white p-1 shadow-sm border border-slate-200/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition transform">
-                            <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" class="h-full w-full object-contain">
+    <!-- Main Navigation Header (Sticky on Scroll across all pages) -->
+    <header class="site-sticky-top glassmorphism border-b border-slate-200/80 transition-all duration-300 no-print shadow-md">
+        <div class="max-w-[1600px] mx-auto px-3 sm:px-6 2xl:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-3 2xl:gap-6">
+                    <!-- Brand Logo -->
+                    <a href="{{ route('home') }}" class="flex items-center gap-2.5 sm:gap-3 group shrink min-w-0 max-w-[280px] xl:max-w-[340px] 2xl:max-w-none">
+                        @if(!empty($siteLogo))
+                            <div class="h-11 w-11 sm:h-13 sm:w-13 2xl:h-14 2xl:w-14 rounded-xl bg-white p-1 shadow-sm border border-slate-200/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition transform">
+                                <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" class="h-full w-full object-contain">
+                            </div>
+                        @else
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-tr from-brand-700 to-brand-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/25 group-hover:scale-105 transition transform shrink-0">
+                                <i data-lucide="graduation-cap" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                            </div>
+                        @endif
+                        <div class="min-w-0">
+                            <span class="text-sm sm:text-base xl:text-lg 2xl:text-xl font-extrabold tracking-tight text-slate-900 group-hover:text-brand-600 transition block leading-tight truncate">{{ $siteName }}</span>
+                            @if(!empty($siteTagline))
+                                <span class="text-[10px] xl:text-[11px] font-bold uppercase tracking-wider text-accent-600 block mt-0.5 truncate">{{ $siteTagline }}</span>
+                            @endif
                         </div>
-                    @else
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-brand-700 to-brand-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/25 group-hover:scale-105 transition transform">
-                            <i data-lucide="graduation-cap" class="w-6 h-6"></i>
-                        </div>
-                    @endif
-                    <div class="whitespace-nowrap">
-                        <span class="text-xl font-extrabold tracking-tight text-slate-900 group-hover:text-brand-600 transition block leading-tight">{{ $siteName }}</span>
-                        <span class="text-xs font-bold uppercase tracking-wider text-accent-600 block mt-0.5">&amp; IETS Center</span>
+                    </a>
+
+                    <!-- Desktop Navigation Links (Responsive flex & auto-adjusting gaps/text size when multiple tabs are enabled) -->
+                    <nav class="hidden xl:flex items-center justify-center gap-1 xl:gap-1.5 2xl:gap-4 text-xs 2xl:text-sm font-semibold text-slate-700 whitespace-nowrap shrink min-w-0 px-1">
+                        @if(\App\Services\PageVisibilityService::isPageVisible('home'))
+                            <a href="{{ route('home') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('home') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Home</a>
+                        @endif
+                        @if(\App\Services\PageVisibilityService::isPageVisible('about'))
+                            <a href="{{ route('about') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('about') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">About</a>
+                        @endif
+                        @if(\App\Services\PageVisibilityService::isPageVisible('history'))
+                            <a href="{{ route('history') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('history') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">History</a>
+                        @endif
+                        @if(\App\Services\PageVisibilityService::isPageVisible('iets'))
+                            <a href="{{ route('iets') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('iets') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Classes & Timings</a>
+                        @endif
+                        @if(\App\Services\PageVisibilityService::isPageVisible('results'))
+                            <a href="{{ route('iets.results') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('iets.results') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Results</a>
+                        @endif
+                        @if(\App\Services\PageVisibilityService::isPageVisible('teachers'))
+                            <a href="{{ route('teachers') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('teachers*') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Teachers</a>
+                        @endif
+                        @if(\App\Services\PageVisibilityService::isPageVisible('classrooms'))
+                            <a href="{{ route('classrooms') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('classrooms') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Classrooms</a>
+                        @endif
+                        @if(\App\Services\PageVisibilityService::isPageVisible('campus'))
+                            <a href="{{ route('gallery') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('gallery') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Campus</a>
+                        @endif
+                        @if(\App\Services\PageVisibilityService::isPageVisible('videos'))
+                            <a href="{{ route('videos') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('videos*') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Vlogs</a>
+                        @endif
+                        @if(\App\Services\PageVisibilityService::isPageVisible('news'))
+                            <a href="{{ route('blog') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('blog*') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">News</a>
+                        @endif
+                        @if(\App\Services\PageVisibilityService::isPageVisible('faq'))
+                            <a href="{{ route('faq') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('faq') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">FAQ</a>
+                        @endif
+                        @if(\App\Services\PageVisibilityService::isPageVisible('contact'))
+                            <a href="{{ route('contact') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('contact') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Contact</a>
+                        @endif
+                    </nav>
+
+                    <!-- Action Button -->
+                    <div class="flex items-center gap-2 shrink-0">
+                        @if(\App\Services\PageVisibilityService::isPageVisible('appointments'))
+                        <a href="{{ route('appointments') }}" class="inline-flex items-center gap-1.5 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white font-semibold text-xs 2xl:text-sm px-3 2xl:px-4 py-2 2xl:py-2.5 rounded-xl shadow-md shadow-brand-500/20 hover:shadow-lg transition transform hover:-translate-y-0.5 whitespace-nowrap shrink-0">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5 2xl:w-4 2xl:h-4 shrink-0"></i>
+                            <span>Book Session</span>
+                        </a>
+                        @endif
+
+                        <!-- Mobile Hamburger Button -->
+                        <button @click="mobileMenu = !mobileMenu" class="xl:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none shrink-0" aria-label="Toggle navigation menu">
+                            <i data-lucide="menu" class="w-6 h-6" x-show="!mobileMenu"></i>
+                            <i data-lucide="x" class="w-6 h-6" x-show="mobileMenu" x-cloak></i>
+                        </button>
                     </div>
-                </a>
+                </div>
+            </div>
 
-                <!-- Desktop Navigation Links (Controlled by Admin Page Visibility) -->
-                <nav class="hidden xl:flex items-center gap-7 text-sm font-semibold text-slate-700 whitespace-nowrap">
-                    @if(\App\Services\PageVisibilityService::isPageVisible('home'))
-                        <a href="{{ route('home') }}" class="hover:text-brand-600 transition {{ request()->routeIs('home') ? 'text-brand-600 font-bold' : '' }}">Home</a>
-                    @endif
-                    @if(\App\Services\PageVisibilityService::isPageVisible('about'))
-                        <a href="{{ route('about') }}" class="hover:text-brand-600 transition {{ request()->routeIs('about') ? 'text-brand-600 font-bold' : '' }}">About</a>
-                    @endif
-                    @if(\App\Services\PageVisibilityService::isPageVisible('history'))
-                        <a href="{{ route('history') }}" class="hover:text-brand-600 transition {{ request()->routeIs('history') ? 'text-brand-600 font-bold' : '' }}">History</a>
-                    @endif
-                    @if(\App\Services\PageVisibilityService::isPageVisible('iets'))
-                        <a href="{{ route('iets') }}" class="hover:text-brand-600 transition {{ request()->routeIs('iets') ? 'text-brand-600 font-bold' : '' }}">IETS Prep</a>
-                    @endif
-                    @if(\App\Services\PageVisibilityService::isPageVisible('results'))
-                        <a href="{{ route('iets.results') }}" class="hover:text-brand-600 transition {{ request()->routeIs('iets.results') ? 'text-brand-600 font-bold' : '' }}">Results</a>
-                    @endif
-                    @if(\App\Services\PageVisibilityService::isPageVisible('teachers'))
-                        <a href="{{ route('teachers') }}" class="hover:text-brand-600 transition {{ request()->routeIs('teachers*') ? 'text-brand-600 font-bold' : '' }}">Teachers</a>
-                    @endif
-                    @if(\App\Services\PageVisibilityService::isPageVisible('classrooms'))
-                        <a href="{{ route('classrooms') }}" class="hover:text-brand-600 transition {{ request()->routeIs('classrooms') ? 'text-brand-600 font-bold' : '' }}">Classrooms</a>
-                    @endif
-                    @if(\App\Services\PageVisibilityService::isPageVisible('campus'))
-                        <a href="{{ route('gallery') }}" class="hover:text-brand-600 transition {{ request()->routeIs('gallery') ? 'text-brand-600 font-bold' : '' }}">Campus</a>
-                    @endif
-                    @if(\App\Services\PageVisibilityService::isPageVisible('videos'))
-                        <a href="{{ route('videos') }}" class="hover:text-brand-600 transition {{ request()->routeIs('videos*') ? 'text-brand-600 font-bold' : '' }}">Vlogs</a>
-                    @endif
-                    @if(\App\Services\PageVisibilityService::isPageVisible('news'))
-                        <a href="{{ route('blog') }}" class="hover:text-brand-600 transition {{ request()->routeIs('blog*') ? 'text-brand-600 font-bold' : '' }}">News</a>
-                    @endif
-                    @if(\App\Services\PageVisibilityService::isPageVisible('faq'))
-                        <a href="{{ route('faq') }}" class="hover:text-brand-600 transition {{ request()->routeIs('faq') ? 'text-brand-600 font-bold' : '' }}">FAQ</a>
-                    @endif
-                    @if(\App\Services\PageVisibilityService::isPageVisible('contact'))
-                        <a href="{{ route('contact') }}" class="hover:text-brand-600 transition {{ request()->routeIs('contact') ? 'text-brand-600 font-bold' : '' }}">Contact</a>
-                    @endif
-                </nav>
-
-                <!-- Action Button -->
+            <!-- Mobile Drawer Menu -->
+            <div x-show="mobileMenu" x-cloak class="xl:hidden border-t border-slate-200 bg-white/95 backdrop-blur-md px-4 pt-3 pb-6 space-y-2 max-h-[calc(100vh-120px)] overflow-y-auto shadow-xl">
+                @if(\App\Services\PageVisibilityService::isPageVisible('home'))
+                    <a href="{{ route('home') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Home</a>
+                @endif
+                @if(\App\Services\PageVisibilityService::isPageVisible('about'))
+                    <a href="{{ route('about') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">About</a>
+                @endif
+                @if(\App\Services\PageVisibilityService::isPageVisible('history'))
+                    <a href="{{ route('history') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">History</a>
+                @endif
+                @if(\App\Services\PageVisibilityService::isPageVisible('iets'))
+                    <a href="{{ route('iets') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Classes & Timings</a>
+                @endif
+                @if(\App\Services\PageVisibilityService::isPageVisible('results'))
+                    <a href="{{ route('iets.results') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">IETS Results</a>
+                @endif
+                @if(\App\Services\PageVisibilityService::isPageVisible('teachers'))
+                    <a href="{{ route('teachers') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Teachers</a>
+                @endif
+                @if(\App\Services\PageVisibilityService::isPageVisible('classrooms'))
+                    <a href="{{ route('classrooms') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Classrooms</a>
+                @endif
+                @if(\App\Services\PageVisibilityService::isPageVisible('campus'))
+                    <a href="{{ route('gallery') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Campus Gallery</a>
+                @endif
+                @if(\App\Services\PageVisibilityService::isPageVisible('videos'))
+                    <a href="{{ route('videos') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Videos &amp; Vlogs</a>
+                @endif
+                @if(\App\Services\PageVisibilityService::isPageVisible('news'))
+                    <a href="{{ route('blog') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Blog / News</a>
+                @endif
+                @if(\App\Services\PageVisibilityService::isPageVisible('faq'))
+                    <a href="{{ route('faq') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">FAQs</a>
+                @endif
+                @if(\App\Services\PageVisibilityService::isPageVisible('contact'))
+                    <a href="{{ route('contact') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Contact</a>
+                @endif
                 @if(\App\Services\PageVisibilityService::isPageVisible('appointments'))
-                <div class="hidden md:flex items-center gap-4">
-                    <a href="{{ route('appointments') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-md shadow-brand-500/20 hover:shadow-lg transition transform hover:-translate-y-0.5">
-                        <i data-lucide="calendar" class="w-4 h-4"></i>
-                        <span>Book Session</span>
+                <div class="pt-2">
+                    <a href="{{ route('appointments') }}" class="w-full flex items-center justify-center gap-2 bg-brand-600 text-white font-bold py-2.5 rounded-xl shadow">
+                        <i data-lucide="calendar" class="w-4 h-4"></i> Book Appointment
                     </a>
                 </div>
                 @endif
-
-                <!-- Mobile Hamburger Button -->
-                <button @click="mobileMenu = !mobileMenu" class="xl:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none">
-                    <i data-lucide="menu" class="w-6 h-6" x-show="!mobileMenu"></i>
-                    <i data-lucide="x" class="w-6 h-6" x-show="mobileMenu" x-cloak></i>
-                </button>
             </div>
-        </div>
-
-        <!-- Mobile Drawer Menu -->
-        <div x-show="mobileMenu" x-cloak class="xl:hidden border-t border-slate-200 bg-white/95 backdrop-blur-md px-4 pt-3 pb-6 space-y-2">
-            @if(\App\Services\PageVisibilityService::isPageVisible('home'))
-                <a href="{{ route('home') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Home</a>
-            @endif
-            @if(\App\Services\PageVisibilityService::isPageVisible('about'))
-                <a href="{{ route('about') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">About</a>
-            @endif
-            @if(\App\Services\PageVisibilityService::isPageVisible('history'))
-                <a href="{{ route('history') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">History</a>
-            @endif
-            @if(\App\Services\PageVisibilityService::isPageVisible('iets'))
-                <a href="{{ route('iets') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">IETS Program</a>
-            @endif
-            @if(\App\Services\PageVisibilityService::isPageVisible('results'))
-                <a href="{{ route('iets.results') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">IETS Results</a>
-            @endif
-            @if(\App\Services\PageVisibilityService::isPageVisible('teachers'))
-                <a href="{{ route('teachers') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Teachers</a>
-            @endif
-            @if(\App\Services\PageVisibilityService::isPageVisible('classrooms'))
-                <a href="{{ route('classrooms') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Classrooms</a>
-            @endif
-            @if(\App\Services\PageVisibilityService::isPageVisible('campus'))
-                <a href="{{ route('gallery') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Campus Gallery</a>
-            @endif
-            @if(\App\Services\PageVisibilityService::isPageVisible('videos'))
-                <a href="{{ route('videos') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Videos &amp; Vlogs</a>
-            @endif
-            @if(\App\Services\PageVisibilityService::isPageVisible('news'))
-                <a href="{{ route('blog') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Blog / News</a>
-            @endif
-            @if(\App\Services\PageVisibilityService::isPageVisible('faq'))
-                <a href="{{ route('faq') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">FAQs</a>
-            @endif
-            @if(\App\Services\PageVisibilityService::isPageVisible('contact'))
-                <a href="{{ route('contact') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Contact</a>
-            @endif
-            @if(\App\Services\PageVisibilityService::isPageVisible('appointments'))
-            <div class="pt-2">
-                <a href="{{ route('appointments') }}" class="w-full flex items-center justify-center gap-2 bg-brand-600 text-white font-bold py-2.5 rounded-xl shadow">
-                    <i data-lucide="calendar" class="w-4 h-4"></i> Book Appointment
-                </a>
-            </div>
-            @endif
-        </div>
-    </header>
+        </header>
 
     <!-- Main Dynamic Content -->
     <main class="flex-grow">
@@ -419,15 +430,21 @@
                         </p>
                         <p class="flex items-center gap-2.5">
                             <i data-lucide="phone" class="w-4 h-4 text-accent-500 shrink-0"></i>
-                            <span>{{ $sitePhone }}</span>
+                            <a href="tel:{{ $sitePhone }}" class="hover:text-white transition">{{ $sitePhone }}</a>
                         </p>
+                        @if(!empty($sitePhone2))
+                        <p class="flex items-center gap-2.5">
+                            <i data-lucide="phone-call" class="w-4 h-4 text-accent-500 shrink-0"></i>
+                            <a href="tel:{{ $sitePhone2 }}" class="hover:text-white transition">{{ $sitePhone2 }}</a>
+                        </p>
+                        @endif
                         <p class="flex items-center gap-2.5">
                             <i data-lucide="mail" class="w-4 h-4 text-accent-500 shrink-0"></i>
-                            <span>{{ $siteEmail }}</span>
+                            <a href="mailto:{{ $siteEmail }}" class="hover:text-white transition">{{ $siteEmail }}</a>
                         </p>
                         <p class="flex items-center gap-2.5">
                             <i data-lucide="clock" class="w-4 h-4 text-accent-500 shrink-0"></i>
-                            <span>Mon - Sat: 8:00 AM - 7:00 PM</span>
+                            <span>{{ $siteTimings }}</span>
                         </p>
                     </div>
                 </div>

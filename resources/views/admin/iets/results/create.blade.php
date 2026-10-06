@@ -1,156 +1,153 @@
 @extends('layouts.admin')
 
 @section('title', 'Upload Student Result Card')
-@section('header', 'Add Result Card (IELTS / PTE / TOEFL)')
+@section('header', 'Upload New Student Result Poster')
 
 @section('content')
 <div class="max-w-4xl">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl">
-        <div class="mb-6 pb-5 border-b border-slate-800">
-            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                <span class="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                </span>
-                Upload Official Result Card Banner
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">
-                Upload the student's result card poster or scorecard. All images are automatically standardized to a uniform size (800&times;1000 px, 4:5 ratio) so sliders and display grids look perfectly aligned.
-            </p>
-        </div>
-
-        @if($errors->any())
-            <div class="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-semibold">
-                <ul class="list-disc list-inside space-y-1">
-                    @foreach($errors->all() as $err)
-                        <li>{{ $err }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form action="{{ route('admin.iets.results.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" x-data="{ previewUrl: null, testType: '{{ old('test_type', 'IELTS') }}' }">
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-sm">
+        <form action="{{ route('admin.iets.results.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
-            <!-- Upload Area & Preview -->
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-                <div class="md:col-span-7 space-y-4">
-                    <label class="block text-xs uppercase font-bold text-slate-300">
-                        Result Card Image / Banner *
-                        <span class="text-[11px] text-blue-400 normal-case font-normal block mt-0.5">Fixed standard 4:5 ratio (800&times;1000 px). Max 10MB (JPG, PNG, WebP).</span>
-                    </label>
-
-                    <div class="relative border-2 border-dashed border-slate-700 hover:border-blue-500 rounded-2xl p-6 text-center transition-colors bg-slate-950/60">
-                        <input type="file" name="result_image_file" accept="image/*" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                               @change="const file = $event.target.files[0]; if (file) { previewUrl = URL.createObjectURL(file); }">
-                        <div class="space-y-2">
-                            <div class="w-12 h-12 mx-auto rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                            </div>
-                            <div class="text-xs font-semibold text-white">Click or drag & drop Result Card Image</div>
-                            <p class="text-[11px] text-slate-500">Supports IELTS / PTE / TOEFL scorecards and banner images</p>
-                        </div>
-                    </div>
-
-                    <!-- Category Portion Selection -->
-                    <div>
-                        <label class="block text-xs uppercase font-bold text-slate-300 mb-2">Select Test Category (Portion) *</label>
-                        <div class="grid grid-cols-3 gap-3">
-                            <label class="relative flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer transition-all text-center"
-                                   :class="testType === 'IELTS' ? 'bg-red-500/15 border-red-500 text-white shadow-md' : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'">
-                                <input type="radio" name="test_type" value="IELTS" class="sr-only" x-model="testType">
-                                <span class="font-extrabold text-sm tracking-wide">IELTS</span>
-                                <span class="text-[10px] mt-0.5" :class="testType === 'IELTS' ? 'text-red-300' : 'text-slate-500'">Academic & General</span>
-                            </label>
-
-                            <label class="relative flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer transition-all text-center"
-                                   :class="testType === 'PTE' ? 'bg-amber-500/15 border-amber-500 text-white shadow-md' : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'">
-                                <input type="radio" name="test_type" value="PTE" class="sr-only" x-model="testType">
-                                <span class="font-extrabold text-sm tracking-wide">PTE</span>
-                                <span class="text-[10px] mt-0.5" :class="testType === 'PTE' ? 'text-amber-300' : 'text-slate-500'">Pearson Academic</span>
-                            </label>
-
-                            <label class="relative flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer transition-all text-center"
-                                   :class="testType === 'TOEFL' ? 'bg-indigo-500/15 border-indigo-500 text-white shadow-md' : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'">
-                                <input type="radio" name="test_type" value="TOEFL" class="sr-only" x-model="testType">
-                                <span class="font-extrabold text-sm tracking-wide">TOEFL</span>
-                                <span class="text-[10px] mt-0.5" :class="testType === 'TOEFL' ? 'text-indigo-300' : 'text-slate-500'">iBT / Essentials</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Live Card Preview Frame -->
-                <div class="md:col-span-5">
-                    <label class="block text-xs uppercase font-bold text-slate-400 mb-2">Live Standard Size Preview (4:5)</label>
-                    <div class="relative w-full aspect-[4/5] bg-slate-950 rounded-2xl border-2 border-slate-800 overflow-hidden flex flex-col items-center justify-center shadow-lg group">
-                        <template x-if="previewUrl">
-                            <img :src="previewUrl" alt="Card Preview" class="w-full h-full object-cover">
-                        </template>
-                        <template x-if="!previewUrl">
-                            <div class="text-center p-6 text-slate-500">
-                                <svg class="w-12 h-12 mx-auto mb-2 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                <span class="text-xs font-semibold block text-slate-400">Fixed Standard Card Frame</span>
-                                <span class="text-[10px] text-slate-600 block mt-1">Image will be auto-formatted to 800&times;1000px</span>
-                            </div>
-                        </template>
-
-                        <!-- Tag overlay -->
-                        <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider backdrop-blur-md shadow"
-                             :class="testType === 'IELTS' ? 'bg-red-600 text-white' : (testType === 'PTE' ? 'bg-amber-600 text-white' : 'bg-indigo-600 text-white')"
-                             x-text="testType">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Student Name & Score/Band -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-800">
-                <div>
-                    <label class="block text-xs uppercase font-bold text-slate-300 mb-2">Student Name *</label>
-                    <input type="text" name="student_name" value="{{ old('student_name') }}" required placeholder="e.g. Menahil Ahmad" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs uppercase font-bold text-slate-300 mb-2">
-                        Score / Overall Band *
-                        <span class="text-[11px] text-slate-500 normal-case font-normal block mt-0.5">e.g. 7.0 or 8.5 (IELTS) / 79 or 85 (PTE) / 105 (TOEFL)</span>
-                    </label>
-                    <input type="text" name="overall_band" value="{{ old('overall_band', '7.0') }}" required placeholder="e.g. 7.0, 8.5, 79, 105" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500">
-                </div>
-            </div>
-
-            <!-- Exam Date & Featured in Slider -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-xs uppercase font-bold text-slate-400 mb-2">Official Exam Date (Optional)</label>
-                    <input type="date" name="test_date" value="{{ old('test_date', date('Y-m-d')) }}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500">
-                </div>
-
-                <div class="flex items-center pt-6">
-                    <label class="relative flex items-center gap-3 cursor-pointer">
-                        <input type="checkbox" name="is_featured" value="1" {{ old('is_featured', '1') ? 'checked' : '' }} class="w-4 h-4 rounded text-blue-600 bg-slate-950 border-slate-800 focus:ring-blue-500">
-                        <div>
-                            <span class="text-xs font-bold text-white block">Feature in Home & Results Slider</span>
-                            <span class="text-[11px] text-slate-500 block">Card will rotate in the auto-playing marquee/slider</span>
-                        </div>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Optional Remarks / Description -->
+            <!-- Section 1: Result Poster Image Upload -->
             <div>
-                <label class="block text-xs uppercase font-bold text-slate-400 mb-2">Remarks / Story (Optional)</label>
-                <textarea name="description" rows="2" placeholder="e.g. Scored 8.5 in Listening, heading to University of Melbourne..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-blue-500">{{ old('description') }}</textarea>
+                <label class="block text-xs uppercase font-bold text-slate-700 mb-2">
+                    Result Card Poster (Standardized Ratio ~800x1000px) *
+                </label>
+                <div class="border-2 border-dashed border-slate-300 hover:border-brand-500 rounded-2xl p-6 text-center transition bg-slate-50 relative group">
+                    <input type="file" name="result_image_file" accept="image/*" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                           onchange="previewResultImage(event)">
+                    <div id="upload-prompt" class="space-y-2">
+                        <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <p class="text-xs text-slate-700 font-semibold">Click to browse or drop result card poster</p>
+                        <p class="text-[11px] text-slate-400">PNG, JPG or WebP up to 5MB (Auto-cropped to standard dimensions)</p>
+                    </div>
+                    <div id="image-preview-container" class="hidden">
+                        <img id="image-preview" src="#" alt="Preview" class="max-h-64 mx-auto rounded-xl shadow-md border border-slate-200 object-contain">
+                        <p class="text-xs text-emerald-600 font-semibold mt-2">New Image Selected</p>
+                    </div>
+                </div>
+                @error('result_image_file') <p class="text-rose-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
-                <a href="{{ route('admin.iets.results.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-700 text-xs font-semibold text-slate-400 hover:text-white">Cancel</a>
-                <button type="submit" class="px-7 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg transition-all flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    Save & Standardize Card
+            <!-- Section 2: Student & Test Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t border-slate-100">
+                <div>
+                    <label class="block text-xs uppercase font-bold text-slate-700 mb-2">Student Full Name *</label>
+                    <input type="text" name="student_name" value="{{ old('student_name') }}" required placeholder="e.g. Muhammad Bilal" 
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-brand-500">
+                    @error('student_name') <p class="text-rose-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase font-bold text-slate-700 mb-2">Student Roll / Candidate Number</label>
+                    <input type="text" name="roll_number" value="{{ old('roll_number') }}" placeholder="e.g. 049281 or IDP-PK-891" 
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-brand-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase font-bold text-slate-700 mb-2">Test Type *</label>
+                    <select name="test_type" id="test_type" onchange="adjustScoreLabels()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-500">
+                        <option value="IELTS Academic" {{ old('test_type') == 'IELTS Academic' ? 'selected' : '' }}>IELTS Academic</option>
+                        <option value="IELTS General Training" {{ old('test_type') == 'IELTS General Training' ? 'selected' : '' }}>IELTS General Training</option>
+                        <option value="PTE Pearson" {{ old('test_type') == 'PTE Pearson' ? 'selected' : '' }}>PTE Pearson Academic</option>
+                        <option value="TOEFL iBT" {{ old('test_type') == 'TOEFL iBT' ? 'selected' : '' }}>TOEFL iBT</option>
+                        <option value="LanguageCert" {{ old('test_type') == 'LanguageCert' ? 'selected' : '' }}>LanguageCert / Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase font-bold text-slate-700 mb-2">Overall Score / Band *</label>
+                    <input type="text" name="overall_score" value="{{ old('overall_score') }}" required placeholder="e.g. Band 8.0 or 79/90" 
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-brand-500">
+                    @error('overall_score') <p class="text-rose-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase font-bold text-slate-700 mb-2">Official Exam Date</label>
+                    <input type="date" name="test_date" value="{{ old('test_date') }}" 
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase font-bold text-slate-700 mb-2">Display Priority Order</label>
+                    <input type="number" name="display_order" value="{{ old('display_order', 0) }}" 
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-brand-500">
+                </div>
+            </div>
+
+            <!-- Section 3: Sub-Skill Breakdown -->
+            <div class="pt-4 border-t border-slate-100">
+                <label class="block text-xs uppercase font-bold text-slate-700 mb-3">
+                    Sub-Skill Breakdown (Listening, Reading, Writing, Speaking)
+                </label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div>
+                        <span class="block text-[11px] text-slate-500 font-semibold mb-1">Listening Score</span>
+                        <input type="text" name="score_listening" value="{{ old('score_listening') }}" placeholder="e.g. 8.5" 
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <span class="block text-[11px] text-slate-500 font-semibold mb-1">Reading Score</span>
+                        <input type="text" name="score_reading" value="{{ old('score_reading') }}" placeholder="e.g. 8.0" 
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <span class="block text-[11px] text-slate-500 font-semibold mb-1">Writing Score</span>
+                        <input type="text" name="score_writing" value="{{ old('score_writing') }}" placeholder="e.g. 7.5" 
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <span class="block text-[11px] text-slate-500 font-semibold mb-1">Speaking Score</span>
+                        <input type="text" name="score_speaking" value="{{ old('score_speaking') }}" placeholder="e.g. 8.0" 
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-brand-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Options: Featured & Active -->
+            <div class="flex items-center gap-6 pt-4 border-t border-slate-100">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="is_featured" value="1" {{ old('is_featured') ? 'checked' : '' }}
+                           class="rounded bg-slate-100 border-slate-300 text-brand-600 focus:ring-brand-500">
+                    <span class="text-xs font-semibold text-slate-800">Feature in Homepage Slider</span>
+                </label>
+
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="status" value="1" {{ old('status', 1) ? 'checked' : '' }}
+                           class="rounded bg-slate-100 border-slate-300 text-brand-600 focus:ring-brand-500">
+                    <span class="text-xs font-semibold text-slate-800">Publish / Active</span>
+                </label>
+            </div>
+
+            <!-- Submit -->
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                <a href="{{ route('admin.iets.results.index') }}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition">
+                    Cancel
+                </a>
+                <button type="submit" class="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-md shadow-brand-500/20 transition">
+                    Upload Result Card
                 </button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    function previewResultImage(event) {
+        const input = event.target;
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('upload-prompt').classList.add('hidden');
+                const container = document.getElementById('image-preview-container');
+                container.classList.remove('hidden');
+                document.getElementById('image-preview').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 @endsection

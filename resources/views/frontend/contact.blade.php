@@ -43,8 +43,14 @@
                             </div>
                             <div>
                                 <h4 class="text-xs uppercase font-bold text-slate-400 tracking-wider mb-1">Direct Phone</h4>
-                                <p class="text-slate-200 text-sm font-semibold">{{ $settings['phone'] }}</p>
-                                <span class="text-xs text-slate-400">Mon-Sat, 9:00 AM - 6:00 PM EST</span>
+                                <p class="text-slate-200 text-sm font-semibold">
+                                    <a href="tel:{{ $settings['phone'] }}" class="hover:text-emerald-400 transition">{{ $settings['phone'] }}</a>
+                                    @if(!empty($settings['phone_2']))
+                                        <span class="text-slate-500 mx-1.5">•</span>
+                                        <a href="tel:{{ $settings['phone_2'] }}" class="hover:text-emerald-400 transition">{{ $settings['phone_2'] }}</a>
+                                    @endif
+                                </p>
+                                <span class="text-xs text-slate-400">{{ $settings['timings'] ?? ($globalSettings['academy_timings'] ?? 'Mon - Sat: 8:00 AM - 7:00 PM') }}</span>
                             </div>
                         </div>
 
@@ -147,6 +153,106 @@
                     </form>
                 </div>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- Student Review & Testimonial Submission Section -->
+<section class="py-16 bg-slate-900 text-white relative overflow-hidden border-t border-slate-800">
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        @if(session('review_success'))
+            <div class="mb-8 p-4 bg-emerald-500/20 border border-emerald-500/40 rounded-2xl text-emerald-300 text-sm flex items-center gap-3">
+                <i data-lucide="check-circle" class="w-5 h-5 shrink-0 text-emerald-400"></i>
+                <div>
+                    <p class="font-bold text-white">{{ session('review_success') }}</p>
+                    <p class="text-xs text-emerald-200/80">Thank you for sharing your learning journey with us!</p>
+                </div>
+            </div>
+        @endif
+
+        <div class="bg-slate-800/80 backdrop-blur-xl border border-slate-700/60 rounded-3xl p-8 sm:p-12 shadow-2xl" x-data="{ rating: 5, hoverRating: 0 }">
+            <div class="text-center max-w-2xl mx-auto mb-10">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider mb-4">
+                    <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
+                    <span>Student Voice & Reviews</span>
+                </div>
+                <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl text-white">Share Your Experience</h2>
+                <p class="mt-3 text-slate-300 text-sm sm:text-base">
+                    Are you a current or former student? Leave an honest review about our classes, teachers, and test prep atmosphere.
+                </p>
+            </div>
+
+            <form action="{{ route('reviews.submit') }}" method="POST" class="space-y-6">
+                @csrf
+
+                <!-- Interactive Star Rating -->
+                <div class="flex flex-col items-center justify-center p-4 bg-slate-900/60 rounded-2xl border border-slate-700/50">
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Select Your Rating</label>
+                    <input type="hidden" name="rating" :value="rating">
+                    <div class="flex items-center gap-2">
+                        <template x-for="star in [1, 2, 3, 4, 5]" :key="star">
+                            <button type="button" 
+                                @click="rating = star" 
+                                @mouseenter="hoverRating = star" 
+                                @mouseleave="hoverRating = 0"
+                                class="p-1 transition transform hover:scale-125 focus:outline-none">
+                                <svg class="w-8 h-8 transition-colors" 
+                                    :class="(hoverRating ? hoverRating >= star : rating >= star) ? 'text-amber-400 fill-amber-400' : 'text-slate-600'" 
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </template>
+                    </div>
+                    <span class="text-xs font-bold text-amber-400 mt-2" x-text="rating + ' Stars'">5 Stars</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Your Full Name <span class="text-rose-400">*</span></label>
+                        <input type="text" name="name" required placeholder="e.g. Ali Raza" value="{{ old('name') }}"
+                            class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm">
+                        @error('name') <p class="text-rose-400 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Course / Test Taken</label>
+                        <input type="text" name="course" placeholder="e.g. IELTS Academic / Spoken English" value="{{ old('course') }}"
+                            class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm">
+                        @error('course') <p class="text-rose-400 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Email Address (Optional)</label>
+                        <input type="email" name="email" placeholder="ali@example.com" value="{{ old('email') }}"
+                            class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Phone / WhatsApp (Optional)</label>
+                        <input type="text" name="phone" placeholder="+92 300 1234567" value="{{ old('phone') }}"
+                            class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Your Review / Testimonial <span class="text-rose-400">*</span></label>
+                    <textarea name="review" rows="4" required placeholder="Tell future students about your learning experience, instructors, mock tests, and environment..."
+                        class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm">{{ old('review') }}</textarea>
+                    @error('review') <p class="text-rose-400 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="text-center pt-2">
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-amber-500/20 hover:shadow-xl transition transform hover:-translate-y-0.5 text-sm">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                        <span>Submit Student Review</span>
+                    </button>
+                    <p class="text-xs text-slate-400 mt-2">All submitted reviews are reviewed by the administration before displaying on the homepage.</p>
+                </div>
+            </form>
         </div>
     </div>
 </section>

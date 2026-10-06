@@ -132,8 +132,8 @@
                 @if(auth()->user()->canAccessSection('iets'))
                 <a href="{{ route('admin.iets.programs.index') }}" 
                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.iets.programs*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
-                    <i data-lucide="book-open" class="w-4 h-4"></i>
-                    <span>IETS Programs</span>
+                    <i data-lucide="clock" class="w-4 h-4"></i>
+                    <span>Classes &amp; Timings</span>
                 </a>
                 @endif
 
@@ -324,6 +324,22 @@
                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.faqs*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
                     <i data-lucide="help-circle" class="w-4 h-4"></i>
                     <span>FAQs</span>
+                </a>
+                @endif
+
+                @if(auth()->user()->canAccessSection('settings') || auth()->user()->isSuperAdmin())
+                <a href="{{ route('admin.reviews.index') }}" 
+                   class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.reviews*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="message-square-quote" class="w-4 h-4 text-amber-400"></i>
+                        <span>Student Reviews</span>
+                    </div>
+                    @php
+                        $pendingReviewsCount = \App\Models\Review::where('is_approved', false)->count();
+                    @endphp
+                    @if($pendingReviewsCount > 0)
+                        <span class="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-500 text-black font-extrabold">{{ $pendingReviewsCount }}</span>
+                    @endif
                 </a>
                 @endif
 

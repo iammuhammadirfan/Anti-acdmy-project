@@ -13,7 +13,11 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
 <body class="font-sans antialiased bg-slate-900 min-h-screen flex items-center justify-center p-4 selection:bg-blue-600 selection:text-white">
     <div class="max-w-md w-full">
@@ -63,12 +67,17 @@
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Password</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 pointer-events-none">
                             <i data-lucide="lock" class="w-4 h-4"></i>
                         </span>
-                        <input type="password" name="password" required
+                        <input type="password" id="login-password" name="password" required
                                placeholder="••••••••••••"
-                               class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white transition">
+                               class="w-full pl-10 pr-11 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white transition">
+                        <button type="button" onclick="toggleLoginPassword()" 
+                                class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-700 transition cursor-pointer focus:outline-none"
+                                title="Show / Hide Password">
+                            <i id="eye-icon-login" data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -104,7 +113,30 @@
     </div>
 
     <script>
-        lucide.createIcons();
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+
+        function toggleLoginPassword() {
+            const input = document.getElementById('login-password');
+            const icon = document.getElementById('eye-icon-login');
+            if (!input) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'eye-off');
+                }
+            } else {
+                input.type = 'password';
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'eye');
+                }
+            }
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
     </script>
 </body>
 </html>

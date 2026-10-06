@@ -32,10 +32,18 @@
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
                 </div>
 
-                <div>
+                <div x-data="{ showPass: false }">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Reset Password</label>
-                    <input type="password" name="password" minlength="8" placeholder="Leave empty to keep current"
-                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                    <div class="relative">
+                        <input :type="showPass ? 'text' : 'password'" name="password" minlength="8" placeholder="Leave empty to keep current"
+                               class="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                        <button type="button" @click="showPass = !showPass" 
+                                class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 focus:outline-none"
+                                :title="showPass ? 'Hide Password' : 'Show Password'">
+                            <i data-lucide="eye" class="w-4 h-4" x-show="!showPass"></i>
+                            <i data-lucide="eye-off" class="w-4 h-4" x-show="showPass" x-cloak></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div>

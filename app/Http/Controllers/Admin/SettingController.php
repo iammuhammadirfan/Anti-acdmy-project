@@ -26,10 +26,13 @@ class SettingController extends Controller
     {
         $settings = [
             'academy_name' => Setting::get('academy_name', config('app.name', 'Academy')),
+            'academy_tagline' => Setting::get('academy_tagline', '& IETS Center'),
+            'academy_timings' => Setting::get('academy_timings', 'Mon - Sat: 8:00 AM - 7:00 PM'),
             'academy_logo' => Setting::get('academy_logo', ''),
             'site_favicon' => Setting::get('site_favicon', ''),
             'contact_email' => Setting::get('contact_email', 'info@antiacademy.edu'),
             'contact_phone' => Setting::get('contact_phone', '+1 (555) 234-5678'),
+            'contact_phone_2' => Setting::get('contact_phone_2', ''),
             'contact_whatsapp' => Setting::get('contact_whatsapp', '+15552345678'),
             'contact_address' => Setting::get('contact_address', '124 Academic Boulevard, Knowledge Park'),
             'social_facebook' => Setting::get('social_facebook', 'https://facebook.com'),
@@ -76,8 +79,11 @@ class SettingController extends Controller
             ]);
 
             Setting::set('academy_name', $request->academy_name, 'general');
+            Setting::set('academy_tagline', $request->academy_tagline ?? '', 'general');
+            Setting::set('academy_timings', $request->academy_timings ?? 'Mon - Sat: 8:00 AM - 7:00 PM', 'general');
             Setting::set('contact_email', $request->contact_email, 'general');
             Setting::set('contact_phone', $request->contact_phone, 'general');
+            Setting::set('contact_phone_2', $request->contact_phone_2 ?? '', 'general');
             Setting::set('contact_whatsapp', $request->contact_whatsapp, 'general');
             Setting::set('contact_address', $request->contact_address, 'general');
 
