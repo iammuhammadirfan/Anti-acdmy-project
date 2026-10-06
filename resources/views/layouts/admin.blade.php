@@ -119,7 +119,7 @@
                 </a>
 
                 @if(auth()->user()->canAccessAnySection(['teachers', 'iets', 'iets_results', 'classrooms', 'gallery']))
-                <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Academics &amp; IETS</div>
+                <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Academics &amp; IELTS</div>
 
                 @if(auth()->user()->canAccessSection('teachers'))
                 <a href="{{ route('admin.teachers.index') }}" 
@@ -141,7 +141,7 @@
                 <a href="{{ route('admin.iets.results.index') }}" 
                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.iets.results*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
                     <i data-lucide="award" class="w-4 h-4"></i>
-                    <span>IETS Results</span>
+                    <span>IELTS Results</span>
                 </a>
                 @endif
 
@@ -205,7 +205,7 @@
                         <a href="{{ route('admin.scheduling.iets') }}" 
                            class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.iets') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
                             <i data-lucide="file-check-2" class="w-3.5 h-3.5"></i>
-                            <span>IETS Test Schedule</span>
+                            <span>IELTS Test Schedule</span>
                         </a>
                         @endif
 
@@ -522,7 +522,7 @@
                                    class="block p-3.5 hover:bg-slate-50/90 transition group">
                                     <div class="flex items-start gap-3">
                                         <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold {{ $isIets ? 'bg-violet-100 text-violet-700 border border-violet-200' : 'bg-blue-100 text-blue-700 border border-blue-200' }}">
-                                            {{ $isIets ? 'IETS' : 'COUN' }}
+                                            {{ $isIets ? 'IELTS' : 'COUN' }}
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center justify-between gap-1 mb-0.5">

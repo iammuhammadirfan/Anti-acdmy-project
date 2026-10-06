@@ -37,13 +37,26 @@ class VideoController extends Controller
         $request->validate([
             'title' => 'required|string|max:191',
             'video_url' => 'required|string|max:255',
-            'category_id' => 'nullable|exists:video_categories,id',
+            'category' => 'nullable|string|max:100',
+            'category_id' => 'nullable',
             'description' => 'nullable|string',
             'thumbnail_file' => 'nullable|image|max:5120',
             'seo_title' => 'nullable|string|max:191',
             'seo_description' => 'nullable|string',
             'seo_keywords' => 'nullable|string',
         ]);
+
+        $categoryId = null;
+        if ($request->filled('category')) {
+            $catName = trim($request->category);
+            $cat = VideoCategory::firstOrCreate(
+                ['name' => $catName],
+                ['slug' => Str::slug($catName), 'status' => true]
+            );
+            $categoryId = $cat->id;
+        } elseif ($request->filled('category_id')) {
+            $categoryId = $request->category_id;
+        }
 
         $thumbnailPath = null;
         if ($request->hasFile('thumbnail_file')) {
@@ -64,7 +77,7 @@ class VideoController extends Controller
         $video = Video::create([
             'title' => $request->title,
             'slug' => Str::slug($request->title),
-            'category_id' => $request->category_id,
+            'category_id' => $categoryId,
             'video_url' => $request->video_url,
             'youtube_id' => $youtubeId,
             'thumbnail' => $thumbnailPath,
@@ -92,13 +105,26 @@ class VideoController extends Controller
         $request->validate([
             'title' => 'required|string|max:191',
             'video_url' => 'required|string|max:255',
-            'category_id' => 'nullable|exists:video_categories,id',
+            'category' => 'nullable|string|max:100',
+            'category_id' => 'nullable',
             'description' => 'nullable|string',
             'thumbnail_file' => 'nullable|image|max:5120',
             'seo_title' => 'nullable|string|max:191',
             'seo_description' => 'nullable|string',
             'seo_keywords' => 'nullable|string',
         ]);
+
+        $categoryId = null;
+        if ($request->filled('category')) {
+            $catName = trim($request->category);
+            $cat = VideoCategory::firstOrCreate(
+                ['name' => $catName],
+                ['slug' => Str::slug($catName), 'status' => true]
+            );
+            $categoryId = $cat->id;
+        } elseif ($request->filled('category_id')) {
+            $categoryId = $request->category_id;
+        }
 
         if ($request->hasFile('thumbnail_file')) {
             $media = $this->mediaService->upload($request->file('thumbnail_file'), 'videos/thumbs', $request->title);
@@ -110,7 +136,7 @@ class VideoController extends Controller
         }
 
         $video->title = $request->title;
-        $video->category_id = $request->category_id;
+        $video->category_id = $categoryId;
         $video->video_url = $request->video_url;
         $video->description = $request->description;
         $video->status = $request->boolean('status', true);

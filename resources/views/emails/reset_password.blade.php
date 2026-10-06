@@ -9,9 +9,9 @@
         <!-- Header -->
         <div style="background-color: #0f172a; padding: 24px; text-align: center;">
             <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">
-                Prime Iets College
+                Prime IELTS College
             </h1>
-            <p style="color: #94a3b8; margin: 6px 0 0; font-size: 13px; font-weight: 700; letter-spacing: 0.5px;">Official Admissions &amp; IETS Training Center</p>
+            <p style="color: #94a3b8; margin: 6px 0 0; font-size: 13px; font-weight: 700; letter-spacing: 0.5px;">Official Admissions &amp; IELTS Training Center</p>
         </div>
 
         <!-- Body -->
@@ -45,13 +45,13 @@
             </p>
             <br>
             <p style="margin-bottom: 0; font-size: 13px;">Warm regards,<br>
-            <strong>Official Admissions &amp; IETS Training Center</strong><br>
-            Prime Iets College</p>
+            <strong>Official Admissions &amp; IELTS Training Center</strong><br>
+            Prime IELTS College</p>
         </div>
 
         <!-- Footer -->
         <div style="background-color: #f8fafc; padding: 16px 24px; text-align: center; border-top: 1px solid #e2e8f0; font-size: 11px; color: #94a3b8;">
-            &copy; {{ date('Y') }} Prime Iets College &bull; Official Admissions &amp; IETS Training Center. All rights reserved.
+            &copy; {{ date('Y') }} Prime IELTS College &bull; Official Admissions &amp; IELTS Training Center. All rights reserved.
         </div>
     </div>
 </body>

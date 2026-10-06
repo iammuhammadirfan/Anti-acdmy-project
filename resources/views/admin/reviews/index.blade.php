@@ -74,7 +74,7 @@
                             </td>
                             <td class="px-6 py-4">
                                 <span class="px-2.5 py-1 bg-slate-100 rounded-md border border-slate-200 text-slate-700 font-semibold text-[11px]">
-                                    {{ $rev->course ?: 'IETS / IELTS Course' }}
+                                    {{ $rev->course ?: 'IELTS Preparation Course' }}
                                 </span>
                             </td>
                             <td class="px-6 py-4">

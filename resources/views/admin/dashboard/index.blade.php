@@ -47,10 +47,10 @@
             </div>
         </div>
 
-        <!-- IETS Results -->
+        <!-- IELTS Results -->
         <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex items-center justify-between min-w-0">
             <div class="min-w-0">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">IETS Success</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">IELTS Success</span>
                 <span class="text-2xl font-extrabold text-slate-900">{{ $metrics['iets_results'] }}</span>
                 <span class="text-[11px] text-purple-600 font-semibold block mt-1 truncate">Verified Band Scores</span>
             </div>

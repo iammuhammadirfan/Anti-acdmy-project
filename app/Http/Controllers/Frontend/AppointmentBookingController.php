@@ -156,7 +156,7 @@ class AppointmentBookingController extends Controller
                     }
                 } else {
                     if ($type === 'iets_test') {
-                        throw new \Exception('Please select an active, pre-scheduled IETS test slot.');
+                        throw new \Exception('Please select an active, pre-scheduled IELTS mock test slot.');
                     }
 
                     // Counseling fallback check against AppointmentSetting max_per_slot
@@ -187,7 +187,7 @@ class AppointmentBookingController extends Controller
                 }
 
                 $purpose = ($type === 'iets_test')
-                    ? ($request->test_type ?: 'IETS Official Test')
+                    ? ($request->test_type ?: 'IELTS Mock Test')
                     : $request->purpose;
 
                 return Appointment::create([

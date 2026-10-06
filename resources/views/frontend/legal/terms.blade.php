@@ -6,7 +6,7 @@
 <section class="py-16 bg-slate-950 text-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 class="text-3xl md:text-4xl font-extrabold mb-4">Terms & Conditions of Enrollment</h1>
-        <p class="text-xs text-slate-400 mb-8">Effective Date: January 1, 2026 &bull; Anti Academy & IETS Institute</p>
+        <p class="text-xs text-slate-400 mb-8">Effective Date: January 1, 2026 &bull; Anti Academy & IELTS Institute</p>
 
         <div class="bg-slate-900 rounded-3xl p-8 md:p-10 border border-slate-800 text-slate-300 text-sm leading-relaxed space-y-6">
             <h2 class="text-xl font-bold text-white">1. Academic Protocol & Mock Examinations</h2>

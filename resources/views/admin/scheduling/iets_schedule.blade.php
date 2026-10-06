@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'IETS Test Schedule & Slots')
-@section('page_title', 'IETS Test Schedule')
+@section('title', 'IELTS Test Schedule & Slots')
+@section('page_title', 'IELTS Test Schedule')
 
 @section('content')
 <div class="space-y-6" x-data="{ 
@@ -101,24 +101,24 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
         <div>
             <div class="flex items-center gap-2">
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800">
-                    IETS Testing Module
+                    IELTS Testing Module
                 </span>
                 <span class="text-xs text-slate-400 font-semibold">• Max 15 Students Default</span>
             </div>
-            <h2 class="text-xl font-extrabold text-slate-900 tracking-tight mt-1">IETS Test Slot &amp; Capacity Manager</h2>
-            <p class="text-xs text-slate-500">Create official IETS test slots with custom time ranges (e.g. 9:00 AM – 10:00 AM). Overlapping slots are strictly blocked.</p>
+            <h2 class="text-xl font-extrabold text-slate-900 tracking-tight mt-1">IELTS Test Slot &amp; Capacity Manager</h2>
+            <p class="text-xs text-slate-500">Create official IELTS test slots with custom time ranges (e.g. 9:00 AM – 10:00 AM). Overlapping slots are strictly blocked.</p>
         </div>
         <div class="flex items-center gap-2">
             @if(auth()->user()->hasPermission('scheduling_iets', 'create'))
             <button type="button" @click="createModal = true" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
                 <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                <span>Create IETS Test Slot</span>
+                <span>Create IELTS Test Slot</span>
             </button>
             @endif
             @if(auth()->user()->hasPermission('appointments', 'view'))
             <a href="{{ route('admin.scheduling.bookings', ['type' => 'iets_test']) }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
                 <i data-lucide="users" class="w-4 h-4"></i>
-                <span>View IETS Bookings</span>
+                <span>View IELTS Bookings</span>
             </a>
             @endif
         </div>
@@ -127,7 +127,7 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
     <!-- Filter Bar -->
     <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex flex-wrap items-center justify-between gap-3">
         <div class="text-xs font-bold text-slate-700">
-            Total IETS Test Sessions: <span class="text-emerald-700 font-black">{{ $slots->total() }}</span>
+            Total IELTS Test Sessions: <span class="text-emerald-700 font-black">{{ $slots->total() }}</span>
         </div>
 
         <form method="GET" action="{{ route('admin.scheduling.iets') }}" class="flex items-center gap-2">
@@ -143,7 +143,7 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
         </form>
     </div>
 
-    <!-- Bulk Delete Action Bar (appears when 1 or more IETS slots are selected) -->
+    <!-- Bulk Delete Action Bar (appears when 1 or more IELTS slots are selected) -->
     @if(auth()->user()->hasPermission('scheduling_iets', 'delete'))
     <div x-show="selectedSlots.length > 0" x-cloak 
          class="bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-4 transition-all">
@@ -153,10 +153,10 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
             </div>
             <div>
                 <div class="text-xs font-bold text-white">
-                    <span x-text="selectedSlots.length" class="text-rose-400 font-extrabold text-sm"></span> IETS Test Slot(s) Selected
+                    <span x-text="selectedSlots.length" class="text-rose-400 font-extrabold text-sm"></span> IELTS Test Slot(s) Selected
                 </div>
                 <div class="text-[11px] text-slate-400">
-                    Delete selected IETS test slots at once.
+                    Delete selected IELTS test slots at once.
                 </div>
             </div>
         </div>
@@ -169,21 +169,21 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
                 Clear Selection
             </button>
 
-            <form action="{{ route('admin.scheduling.slots.bulk-destroy') }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete ALL selected IETS test slots?');">
+            <form action="{{ route('admin.scheduling.slots.bulk-destroy') }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete ALL selected IELTS test slots?');">
                 @csrf
                 <template x-for="id in selectedSlots" :key="id">
                     <input type="hidden" name="slot_ids[]" :value="id">
                 </template>
                 <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold rounded-xl shadow-lg shadow-rose-600/30 transition">
                     <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    <span>Delete Selected IETS Slots</span>
+                    <span>Delete Selected IELTS Slots</span>
                 </button>
             </form>
         </div>
     </div>
     @endif
 
-    <!-- IETS Slots Table -->
+    <!-- IELTS Slots Table -->
     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-slate-600">
@@ -300,7 +300,7 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
                                     </button>
                                     @endif
                                     @if(auth()->user()->hasPermission('scheduling_iets', 'delete'))
-                                    <form action="{{ route('admin.scheduling.slot.destroy', $slot) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this IETS slot?');">
+                                    <form action="{{ route('admin.scheduling.slot.destroy', $slot) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this IELTS slot?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-400 transition" title="Delete Slot">
@@ -314,7 +314,7 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
                     @empty
                         <tr>
                             <td colspan="8" class="py-8 text-center text-slate-400">
-                                No IETS test slots created yet. Click "Create IETS Test Slot" to schedule official test sessions.
+                                No IELTS test slots created yet. Click "Create IELTS Test Slot" to schedule official test sessions.
                             </td>
                         </tr>
                     @endforelse
@@ -329,12 +329,12 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
         @endif
     </div>
 
-    <!-- Create IETS Slot Modal with Overlap Prevention -->
+    <!-- Create IELTS Slot Modal with Overlap Prevention -->
     <div x-show="createModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative" @click.away="createModal = false">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div>
-                    <h3 class="font-extrabold text-base text-slate-900">Create IETS Test Slot</h3>
+                    <h3 class="font-extrabold text-base text-slate-900">Create IELTS Test Slot</h3>
                     <p class="text-xs text-slate-400">Select date and custom non-overlapping time range</p>
                 </div>
                 <button type="button" @click="createModal = false" class="text-slate-400 hover:text-slate-600">
@@ -408,7 +408,7 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
                         <i data-lucide="shield-alert" class="w-4 h-4 text-amber-600"></i>
                         Overlap Protection Rule:
                     </strong>
-                    <p>The system will verify that this slot does not overlap with any existing IETS test slot on the same date. For example, 9:00 AM – 10:00 AM is allowed, and the next slot must start at or after 10:00 AM.</p>
+                    <p>The system will verify that this slot does not overlap with any existing IELTS test slot on the same date. For example, 9:00 AM – 10:00 AM is allowed, and the next slot must start at or after 10:00 AM.</p>
                 </div>
 
                 <div>
@@ -422,18 +422,18 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
                         Cancel
                     </button>
                     <button type="submit" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition">
-                        Save IETS Slot
+                        Save IELTS Slot
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Edit IETS Slot Modal -->
+    <!-- Edit IELTS Slot Modal -->
     <div x-show="editModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative" @click.away="editModal = false">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-                <h3 class="font-extrabold text-base text-slate-900">Edit IETS Slot Configuration</h3>
+                <h3 class="font-extrabold text-base text-slate-900">Edit IELTS Slot Configuration</h3>
                 <button type="button" @click="editModal = false" class="text-slate-400 hover:text-slate-600">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
@@ -524,7 +524,7 @@ x-init="$watch('createStartTime', () => applyCreateDuration()); $watch('editSlot
         <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative" @click.away="studentsModal = false">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div>
-                    <h3 class="font-extrabold text-base text-slate-900">Registered Candidates in IETS Slot</h3>
+                    <h3 class="font-extrabold text-base text-slate-900">Registered Candidates in IELTS Slot</h3>
                     <p class="text-xs text-emerald-600 font-semibold" x-text="currentSlotTitle"></p>
                 </div>
                 <button type="button" @click="studentsModal = false" class="text-slate-400 hover:text-slate-600">

@@ -19,7 +19,7 @@
                     <label class="block text-xs uppercase font-bold text-slate-400 mb-2">Category *</label>
                     <select name="category" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500">
                         <option value="general">General Inquiries</option>
-                        <option value="iets">IETS & IELTS Tests</option>
+                        <option value="iets">IELTS Preparation &amp; Tests</option>
                         <option value="appointments">Evaluation Bookings</option>
                         <option value="courses">Course Formats</option>
                         <option value="admissions">Global Admissions</option>

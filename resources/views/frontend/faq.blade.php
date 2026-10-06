@@ -28,7 +28,7 @@
             <a href="{{ route('faq') }}" class="px-4 py-2 rounded-xl text-xs font-bold transition-all {{ empty($category) ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700' }}">
                 All Questions
             </a>
-            @foreach(['general' => 'General Inquiries', 'iets' => 'IETS & IELTS Tests', 'appointments' => 'Evaluation Bookings', 'courses' => 'Course Formats', 'admissions' => 'Global Admissions'] as $key => $lbl)
+            @foreach(['general' => 'General Inquiries', 'iets' => 'IELTS & English Tests', 'appointments' => 'Evaluation Bookings', 'courses' => 'Course Formats', 'admissions' => 'Global Admissions'] as $key => $lbl)
                 <a href="{{ route('faq', ['category' => $key]) }}" class="px-4 py-2 rounded-xl text-xs font-bold transition-all {{ $category === $key ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700' }}">
                     {{ $lbl }}
                 </a>

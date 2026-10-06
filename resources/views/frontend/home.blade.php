@@ -446,14 +446,14 @@
         </div>
     </section>
 
-    <!-- 5. IETS Program Section -->
+    <!-- 5. IELTS Program Section -->
     <section class="bg-gradient-to-b from-slate-100 to-white py-20 border-y border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-3">
                 <span class="text-xs font-extrabold uppercase tracking-wider text-brand-600 bg-brand-50 border border-brand-200 px-3 py-1 rounded-full">
                     Official Exam Preparation
                 </span>
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900">Comprehensive IETS / IELTS Modules</h2>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900">Comprehensive IELTS Modules</h2>
                 <p class="text-sm text-slate-600">Tailored study programs with intensive 1-on-1 speaking clinics, computer-delivered mock tests, and AI evaluation.</p>
             </div>
 
@@ -493,7 +493,7 @@
 
             <div class="text-center pt-4">
                 <a href="{{ route('iets') }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm px-6 py-3 rounded-xl shadow transition">
-                    <span>Explore Full IETS Curriculum</span>
+                    <span>Explore Full IELTS Curriculum</span>
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
             </div>
@@ -751,7 +751,7 @@
     <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div class="text-center space-y-2">
             <span class="text-xs font-extrabold uppercase tracking-wider text-brand-600 bg-brand-50 border border-brand-200 px-3 py-1 rounded-full">Frequently Asked Questions</span>
-            <h2 class="text-3xl font-extrabold text-slate-900">Got Questions About Admissions &amp; IETS?</h2>
+            <h2 class="text-3xl font-extrabold text-slate-900">Got Questions About Admissions &amp; IELTS?</h2>
         </div>
 
         <div class="space-y-3" x-data="{ activeFaq: null }">

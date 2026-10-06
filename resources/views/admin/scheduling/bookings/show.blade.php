@@ -30,7 +30,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-slate-100">
                     <div>
                         <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-                            {{ $booking->type === 'iets_test' ? 'Official IETS Enrollment Number' : 'Counseling Tracking Code' }}
+                            {{ $booking->type === 'iets_test' ? 'Official IELTS Enrollment Number' : 'Counseling Tracking Code' }}
                         </span>
                         <h3 class="text-2xl font-black font-mono tracking-tight {{ $booking->type === 'iets_test' ? 'text-emerald-600' : 'text-brand-600' }}">
                             {{ $booking->registration_number ?: $booking->booking_code }}
@@ -95,7 +95,7 @@
                         <div class="mt-1 flex items-center gap-2">
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase
                                 {{ $booking->type === 'iets_test' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-blue-50 text-blue-800 border border-blue-200' }}">
-                                {{ $booking->type === 'iets_test' ? 'IETS Test Session' : 'Campus Counseling' }}
+                                {{ $booking->type === 'iets_test' ? 'IELTS Test Session' : 'Campus Counseling' }}
                             </span>
                             <span class="font-bold text-slate-800 text-sm">
                                 {{ $booking->test_type ?: $booking->purpose }}
@@ -138,7 +138,7 @@
                             <option value="">-- Choose New Date &amp; Slot --</option>
                             @forelse($availableSlots as $altSlot)
                                 <option value="{{ $altSlot->id }}">
-                                    [{{ $altSlot->type === 'counseling' ? 'Campus Counseling' : 'IETS Test' }}] {{ $altSlot->slot_date->format('D, M d, Y') }} — {{ $altSlot->start_time }} ({{ $altSlot->capacity - $altSlot->appointments_count }} seats left of {{ $altSlot->capacity }})
+                                    [{{ $altSlot->type === 'counseling' ? 'Campus Counseling' : 'IELTS Test' }}] {{ $altSlot->slot_date->format('D, M d, Y') }} — {{ $altSlot->start_time }} ({{ $altSlot->capacity - $altSlot->appointments_count }} seats left of {{ $altSlot->capacity }})
                                 </option>
                             @empty
                                 <option value="" disabled>No active future slots with available seats found</option>

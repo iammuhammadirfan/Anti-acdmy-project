@@ -15,13 +15,13 @@
                     <input type="text" name="title" value="{{ old('title') }}" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs uppercase font-bold text-slate-400 mb-2">Category</label>
-                    <select name="category_id" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500">
-                        <option value="">-- Select Category --</option>
+                    <label class="block text-xs uppercase font-bold text-slate-400 mb-2">Category (Custom)</label>
+                    <input type="text" name="category" list="video-categories-list" value="{{ old('category') }}" placeholder="Type any custom category (e.g. IELTS Speaking, Campus Vlogs, Tutorials)..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+                    <datalist id="video-categories-list">
                         @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                            <option value="{{ $cat->name }}"></option>
                         @endforeach
-                    </select>
+                    </datalist>
                 </div>
             </div>
 
