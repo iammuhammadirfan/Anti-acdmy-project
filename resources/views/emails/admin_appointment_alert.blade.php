@@ -7,8 +7,8 @@
 <body style="font-family: Arial, sans-serif; background: #f3f4f6; margin: 0; padding: 20px;">
     <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;">
         <div style="background: #0f172a; padding: 20px; color: #ffffff; text-align: center;">
-            <h2 style="margin: 0; font-size: 20px; font-weight: 800;">Prime Iets College</h2>
-            <p style="margin: 4px 0 0 0; font-size: 12px; font-weight: 700; color: #94a3b8; letter-spacing: 0.5px;">Official Admissions &amp; IETS Training Center</p>
+            <h2 style="margin: 0; font-size: 20px; font-weight: 800;">Prime IELTS College</h2>
+            <p style="margin: 4px 0 0 0; font-size: 12px; font-weight: 700; color: #94a3b8; letter-spacing: 0.5px;">Official Admissions &amp; IELTS Training Center</p>
         </div>
         <div style="padding: 25px; color: #374151; line-height: 1.6;">
             <h3 style="color: #1e3a8a; margin-top: 0;">New Appointment / Test Booking Received</h3>
@@ -28,7 +28,7 @@
             <p>Please log in to the admin dashboard to review, approve or manage this appointment slot.</p>
         </div>
         <div style="background: #f9fafb; padding: 12px; text-align: center; color: #9ca3af; font-size: 11px; border-top: 1px solid #e5e7eb;">
-            &copy; {{ date('Y') }} Prime Iets College &bull; Official Admissions &amp; IETS Training Center. Internal Alert.
+            &copy; {{ date('Y') }} Prime IELTS College &bull; Official Admissions &amp; IELTS Training Center. Internal Alert.
         </div>
     </div>
 </body>

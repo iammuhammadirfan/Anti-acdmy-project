@@ -9,7 +9,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h2 class="text-lg font-bold text-slate-900">Interactive Slot Calendar</h2>
-            <p class="text-xs text-slate-500">Inspect scheduled IETS tests and campus counseling sessions by date.</p>
+            <p class="text-xs text-slate-500">Inspect scheduled IELTS tests and campus counseling sessions by date.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
             <button type="button" @click="addSlotModal = true" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
@@ -141,7 +141,7 @@
                                 <span class="font-extrabold text-sm text-slate-900 block">{{ $slot->start_time }}</span>
                                 <span class="text-[11px] font-semibold uppercase
                                     {{ $slot->type === 'iets_test' ? 'text-emerald-700' : 'text-blue-700' }}">
-                                    {{ $slot->type === 'iets_test' ? 'IETS Test' : 'Counseling' }}
+                                    {{ $slot->type === 'iets_test' ? 'IELTS Test' : 'Counseling' }}
                                 </span>
                             </div>
                             <div class="text-right">
@@ -205,7 +205,7 @@
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Slot Type *</label>
                     <select name="type" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
-                        <option value="iets_test" selected>IETS Test (Capacity default: 15)</option>
+                        <option value="iets_test" selected>IELTS Test (Capacity default: 15)</option>
                         <option value="counseling">Campus Counseling</option>
                     </select>
                 </div>

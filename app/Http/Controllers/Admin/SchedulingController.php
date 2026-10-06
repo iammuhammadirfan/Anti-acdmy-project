@@ -198,11 +198,11 @@ class SchedulingController extends Controller
             return back()->with('error', "End time ({$endTime}) must be strictly after start time ({$startTime}).")->withInput();
         }
 
-        // Overlap Check for IETS Test Slots
+        // Overlap Check for IELTS Test Slots
         if ($request->type === 'iets_test') {
             $overlap = AppointmentSlot::checkIetsOverlap($date, $startTime, $endTime);
             if ($overlap) {
-                return back()->with('error', "Overlap Conflict: The requested IETS slot ({$startTime} – {$endTime}) overlaps with an existing IETS slot ({$overlap->start_time} – {$overlap->end_time}) on {$date}. Overlapping IETS slots are strictly not allowed.")->withInput();
+                return back()->with('error', "Overlap Conflict: The requested IELTS Mock Test slot ({$startTime} – {$endTime}) overlaps with an existing slot ({$overlap->start_time} – {$overlap->end_time}) on {$date}. Overlapping test slots are strictly not allowed.")->withInput();
             }
         }
 
@@ -230,9 +230,10 @@ class SchedulingController extends Controller
             'created_by' => auth()->id(),
         ]);
 
-        ActivityLog::log('create', 'appointments', "Created {$slot->type} slot on {$slot->slot_date} ({$slot->start_time} – {$slot->end_time}) with capacity {$slot->capacity}.");
+        $typeLabel = ($slot->type === 'iets_test') ? 'IELTS Mock Test' : 'Counseling';
+        ActivityLog::log('create', 'appointments', "Created {$typeLabel} slot on {$slot->slot_date->format('M d, Y')} ({$slot->start_time} – {$slot->end_time}) with capacity {$slot->capacity}.");
 
-        return back()->with('success', "{$slot->type} slot created for {$slot->slot_date->format('M d, Y')} ({$slot->start_time} – {$slot->end_time}) with {$slot->capacity} seats.");
+        return back()->with('success', "{$typeLabel} slot created for {$slot->slot_date->format('M d, Y')} ({$slot->start_time} – {$slot->end_time}) with {$slot->capacity} seats.");
     }
 
     /**
@@ -346,7 +347,7 @@ class SchedulingController extends Controller
         if ($slot->type === 'iets_test' && $endTime) {
             $overlap = AppointmentSlot::checkIetsOverlap($slot->slot_date->toDateString(), $startTime, $endTime, $slot->id);
             if ($overlap) {
-                return back()->with('error', "Slot conflict: The updated time range ({$startTime} – {$endTime}) overlaps with another IETS slot ({$overlap->start_time} – {$overlap->end_time}).")->withInput();
+                return back()->with('error', "Slot conflict: The updated time range ({$startTime} – {$endTime}) overlaps with another IELTS Mock Test slot ({$overlap->start_time} – {$overlap->end_time}).")->withInput();
             }
         }
 

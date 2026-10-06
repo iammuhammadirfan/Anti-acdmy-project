@@ -19,7 +19,7 @@
                 <div>
                     <label class="block text-xs uppercase font-bold text-slate-400 mb-2">Category *</label>
                     <select name="category" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500">
-                        @foreach(['general' => 'General Inquiries', 'iets' => 'IETS & IELTS Tests', 'appointments' => 'Evaluation Bookings', 'courses' => 'Course Formats', 'admissions' => 'Global Admissions', 'facilities' => 'Campus & Labs'] as $cKey => $cLbl)
+                        @foreach(['general' => 'General Inquiries', 'iets' => 'IELTS Preparation & Tests', 'appointments' => 'Evaluation Bookings', 'courses' => 'Course Formats', 'admissions' => 'Global Admissions', 'facilities' => 'Campus & Labs'] as $cKey => $cLbl)
                             <option value="{{ $cKey }}" {{ $faq->category === $cKey ? 'selected' : '' }}>{{ $cLbl }}</option>
                         @endforeach
                     </select>

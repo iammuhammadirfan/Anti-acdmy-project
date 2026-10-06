@@ -8,7 +8,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h2 class="text-lg font-bold text-slate-900">Automated Email Templates</h2>
-            <p class="text-xs text-slate-500">Customize the emails dispatched to students for confirmations, IETS test enrollment numbers, cancellations, and reminders.</p>
+            <p class="text-xs text-slate-500">Customize the emails dispatched to students for confirmations, IELTS test enrollment numbers, cancellations, and reminders.</p>
         </div>
     </div>
 

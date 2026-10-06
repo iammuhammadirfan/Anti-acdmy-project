@@ -66,7 +66,7 @@
             <div class="lg:col-span-2">
                 <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Search Student / Reg #</label>
                 <div class="relative">
-                    <input type="text" name="search" value="{{ $search }}" placeholder="Name, email, phone, IETS-2026..."
+                    <input type="text" name="search" value="{{ $search }}" placeholder="Name, email, phone, IELTS-2026..."
                            class="w-full pl-9 pr-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brand-500">
                     <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
                 </div>
@@ -77,7 +77,7 @@
                 <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Type</label>
                 <select name="type" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
                     <option value="">All Types</option>
-                    <option value="iets_test" {{ $type === 'iets_test' ? 'selected' : '' }}>IETS Test</option>
+                    <option value="iets_test" {{ $type === 'iets_test' ? 'selected' : '' }}>IELTS Test</option>
                     <option value="counseling" {{ $type === 'counseling' ? 'selected' : '' }}>Campus Counseling</option>
                 </select>
             </div>
@@ -197,7 +197,7 @@
                             <td class="py-3.5 px-4">
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase
                                     {{ $b->type === 'iets_test' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-blue-50 text-blue-800 border border-blue-200' }}">
-                                    {{ $b->type === 'iets_test' ? 'IETS Test' : 'Counseling' }}
+                                    {{ $b->type === 'iets_test' ? 'IELTS Test' : 'Counseling' }}
                                 </span>
                                 <div class="text-slate-700 font-medium text-[11px] mt-1">
                                     {{ $b->test_type ?: $b->purpose }}

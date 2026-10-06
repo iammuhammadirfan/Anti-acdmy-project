@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'Scheduling Dashboard — ' . ($globalSettings['academy_name'] ?? 'Academy'))
-@section('page_title', 'Appointment & IETS Test Scheduling')
+@section('page_title', 'Appointment & IELTS Test Scheduling')
 
 @section('content')
 <div class="space-y-8">
@@ -9,7 +9,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Scheduling Operations Center</h2>
-            <p class="text-xs text-slate-500">Live monitoring for IETS test sessions, candidate capacities, and campus counseling appointments.</p>
+            <p class="text-xs text-slate-500">Live monitoring for IELTS test sessions, candidate capacities, and campus counseling appointments.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2.5">
             <a href="{{ route('admin.scheduling.calendar') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition">
@@ -51,7 +51,7 @@
         </a>
         <a href="{{ route('admin.scheduling.iets') }}" class="px-3.5 py-2 rounded-xl text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition">
             <i data-lucide="award" class="w-4 h-4 text-slate-400"></i>
-            <span>IETS Tests</span>
+            <span>IELTS Tests</span>
         </a>
         <a href="{{ route('admin.scheduling.students') }}" class="px-3.5 py-2 rounded-xl text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition">
             <i data-lucide="user-check" class="w-4 h-4 text-slate-400"></i>
@@ -81,10 +81,10 @@
             </div>
         </div>
 
-        <!-- Today's IETS Tests -->
+        <!-- Today's IELTS Tests -->
         <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex items-center justify-between">
             <div>
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Today's IETS Tests</span>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Today's IELTS Tests</span>
                 <span class="text-2xl font-black text-slate-900 mt-1 block">{{ $metrics['today_iets'] }}</span>
                 <span class="text-[11px] text-emerald-600 font-semibold mt-0.5 block">Scheduled Candidates</span>
             </div>
@@ -127,9 +127,9 @@
         </div>
 
         <div class="bg-gradient-to-br from-emerald-900 to-slate-900 text-white rounded-2xl p-5 shadow-sm space-y-1">
-            <span class="text-[11px] text-emerald-300 uppercase font-bold tracking-wider">Total IETS Test Candidates</span>
+            <span class="text-[11px] text-emerald-300 uppercase font-bold tracking-wider">Total IELTS Test Candidates</span>
             <div class="text-3xl font-black tracking-tight">{{ $metrics['total_iets_students'] }}</div>
-            <span class="text-xs text-slate-300 block">Registered with unique IETS numbers</span>
+            <span class="text-xs text-slate-300 block">Registered with unique IELTS numbers</span>
         </div>
 
         <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-2xl p-5 shadow-sm space-y-1">
@@ -139,13 +139,13 @@
         </div>
     </div>
 
-    <!-- Two-Column Section: Upcoming IETS Slots & Recent Bookings -->
+    <!-- Two-Column Section: Upcoming IELTS Slots & Recent Bookings -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Upcoming IETS Slots with Seat Tracking -->
+        <!-- Upcoming IELTS Slots with Seat Tracking -->
         <div class="lg:col-span-1 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-5">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="font-extrabold text-slate-900 text-sm">Upcoming IETS Test Slots</h3>
+                    <h3 class="font-extrabold text-slate-900 text-sm">Upcoming IELTS Test Slots</h3>
                     <p class="text-xs text-slate-400">Live seat capacity tracker</p>
                 </div>
                 <a href="{{ route('admin.scheduling.slots', ['type' => 'iets_test']) }}" class="text-xs font-bold text-brand-600 hover:underline">
@@ -196,7 +196,7 @@
                 <div class="p-5 border-b border-slate-100 flex items-center justify-between">
                     <div>
                         <h3 class="font-extrabold text-slate-900 text-sm">Recent Student Bookings</h3>
-                        <p class="text-xs text-slate-400">Latest registration entries across counseling &amp; IETS</p>
+                        <p class="text-xs text-slate-400">Latest registration entries across counseling &amp; IELTS</p>
                     </div>
                     <a href="{{ route('admin.scheduling.bookings') }}" class="text-xs font-bold text-brand-600 hover:underline">
                         View All Bookings &rarr;
@@ -230,7 +230,7 @@
                                     <td class="py-3 px-4">
                                         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase
                                             {{ $b->type === 'iets_test' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-blue-700 border border-blue-200' }}">
-                                            {{ $b->type === 'iets_test' ? 'IETS Test' : 'Counseling' }}
+                                            {{ $b->type === 'iets_test' ? 'IELTS Test' : 'Counseling' }}
                                         </span>
                                     </td>
                                     <td class="py-3 px-4">

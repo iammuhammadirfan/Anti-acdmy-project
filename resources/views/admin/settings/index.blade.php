@@ -38,9 +38,9 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Academy Subtitle / Tagline</label>
-                    <input type="text" name="academy_tagline" value="{{ $settings['academy_tagline'] ?? '' }}" placeholder="&amp; IETS Center"
+                    <input type="text" name="academy_tagline" value="{{ $settings['academy_tagline'] ?? '' }}" placeholder="&amp; IELTS Center"
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                    <p class="text-[11px] text-slate-400 mt-1">Shown below academy logo/name in header (e.g. &amp; IETS Center).</p>
+                    <p class="text-[11px] text-slate-400 mt-1">Shown below academy logo/name in header (e.g. &amp; IELTS Center).</p>
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
@@ -417,7 +417,7 @@
                             <span>Admin WhatsApp Instant Alerts</span>
                             <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">100% Free - CallMeBot</span>
                         </h3>
-                        <p class="text-xs text-slate-600">Receive instant WhatsApp alerts on your phone whenever any student registers for an IETS Mock Test or Counseling Session.</p>
+                        <p class="text-xs text-slate-600">Receive instant WhatsApp alerts on your phone whenever any student registers for an IELTS Mock Test or Counseling Session.</p>
                     </div>
                 </div>
             </div>

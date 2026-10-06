@@ -10,17 +10,17 @@
         <div class="lg:col-span-2 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
             <div>
                 <h3 class="font-extrabold text-base text-slate-900">Capacity &amp; Working Hours Rules</h3>
-                <p class="text-xs text-slate-500">Configure global defaults for IETS test capacities, counseling durations, and operating schedules.</p>
+                <p class="text-xs text-slate-500">Configure global defaults for IELTS test capacities, counseling durations, and operating schedules.</p>
             </div>
 
             <form action="{{ route('admin.scheduling.settings.update') }}" method="POST" class="space-y-6">
                 @csrf
 
-                <!-- IETS Test Capacity Settings -->
+                <!-- IELTS Test Capacity Settings -->
                 <div class="p-5 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-3">
                     <div class="flex items-center gap-2">
                         <i data-lucide="shield-check" class="w-5 h-5 text-emerald-600"></i>
-                        <h4 class="font-extrabold text-sm text-emerald-950">IETS Test Slot Capacity Enforcement</h4>
+                        <h4 class="font-extrabold text-sm text-emerald-950">IELTS Test Slot Capacity Enforcement</h4>
                     </div>
                     <p class="text-xs text-emerald-800 leading-relaxed">
                         Default capacity is set to <strong>15 students per slot</strong>. Individual slots can also have custom capacities set in the Slot Manager.

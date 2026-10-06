@@ -10,7 +10,7 @@
 
         <div class="bg-slate-900 rounded-3xl p-8 md:p-10 border border-slate-800 text-slate-300 text-sm leading-relaxed space-y-6">
             <h2 class="text-xl font-bold text-white">1. Information Collection & Usage</h2>
-            <p>At Anti Academy & IETS Preparation Institute, we collect personal information you provide when scheduling consultations, registering for diagnostic assessments, submitting inquiries, or communicating with our Agentic AI Advisor. This includes your name, email address, phone number, current English proficiency level, and academic history.</p>
+            <p>At Anti Academy & IELTS Preparation Institute, we collect personal information you provide when scheduling consultations, registering for diagnostic assessments, submitting inquiries, or communicating with our Agentic AI Advisor. This includes your name, email address, phone number, current English proficiency level, and academic history.</p>
 
             <h2 class="text-xl font-bold text-white">2. Appointment Scheduling & Double-Booking Safeguards</h2>
             <p>Your calendar appointments and mock test booking requests are stored securely in our database. We use this information solely to coordinate admissions interviews, send appointment confirmation emails via SMTP, and provide optional WhatsApp appointment notifications.</p>

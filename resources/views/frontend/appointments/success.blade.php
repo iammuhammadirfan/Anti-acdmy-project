@@ -20,7 +20,7 @@
         <!-- Status Pill -->
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-extrabold {{ $isIets ? 'bg-emerald-50 text-emerald-800 border border-emerald-300' : 'bg-brand-50 text-brand-800 border border-brand-300' }}">
             <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
-            <span>{{ $isIets ? 'IETS Official Test Registration Confirmed' : 'Campus Counseling Appointment Confirmed' }}</span>
+            <span>{{ $isIets ? 'IELTS Official Test Registration Confirmed' : 'Campus Counseling Appointment Confirmed' }}</span>
         </div>
 
         <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
@@ -238,7 +238,7 @@
                     <div class="pt-1">
                         <span class="text-[10px] text-slate-500 font-semibold uppercase block">Session Type:</span>
                         <span class="text-sm font-bold text-slate-950 block leading-snug">
-                            {{ $isIets ? ($appointment->test_type ?: 'IETS Official Test') : ($appointment->purpose ?: 'Campus Counseling') }}
+                            {{ $isIets ? ($appointment->test_type ?: 'IELTS Mock Test') : ($appointment->purpose ?: 'Campus Counseling') }}
                         </span>
                     </div>
 

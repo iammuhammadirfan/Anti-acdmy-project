@@ -115,7 +115,7 @@
                                 <td class="py-3 px-4 font-semibold text-slate-900">
                                     <div class="flex items-center gap-2">
                                         @if($key === 'scheduling_iets')
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800">IETS</span>
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800">IELTS</span>
                                         @elseif($key === 'scheduling_counseling')
                                             <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-blue-100 text-blue-800">Counseling</span>
                                         @elseif($key === 'appointments')

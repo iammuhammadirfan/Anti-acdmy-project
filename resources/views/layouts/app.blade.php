@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', ($globalSettings['academy_name'] ?? 'Academy') . ' — World-Class Academic & IELTS Coaching')</title>
     <meta name="description" content="@yield('meta_description', ($globalSettings['academy_name'] ?? 'Academy') . ' provides premier higher education prep, IELTS band coaching with AI evaluation, modern multimedia classrooms, and distinguished faculty.')">
-    <meta name="keywords" content="@yield('meta_keywords', 'IELTS, IETS, Academy, English Preparation, Band 8, Academic Coaching, Study Abroad')">
+    <meta name="keywords" content="@yield('meta_keywords', 'IELTS, Academy, English Preparation, Band 8, Academic Coaching, Study Abroad')">
     <link rel="canonical" href="@yield('canonical_url', url()->current())">
     <meta name="robots" content="@yield('robots_meta', 'index, follow')">
 
@@ -70,7 +70,7 @@
     @php
         $siteLogo = $globalSettings['academy_logo'] ?? \App\Models\Setting::get('academy_logo');
         $siteName = $globalSettings['academy_name'] ?? \App\Models\Setting::get('academy_name', 'Academy');
-        $siteTagline = $globalSettings['academy_tagline'] ?? \App\Models\Setting::get('academy_tagline', '& IETS Center');
+        $siteTagline = $globalSettings['academy_tagline'] ?? \App\Models\Setting::get('academy_tagline', '& IELTS Center');
         $sitePhone = $globalSettings['contact_phone'] ?? \App\Models\Setting::get('contact_phone', '+1 (555) 234-5678');
         $sitePhone2 = $globalSettings['contact_phone_2'] ?? \App\Models\Setting::get('contact_phone_2', '');
         $siteTimings = $globalSettings['academy_timings'] ?? \App\Models\Setting::get('academy_timings', 'Mon - Sat: 8:00 AM - 7:00 PM');
@@ -168,7 +168,7 @@
                 <a href="tel:{{ $sitePhone }}" class="flex items-center gap-1.5 hover:text-white transition"><i data-lucide="phone" class="w-3.5 h-3.5 text-accent-500 shrink-0"></i> <span>{{ $sitePhone }}</span></a>
                 <a href="mailto:{{ $siteEmail }}" class="items-center gap-1.5 hover:text-white transition hidden md:flex"><i data-lucide="mail" class="w-3.5 h-3.5 text-accent-500 shrink-0"></i> <span>{{ $siteEmail }}</span></a>
                 <span class="hidden lg:inline text-slate-600">|</span>
-                <span class="hidden lg:inline text-slate-400">Admissions Open for Spring {{ date('Y') }} IETS &amp; Language Batches</span>
+                <span class="hidden lg:inline text-slate-400">Admissions Open for Spring {{ date('Y') }} IELTS &amp; Language Batches</span>
             </div>
             <div class="flex items-center gap-3 shrink-0">
                 <a href="{{ route('appointments') }}" class="text-accent-500 hover:text-accent-400 font-semibold flex items-center gap-1">
@@ -276,7 +276,7 @@
                     <a href="{{ route('iets') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Classes & Timings</a>
                 @endif
                 @if(\App\Services\PageVisibilityService::isPageVisible('results'))
-                    <a href="{{ route('iets.results') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">IETS Results</a>
+                    <a href="{{ route('iets.results') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">IELTS Results</a>
                 @endif
                 @if(\App\Services\PageVisibilityService::isPageVisible('teachers'))
                     <a href="{{ route('teachers') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Teachers</a>
@@ -355,7 +355,7 @@
                         <span class="text-xl font-bold text-white tracking-tight">{{ $siteName }}</span>
                     </div>
                     <p class="text-sm text-slate-400 leading-relaxed pr-6">
-                        An elite educational institution dedicated to higher learning, language fluency, and premier IELTS/IETS test preparation. Featuring AI-assisted evaluation, world-class faculty, and modern laboratory infrastructure.
+                        An elite educational institution dedicated to higher learning, language fluency, and premier IELTS test preparation. Featuring AI-assisted evaluation, world-class faculty, and modern laboratory infrastructure.
                     </p>
                     <div class="flex items-center gap-3 pt-2">
                         @if(!empty($fbLink))
@@ -400,10 +400,10 @@
 
                 <!-- Col 3: Programs -->
                 <div>
-                    <h4 class="text-white font-semibold text-sm uppercase tracking-wider mb-4">IETS / IELTS Prep</h4>
+                    <h4 class="text-white font-semibold text-sm uppercase tracking-wider mb-4">IELTS Prep</h4>
                     <ul class="space-y-2.5 text-sm">
                         @if(\App\Services\PageVisibilityService::isPageVisible('iets'))
-                            <li><a href="{{ route('iets') }}" class="hover:text-white transition">IETS Overview</a></li>
+                            <li><a href="{{ route('iets') }}" class="hover:text-white transition">IELTS Overview</a></li>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('results'))
                             <li><a href="{{ route('iets.results') }}" class="hover:text-white transition">Band Results &amp; Scores</a></li>
@@ -600,8 +600,8 @@
             <!-- Quick Action Pills -->
             <div class="p-2 border-t border-slate-100 bg-white flex gap-1.5 overflow-x-auto text-xs whitespace-nowrap">
                 <button @click="sendPreset('Check available slots for tomorrow')" class="bg-slate-100 hover:bg-brand-50 hover:text-brand-600 px-2.5 py-1 rounded-full text-slate-600 transition">📅 Tomorrow Slots</button>
-                <button @click="sendPreset('Who teaches IETS?')" class="bg-slate-100 hover:bg-brand-50 hover:text-brand-600 px-2.5 py-1 rounded-full text-slate-600 transition">👨‍🏫 Teachers</button>
-                <button @click="sendPreset('Tell me about IETS band scoring')" class="bg-slate-100 hover:bg-brand-50 hover:text-brand-600 px-2.5 py-1 rounded-full text-slate-600 transition">🎯 Band Scoring</button>
+                <button @click="sendPreset('Who teaches IELTS?')" class="bg-slate-100 hover:bg-brand-50 hover:text-brand-600 px-2.5 py-1 rounded-full text-slate-600 transition">👨‍🏫 Teachers</button>
+                <button @click="sendPreset('Tell me about IELTS band scoring')" class="bg-slate-100 hover:bg-brand-50 hover:text-brand-600 px-2.5 py-1 rounded-full text-slate-600 transition">🎯 Band Scoring</button>
             </div>
 
             <!-- Chat Input Box -->

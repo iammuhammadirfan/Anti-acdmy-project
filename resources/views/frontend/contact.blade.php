@@ -132,7 +132,7 @@
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Inquiry Topic</label>
                                 <select name="subject" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
-                                    <option value="IETS Academic Program Inquiry">IETS Academic Program Inquiry</option>
+                                    <option value="IELTS Academic Program Inquiry">IELTS Academic Program Inquiry</option>
                                     <option value="General Training / Express Entry Inquiry">General Training / Express Entry Inquiry</option>
                                     <option value="Private 1-on-1 Speaking Clinics">Private 1-on-1 Speaking Clinics</option>
                                     <option value="Global University Admissions Guidance">Global University Admissions Guidance</option>

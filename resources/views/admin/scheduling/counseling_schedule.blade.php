@@ -16,7 +16,7 @@
                 <span class="text-xs text-slate-400 font-semibold">• Auto 9:00 AM – 6:00 PM • Single Slots</span>
             </div>
             <h2 class="text-xl font-extrabold text-slate-900 tracking-tight mt-1">Counseling Daily Schedule</h2>
-            <p class="text-xs text-slate-500">Automatically generated 1-on-1 counseling appointment slots. Independent from IETS test sessions.</p>
+            <p class="text-xs text-slate-500">Automatically generated 1-on-1 counseling appointment slots. Independent from IELTS test sessions.</p>
         </div>
         <div class="flex items-center gap-2">
             @if(auth()->user()->hasPermission('scheduling_counseling', 'edit'))

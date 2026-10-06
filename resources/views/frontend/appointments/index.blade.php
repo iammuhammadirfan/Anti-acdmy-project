@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Book an Academic Counseling Session or IETS Mock Test — ' . ($globalSettings['academy_name'] ?? 'Academy'))
-@section('meta_description', 'Official booking portal for Campus Counseling Sessions and IETS Mock Testing at ' . ($globalSettings['academy_name'] ?? 'our academy') . '. Real-time slot availability, instant confirmed enrollment.')
+@section('title', 'Book an Academic Counseling Session or IELTS Mock Test — ' . ($globalSettings['academy_name'] ?? 'Academy'))
+@section('meta_description', 'Official booking portal for Campus Counseling Sessions and IELTS Mock Testing at ' . ($globalSettings['academy_name'] ?? 'our academy') . '. Real-time slot availability, instant confirmed enrollment.')
 
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8" 
@@ -15,7 +15,7 @@
         </span>
         
         <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight" 
-            x-text="appointmentType === 'iets_test' ? 'Schedule Your IETS Mock Test' : 'Schedule Your Campus Counseling Session'">
+            x-text="appointmentType === 'iets_test' ? 'Schedule Your IELTS Mock Test' : 'Schedule Your Campus Counseling Session'">
             Schedule Your Campus Counseling Session
         </h1>
         
@@ -83,7 +83,7 @@
                     </div>
                 </button>
 
-                <!-- IETS Test Option -->
+                <!-- IELTS Test Option -->
                 <button type="button" 
                         @click="setType('iets_test')"
                         :class="appointmentType === 'iets_test' 
@@ -96,11 +96,11 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between">
-                            <span class="font-extrabold text-sm text-slate-900">IETS Mock Test</span>
+                            <span class="font-extrabold text-sm text-slate-900">IELTS Mock Test</span>
                             <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800">Max 15 Seats</span>
                         </div>
                         <p class="text-xs text-slate-500 mt-1 line-clamp-2">
-                            Official IETS / IELTS mock exam test sessions. Timed exam environment with band score assessment.
+                            Official IELTS mock exam test sessions. Timed exam environment with band score assessment.
                         </p>
                     </div>
                 </button>
@@ -121,7 +121,7 @@
                 <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
                     <span class="w-6 h-6 rounded-full bg-brand-600 text-white font-bold text-xs flex items-center justify-center">2</span>
                     <h3 class="font-bold text-slate-900 text-base"
-                        x-text="appointmentType === 'iets_test' ? 'Select IETS Mock Test Date & Time Slot' : 'Select Counseling Date & Time Slot'">
+                        x-text="appointmentType === 'iets_test' ? 'Select IELTS Mock Test Date & Time Slot' : 'Select Counseling Date & Time Slot'">
                         Select Appointment Date
                     </h3>
                 </div>
@@ -147,12 +147,12 @@
                              :class="appointmentType === 'iets_test' ? 'bg-emerald-50/60 border-emerald-200/80 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-600'">
                             <span class="font-bold block text-xs"
                                   :class="appointmentType === 'iets_test' ? 'text-emerald-950' : 'text-slate-800'">
-                                <span x-text="appointmentType === 'iets_test' ? 'IETS Mock Test Session Policy:' : 'Counseling Session Policy:'"></span>
+                                <span x-text="appointmentType === 'iets_test' ? 'IELTS Mock Test Session Policy:' : 'Counseling Session Policy:'"></span>
                             </span>
                             <template x-if="appointmentType === 'iets_test'">
                                 <div class="space-y-1">
                                     <p>• Strict maximum capacity of <strong>15 students per slot</strong>.</p>
-                                    <p>• Unique Enrollment Number (<strong>IETS-2026-XXXXXX</strong>) generated on confirmation.</p>
+                                    <p>• Unique Enrollment Number (<strong>IELTS-2026-XXXXXX</strong>) generated on confirmation.</p>
                                     <p>• Real-time server-side race condition &amp; duplicate check.</p>
                                 </div>
                             </template>
@@ -188,7 +188,7 @@
                     <div x-show="!loadingSlots && availableSlots.length === 0" class="p-6 rounded-2xl bg-amber-50 text-amber-900 border border-amber-200 text-xs text-center font-medium space-y-1">
                         <p class="font-bold text-sm">No scheduled slots available for this date.</p>
                         <p x-text="appointmentType === 'iets_test' 
-                            ? 'No IETS mock test sessions are scheduled on this date. Please pick another upcoming date.' 
+                            ? 'No IELTS mock test sessions are scheduled on this date. Please pick another upcoming date.' 
                             : 'The academy may be closed or on a scheduled break. Please pick another date.'"></p>
                     </div>
 
@@ -338,15 +338,15 @@
                 <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
                     <span class="w-6 h-6 rounded-full bg-brand-600 text-white font-bold text-xs flex items-center justify-center">3</span>
                     <h3 class="font-bold text-slate-900 text-base"
-                        x-text="appointmentType === 'iets_test' ? 'IETS Mock Test Candidate Information' : 'Student & Visitor Information'">
+                        x-text="appointmentType === 'iets_test' ? 'IELTS Mock Test Candidate Information' : 'Student & Visitor Information'">
                         Your Information
                     </h3>
                 </div>
 
-                <!-- Test Type Selection (Shown only when IETS Mock Test is selected) -->
+                <!-- Test Type Selection (Shown only when IELTS Mock Test is selected) -->
                 <div x-show="appointmentType === 'iets_test'" class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200/80 space-y-2">
                     <label class="block text-xs font-bold uppercase tracking-wider text-emerald-900">
-                        Select IETS Mock Test Type *
+                        Select IELTS Mock Test Type *
                     </label>
                     <select name="test_type" :required="appointmentType === 'iets_test'" 
                             class="w-full px-3.5 py-2.5 bg-white border border-emerald-300 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500">
@@ -392,7 +392,7 @@
                                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
                     </div>
 
-                    <!-- Conditional Fields for IETS Test -->
+                    <!-- Conditional Fields for IELTS Test -->
                     <template x-if="appointmentType === 'iets_test'">
                         <div class="contents">
                             <div>
@@ -419,7 +419,7 @@
                             Session Purpose *
                         </label>
                         <select name="purpose" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
-                            <option value="IETS / IELTS Diagnostic Consultation">IETS / IELTS Diagnostic Consultation</option>
+                            <option value="IELTS Diagnostic Consultation">IELTS Diagnostic Consultation</option>
                             <option value="Admissions &amp; Course Enrollment">Admissions &amp; Course Enrollment</option>
                             <option value="Campus Tour &amp; Facility Inspection">Campus Tour &amp; Facility Inspection</option>
                             <option value="Academic Counseling &amp; Study Abroad Guidance">Academic Counseling &amp; Study Abroad Guidance</option>
@@ -442,7 +442,9 @@
                         <div>Selected: <strong class="text-slate-900" x-text="selectedDate + ' at ' + selectedSlot"></strong></div>
                         <div class="text-[11px] text-brand-600 font-semibold" 
                              x-text="appointmentType === 'iets_test' ? 'Enrollment number will be generated automatically' : 'Instant confirmation via email'"></div>
-                                  <button type="submit" 
+                    </div>
+
+                    <button type="submit" 
                             :disabled="!selectedSlot || isSubmitting"
                             :class="[
                                 isSubmitting ? 'opacity-80 cursor-wait' : '',
@@ -463,7 +465,7 @@
                         <template x-if="!isSubmitting">
                             <span class="flex items-center gap-2">
                                 <i data-lucide="check-circle" class="w-4 h-4"></i>
-                                <span x-text="appointmentType === 'iets_test' ? 'Register for IETS Mock Test' : 'Confirm Counseling Booking'">
+                                <span x-text="appointmentType === 'iets_test' ? 'Register for IELTS Mock Test' : 'Confirm Counseling Booking'">
                                     Confirm Appointment Booking
                                 </span>
                             </span>

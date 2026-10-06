@@ -8,7 +8,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h2 class="text-lg font-bold text-slate-900">Student &amp; Candidate Registry</h2>
-            <p class="text-xs text-slate-500">Directory of all students who have registered for counseling or IETS test slots.</p>
+            <p class="text-xs text-slate-500">Directory of all students who have registered for counseling or IELTS test slots.</p>
         </div>
         <form method="GET" action="{{ route('admin.scheduling.students') }}" class="flex items-center gap-2">
             <input type="text" name="search" value="{{ $search }}" placeholder="Search by name, email, phone..."

@@ -37,7 +37,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h2 class="text-lg font-bold text-slate-900">Time Slot &amp; Capacity Control</h2>
-            <p class="text-xs text-slate-500">Configure appointment dates, times, and maximum student capacities (default 15 for IETS).</p>
+            <p class="text-xs text-slate-500">Configure appointment dates, times, and maximum student capacities (default 15 for IELTS).</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
             @if(auth()->user()->canAccessAnySection(['scheduling_iets', 'scheduling_counseling', 'appointments'], 'create'))
@@ -62,7 +62,7 @@
             </a>
             <a href="{{ route('admin.scheduling.slots', ['type' => 'iets_test']) }}" 
                class="px-3 py-1.5 rounded-xl text-xs font-bold transition {{ $type === 'iets_test' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100' }}">
-                IETS Tests Only (Max 15)
+                IELTS Tests Only (Max 15)
             </a>
             <a href="{{ route('admin.scheduling.slots', ['type' => 'counseling']) }}" 
                class="px-3 py-1.5 rounded-xl text-xs font-bold transition {{ $type === 'counseling' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-800 hover:bg-blue-100' }}">
@@ -97,7 +97,7 @@
                     <span x-text="selectedSlots.length" class="text-rose-400 font-extrabold text-sm"></span> Slot(s) Selected
                 </div>
                 <div class="text-[11px] text-slate-400">
-                    Delete selected IETS or Counseling slots at once.
+                    Delete selected IELTS or Counseling slots at once.
                 </div>
             </div>
         </div>
@@ -185,7 +185,7 @@
                             <td class="py-3.5 px-4 whitespace-nowrap">
                                 <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase
                                     {{ $slot->type === 'iets_test' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-blue-50 text-blue-800 border border-blue-200' }}">
-                                    {{ $slot->type === 'iets_test' ? 'IETS Test' : 'Counseling' }}
+                                    {{ $slot->type === 'iets_test' ? 'IELTS Test' : 'Counseling' }}
                                 </span>
                             </td>
                             <td class="py-3.5 px-4 min-w-[180px]">
@@ -289,7 +289,7 @@
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Slot Type *</label>
                     <select name="type" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
-                        <option value="iets_test" selected>IETS Test Slot (Capacity default: 15)</option>
+                        <option value="iets_test" selected>IELTS Test Slot (Capacity default: 15)</option>
                         <option value="counseling">Campus Counseling Slot</option>
                     </select>
                 </div>
@@ -373,7 +373,7 @@
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Type *</label>
                         <select name="type" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
-                            <option value="iets_test" selected>IETS Test (Capacity: 15)</option>
+                            <option value="iets_test" selected>IELTS Test (Capacity: 15)</option>
                             <option value="counseling">Campus Counseling</option>
                         </select>
                     </div>

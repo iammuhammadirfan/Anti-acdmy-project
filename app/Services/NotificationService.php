@@ -50,7 +50,7 @@ class NotificationService
                 $password = Setting::get('smtp_password');
                 $encryption = Setting::get('smtp_encryption', 'tls');
                 $fromAddress = Setting::get('mail_from_address', config('mail.from.address'));
-                $fromName = Setting::get('mail_from_name') ?: Setting::get('academy_name', 'Prime Iets College');
+                $fromName = Setting::get('mail_from_name') ?: Setting::get('academy_name', 'Prime IELTS College');
 
                 config([
                     'mail.default' => 'smtp',
@@ -74,7 +74,7 @@ class NotificationService
                 }
             } else {
                 $fromAddress = Setting::get('mail_from_address');
-                $fromName = Setting::get('mail_from_name') ?: Setting::get('academy_name', 'Prime Iets College');
+                $fromName = Setting::get('mail_from_name') ?: Setting::get('academy_name', 'Prime IELTS College');
                 if (!empty($fromAddress)) {
                     config(['mail.from.address' => $fromAddress]);
                 }
@@ -108,7 +108,7 @@ class NotificationService
             'time' => $appointment->time_slot,
             'registration_number' => $appointment->registration_number ?: $appointment->booking_code,
             'test_type' => $appointment->test_type ?: ($appointment->purpose ?: 'Campus Counseling'),
-            'purpose' => $appointment->purpose ?: ($appointment->test_type ?: 'IETS Test Registration'),
+            'purpose' => $appointment->purpose ?: ($appointment->test_type ?: 'IELTS Test Registration'),
             'status' => ucfirst($appointment->status),
             'academy_name' => $appName,
             'admin_notes' => $appointment->admin_notes ?: '',
@@ -350,7 +350,7 @@ HTML;
                 ?: Setting::get('contact_email') 
                 ?: config('mail.from.address', 'admin@antiacademy.edu');
             $regNumber = $appointment->registration_number ?: $appointment->booking_code;
-            $typeLabel = ($appointment->type === 'iets_test') ? 'IETS Test Registration' : 'Counseling Appointment';
+            $typeLabel = ($appointment->type === 'iets_test') ? 'IELTS Test Registration' : 'Counseling Appointment';
             $dateStr = $appointment->appointment_date ? $appointment->appointment_date->format('l, F j, Y') : '';
 
             $body = <<<HTML
@@ -510,7 +510,7 @@ HTML;
 
             $appName = $appName ?: Setting::get('academy_name', config('app.name', 'Academy'));
             $regNumber = $appointment->registration_number ?: $appointment->booking_code;
-            $typeLabel = ($appointment->type === 'iets_test') ? 'IETS Mock Test' : 'Counseling Session';
+            $typeLabel = ($appointment->type === 'iets_test') ? 'IELTS Mock Test' : 'Counseling Session';
             $dateStr = $appointment->appointment_date ? $appointment->appointment_date->format('D, M d, Y') : 'N/A';
             $testOrPurpose = $appointment->test_type ?: ($appointment->purpose ?: 'Campus Counseling');
 
