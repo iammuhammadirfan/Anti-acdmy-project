@@ -15,18 +15,20 @@
         <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-5">
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Heading *</label>
-                <input type="text" name="heading" value="{{ old('heading') }}" required placeholder="e.g. Empowering Students Through Modern Education"
+                <input type="text" name="heading" value="{{ old('heading', 'Master IELTS with Official Cambridge Certified Mentors') }}" required placeholder="e.g. Master IELTS with Official Cambridge Certified Mentors"
                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                <p class="text-[11px] text-slate-400 mt-1">Tip: The words <strong>IELTS</strong> or <strong>PTE</strong> will automatically glow with an electric blue gradient on the website.</p>
             </div>
 
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Short Description</label>
-                <textarea name="short_description" rows="3" placeholder="Brief tagline or description displayed on top of the slide..."
-                          class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">{{ old('short_description') }}</textarea>
+                <textarea name="short_description" rows="3" placeholder="Brief supporting description..."
+                          class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">{{ old('short_description', 'Target Band 8.0+ with personalized 1-on-1 coaching, real exam mock trials, and cutting-edge acoustic AI speech evaluation labs.') }}</textarea>
             </div>
 
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Background Image</label>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Hero Right-Side Image (Student Photo / Visual Composition)</label>
+                <p class="text-xs text-slate-500 mb-3">Upload a custom image to replace the right-side student composition. If left empty, the default high-resolution student photograph will be shown.</p>
                 <input type="file" name="image_file" accept="image/*"
                        class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer">
             </div>
@@ -34,7 +36,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-3 border-t border-slate-100">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Primary Button Text</label>
-                    <input type="text" name="button_text" value="{{ old('button_text', 'Explore Programs') }}"
+                    <input type="text" name="button_text" value="{{ old('button_text', 'IELTS Login') }}"
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
                 </div>
                 <div>
@@ -49,8 +51,8 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Secondary Button Text</label>
-                    <input type="text" name="secondary_button_text" value="{{ old('secondary_button_text', 'Book Appointment') }}"
-                           placeholder="e.g. PTE booking or Book Appointment"
+                    <input type="text" name="secondary_button_text" value="{{ old('secondary_button_text', 'PTE Login') }}"
+                           placeholder="e.g. PTE Login"
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
                 </div>
                 <div>
