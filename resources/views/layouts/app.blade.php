@@ -215,7 +215,7 @@
                             <a href="{{ route('history') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('history') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">History</a>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('iets'))
-                            <a href="{{ route('iets') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('iets') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Classes & Timings</a>
+                            <a href="{{ route('iets') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('iets') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Courses & Timings</a>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('results'))
                             <a href="{{ route('iets.results') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('iets.results') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Results</a>
@@ -273,7 +273,7 @@
                     <a href="{{ route('history') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">History</a>
                 @endif
                 @if(\App\Services\PageVisibilityService::isPageVisible('iets'))
-                    <a href="{{ route('iets') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Classes & Timings</a>
+                    <a href="{{ route('iets') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">Courses & Timings</a>
                 @endif
                 @if(\App\Services\PageVisibilityService::isPageVisible('results'))
                     <a href="{{ route('iets.results') }}" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-700 hover:bg-slate-100">IELTS Results</a>

@@ -74,12 +74,15 @@ class IetsProgramController extends Controller
             'timing_slot_1_name' => $request->timing_slot_1_name ?: 'Morning Batch',
             'timing_slot_1_time' => $request->timing_slot_1_time ?: '09:00 AM - 12:00 PM',
             'timing_slot_1_details' => $request->timing_slot_1_details,
+            'timing_slot_1_enabled' => $request->boolean('timing_slot_1_enabled', true),
             'timing_slot_2_name' => $request->timing_slot_2_name ?: 'Midday Batch',
             'timing_slot_2_time' => $request->timing_slot_2_time ?: '11:00 AM - 02:00 PM',
             'timing_slot_2_details' => $request->timing_slot_2_details,
+            'timing_slot_2_enabled' => $request->boolean('timing_slot_2_enabled', true),
             'timing_slot_3_name' => $request->timing_slot_3_name ?: 'Evening Batch',
             'timing_slot_3_time' => $request->timing_slot_3_time ?: '04:00 PM - 07:00 PM',
             'timing_slot_3_details' => $request->timing_slot_3_details,
+            'timing_slot_3_enabled' => $request->boolean('timing_slot_3_enabled', true),
             'summary' => $request->summary,
             'content' => $request->content,
             'features' => $features,
@@ -89,9 +92,9 @@ class IetsProgramController extends Controller
             'status' => $request->boolean('status', true),
         ]);
 
-        ActivityLog::log('create', 'iets', "Created Class / Test Schedule: {$program->title}");
+        ActivityLog::log('create', 'iets', "Created Course / Test Schedule: {$program->title}");
 
-        return redirect()->route('admin.iets.programs.index')->with('success', 'Class / Test Schedule created successfully.');
+        return redirect()->route('admin.iets.programs.index')->with('success', 'Course / Test Schedule created successfully.');
     }
 
     public function edit(IetsProgram $program)
@@ -141,12 +144,15 @@ class IetsProgramController extends Controller
         $program->timing_slot_1_name = $request->timing_slot_1_name ?: 'Morning Batch';
         $program->timing_slot_1_time = $request->timing_slot_1_time ?: '09:00 AM - 12:00 PM';
         $program->timing_slot_1_details = $request->timing_slot_1_details;
+        $program->timing_slot_1_enabled = $request->boolean('timing_slot_1_enabled');
         $program->timing_slot_2_name = $request->timing_slot_2_name ?: 'Midday Batch';
         $program->timing_slot_2_time = $request->timing_slot_2_time ?: '11:00 AM - 02:00 PM';
         $program->timing_slot_2_details = $request->timing_slot_2_details;
+        $program->timing_slot_2_enabled = $request->boolean('timing_slot_2_enabled');
         $program->timing_slot_3_name = $request->timing_slot_3_name ?: 'Evening Batch';
         $program->timing_slot_3_time = $request->timing_slot_3_time ?: '04:00 PM - 07:00 PM';
         $program->timing_slot_3_details = $request->timing_slot_3_details;
+        $program->timing_slot_3_enabled = $request->boolean('timing_slot_3_enabled');
         $program->summary = $request->summary;
         $program->content = $request->content;
         $program->features = $features;

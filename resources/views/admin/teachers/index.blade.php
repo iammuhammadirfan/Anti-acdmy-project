@@ -25,7 +25,7 @@
                     <div class="flex items-start gap-4">
                         <div class="w-16 h-16 rounded-2xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
                             @if($teacher->profile_image)
-                                <img src="{{ asset('storage/' . $teacher->profile_image) }}" alt="{{ $teacher->name }}" class="w-full h-full object-cover">
+                                <img src="{{ asset('storage/' . $teacher->profile_image) }}" alt="{{ $teacher->name }}" class="w-full h-full object-cover object-top">
                             @else
                                 <div class="w-full h-full flex items-center justify-center font-bold text-xl text-brand-600 bg-brand-50">
                                     {{ substr($teacher->name, 0, 1) }}

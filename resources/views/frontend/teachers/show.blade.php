@@ -20,9 +20,9 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
             <!-- Left: Photo & Socials -->
             <div class="space-y-4 text-center md:text-left">
-                <div class="aspect-square rounded-2xl bg-slate-100 overflow-hidden border border-slate-200 shadow-inner">
+                <div class="aspect-[4/5] rounded-2xl bg-slate-100 overflow-hidden border border-slate-200 shadow-inner">
                     @if($teacher->profile_image)
-                        <img src="{{ asset('storage/' . $teacher->profile_image) }}" alt="{{ $teacher->name }}" class="w-full h-full object-cover">
+                        <img src="{{ asset('storage/' . $teacher->profile_image) }}" alt="{{ $teacher->name }}" class="w-full h-full object-cover object-top">
                     @else
                         <div class="w-full h-full flex items-center justify-center font-black text-6xl text-brand-600 bg-brand-50">
                             {{ substr($teacher->name, 0, 1) }}
