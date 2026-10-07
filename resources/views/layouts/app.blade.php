@@ -8,6 +8,11 @@
     <meta name="keywords" content="@yield('meta_keywords', 'IELTS, Academy, English Preparation, Band 8, Academic Coaching, Study Abroad')">
     <link rel="canonical" href="@yield('canonical_url', url()->current())">
     <meta name="robots" content="@yield('robots_meta', 'index, follow')">
+    <meta name="google-site-verification" content="40zOpqKaYgWb1PZmVnqFKax2JlIW31b60wJc0zsqUro" />
+    @if(!empty($globalSettings['google_site_verification']))
+        <meta name="google-site-verification" content="{{ $globalSettings['google_site_verification'] }}">
+    @endif
+    @yield('meta_extra')
 
     <!-- Open Graph & Social Cards -->
     <meta property="og:title" content="@yield('og_title', $globalSettings['academy_name'] ?? config('app.name', 'Academy'))">
