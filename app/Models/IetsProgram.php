@@ -17,12 +17,15 @@ class IetsProgram extends Model
         'timing_slot_1_name',
         'timing_slot_1_time',
         'timing_slot_1_details',
+        'timing_slot_1_enabled',
         'timing_slot_2_name',
         'timing_slot_2_time',
         'timing_slot_2_details',
+        'timing_slot_2_enabled',
         'timing_slot_3_name',
         'timing_slot_3_time',
         'timing_slot_3_details',
+        'timing_slot_3_enabled',
         'badge',
         'instructor_name',
         'duration',
@@ -39,6 +42,9 @@ class IetsProgram extends Model
     protected $casts = [
         'features' => 'array',
         'status' => 'boolean',
+        'timing_slot_1_enabled' => 'boolean',
+        'timing_slot_2_enabled' => 'boolean',
+        'timing_slot_3_enabled' => 'boolean',
         'display_order' => 'integer',
     ];
 

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Classes, Test Schedules & Batch Timings — ' . ($globalSettings['academy_name'] ?? config('app.name', 'Anti Academy')))
-@section('meta_description', 'View official class timings, test schedules, and flexible 3-slot daily batch timings (Morning 9-12, Midday 11-2, Evening 4-7) for IELTS, PTE, and standardized language courses.')
+@section('title', 'Courses, Test Schedules & Batch Timings — ' . ($globalSettings['academy_name'] ?? config('app.name', 'Anti Academy')))
+@section('meta_description', 'View official course timings, test schedules, and flexible 3-slot daily batch timings (Morning 9-12, Midday 11-2, Evening 4-7) for IELTS, PTE, and standardized language courses.')
 
 @section('content')
 <!-- Light / Cream Hero Section -->
@@ -16,7 +16,7 @@
             <span>Flexible 3-Slot Daily Schedules (9-12 • 11-2 • 4-7)</span>
         </span>
         <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 mb-5">
-            Classes, Test Schedules &amp; <span class="bg-gradient-to-r from-brand-600 via-indigo-600 to-brand-700 bg-clip-text text-transparent">Batch Timings</span>
+            Courses, Test Schedules &amp; <span class="bg-gradient-to-r from-brand-600 via-indigo-600 to-brand-700 bg-clip-text text-transparent">Batch Timings</span>
         </h1>
         <p class="text-slate-600 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
             Select your target exam and choose from 3 flexible daily batch slots designed for students, university candidates, and working professionals.
@@ -84,97 +84,120 @@
                                 <span class="text-xs text-slate-500 font-medium">All sessions held at main campus &amp; live multimedia labs</span>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                                <!-- Card Slot 1: Morning Batch (Warm Cream / Amber) -->
-                                <div class="bg-gradient-to-br from-amber-50/80 via-white to-amber-50/40 rounded-2xl p-6 border border-amber-200/90 hover:border-amber-400/80 hover:shadow-lg transition-all group flex flex-col justify-between">
-                                    <div>
-                                        <div class="flex items-center justify-between gap-2 mb-4">
-                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300/80">
-                                                <span>🌅</span>
-                                                <span>{{ $prog->timing_slot_1_name ?: 'Morning Batch' }}</span>
-                                            </span>
-                                            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md flex items-center gap-1">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Open
-                                            </span>
+                            @php
+                                $slot1Active = (bool) ($prog->timing_slot_1_enabled ?? true);
+                                $slot2Active = (bool) ($prog->timing_slot_2_enabled ?? true);
+                                $slot3Active = (bool) ($prog->timing_slot_3_enabled ?? true);
+                                $activeSlotsCount = ($slot1Active ? 1 : 0) + ($slot2Active ? 1 : 0) + ($slot3Active ? 1 : 0);
+                            @endphp
+
+                            @if($activeSlotsCount > 0)
+                                <div class="grid grid-cols-1 {{ $activeSlotsCount == 2 ? 'md:grid-cols-2 max-w-4xl' : ($activeSlotsCount == 1 ? 'md:grid-cols-1 max-w-xl' : 'md:grid-cols-3') }} gap-5">
+                                    @if($slot1Active)
+                                    <!-- Card Slot 1: Morning Batch (Warm Cream / Amber) -->
+                                    <div class="bg-gradient-to-br from-amber-50/80 via-white to-amber-50/40 rounded-2xl p-6 border border-amber-200/90 hover:border-amber-400/80 hover:shadow-lg transition-all group flex flex-col justify-between">
+                                        <div>
+                                            <div class="flex items-center justify-between gap-2 mb-4">
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300/80">
+                                                    <span>🌅</span>
+                                                    <span>{{ $prog->timing_slot_1_name ?: 'Morning Batch' }}</span>
+                                                </span>
+                                                <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Open
+                                                </span>
+                                            </div>
+
+                                            <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight my-2 font-mono group-hover:text-amber-800 transition">
+                                                {{ $prog->timing_slot_1_time ?: '09:00 AM - 12:00 PM' }}
+                                            </div>
+
+                                            <p class="text-xs sm:text-sm text-slate-600 mt-2.5 leading-relaxed">
+                                                {{ $prog->timing_slot_1_details ?: 'Comprehensive theoretical concepts, examiner vocabulary, and guided classroom drills.' }}
+                                            </p>
                                         </div>
 
-                                        <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight my-2 font-mono group-hover:text-amber-800 transition">
-                                            {{ $prog->timing_slot_1_time ?: '09:00 AM - 12:00 PM' }}
+                                        <div class="pt-5 mt-5 border-t border-amber-200/60 flex items-center justify-between">
+                                            <span class="text-xs text-slate-500 font-semibold">Morning Slot</span>
+                                            <a href="{{ route('appointments') }}" class="text-xs font-bold text-amber-800 hover:text-amber-900 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                                                <span>Reserve Slot</span> &rarr;
+                                            </a>
+                                        </div>
+                                    </div>
+                                    @endif
+
+                                    @if($slot2Active)
+                                    <!-- Card Slot 2: Midday Batch (Crisp Sky / Light Cream) -->
+                                    <div class="bg-gradient-to-br from-sky-50/80 via-white to-sky-50/40 rounded-2xl p-6 border border-sky-200/90 hover:border-sky-400/80 hover:shadow-lg transition-all group flex flex-col justify-between">
+                                        <div>
+                                            <div class="flex items-center justify-between gap-2 mb-4">
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-900 border border-sky-300/80">
+                                                    <span>☀️</span>
+                                                    <span>{{ $prog->timing_slot_2_name ?: 'Midday Batch' }}</span>
+                                                </span>
+                                                <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Open
+                                                </span>
+                                            </div>
+
+                                            <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight my-2 font-mono group-hover:text-sky-800 transition">
+                                                {{ $prog->timing_slot_2_time ?: '11:00 AM - 02:00 PM' }}
+                                            </div>
+
+                                            <p class="text-xs sm:text-sm text-slate-600 mt-2.5 leading-relaxed">
+                                                {{ $prog->timing_slot_2_details ?: 'Interactive multimedia lab simulations, reading speed training, and proctored mock tests.' }}
+                                            </p>
                                         </div>
 
-                                        <p class="text-xs sm:text-sm text-slate-600 mt-2.5 leading-relaxed">
-                                            {{ $prog->timing_slot_1_details ?: 'Comprehensive theoretical concepts, examiner vocabulary, and guided classroom drills.' }}
-                                        </p>
+                                        <div class="pt-5 mt-5 border-t border-sky-200/60 flex items-center justify-between">
+                                            <span class="text-xs text-slate-500 font-semibold">Midday Slot</span>
+                                            <a href="{{ route('appointments') }}" class="text-xs font-bold text-sky-800 hover:text-sky-900 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                                                <span>Reserve Slot</span> &rarr;
+                                            </a>
+                                        </div>
                                     </div>
+                                    @endif
 
-                                    <div class="pt-5 mt-5 border-t border-amber-200/60 flex items-center justify-between">
-                                        <span class="text-xs text-slate-500 font-semibold">Slot 1</span>
-                                        <a href="{{ route('appointments') }}" class="text-xs font-bold text-amber-800 hover:text-amber-900 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                                            <span>Reserve Morning Slot</span> &rarr;
-                                        </a>
+                                    @if($slot3Active)
+                                    <!-- Card Slot 3: Evening Batch (Elegant Violet / Warm Light) -->
+                                    <div class="bg-gradient-to-br from-indigo-50/80 via-white to-indigo-50/40 rounded-2xl p-6 border border-indigo-200/90 hover:border-indigo-400/80 hover:shadow-lg transition-all group flex flex-col justify-between">
+                                        <div>
+                                            <div class="flex items-center justify-between gap-2 mb-4">
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-900 border border-indigo-300/80">
+                                                    <span>🌙</span>
+                                                    <span>{{ $prog->timing_slot_3_name ?: 'Evening Batch' }}</span>
+                                                </span>
+                                                <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Open
+                                                </span>
+                                            </div>
+
+                                            <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight my-2 font-mono group-hover:text-indigo-800 transition">
+                                                {{ $prog->timing_slot_3_time ?: '04:00 PM - 07:00 PM' }}
+                                            </div>
+
+                                            <p class="text-xs sm:text-sm text-slate-600 mt-2.5 leading-relaxed">
+                                                {{ $prog->timing_slot_3_details ?: 'Designed for working executives, intensive speaking clinics, and customized writing feedback.' }}
+                                            </p>
+                                        </div>
+
+                                        <div class="pt-5 mt-5 border-t border-indigo-200/60 flex items-center justify-between">
+                                            <span class="text-xs text-slate-500 font-semibold">Evening Slot</span>
+                                            <a href="{{ route('appointments') }}" class="text-xs font-bold text-indigo-800 hover:text-indigo-900 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                                                <span>Reserve Slot</span> &rarr;
+                                            </a>
+                                        </div>
                                     </div>
+                                    @endif
                                 </div>
-
-                                <!-- Card Slot 2: Midday Batch (Crisp Sky / Light Cream) -->
-                                <div class="bg-gradient-to-br from-sky-50/80 via-white to-sky-50/40 rounded-2xl p-6 border border-sky-200/90 hover:border-sky-400/80 hover:shadow-lg transition-all group flex flex-col justify-between">
-                                    <div>
-                                        <div class="flex items-center justify-between gap-2 mb-4">
-                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-900 border border-sky-300/80">
-                                                <span>☀️</span>
-                                                <span>{{ $prog->timing_slot_2_name ?: 'Midday Batch' }}</span>
-                                            </span>
-                                            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md flex items-center gap-1">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Open
-                                            </span>
-                                        </div>
-
-                                        <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight my-2 font-mono group-hover:text-sky-800 transition">
-                                            {{ $prog->timing_slot_2_time ?: '11:00 AM - 02:00 PM' }}
-                                        </div>
-
-                                        <p class="text-xs sm:text-sm text-slate-600 mt-2.5 leading-relaxed">
-                                            {{ $prog->timing_slot_2_details ?: 'Interactive multimedia lab simulations, reading speed training, and proctored mock tests.' }}
-                                        </p>
-                                    </div>
-
-                                    <div class="pt-5 mt-5 border-t border-sky-200/60 flex items-center justify-between">
-                                        <span class="text-xs text-slate-500 font-semibold">Slot 2</span>
-                                        <a href="{{ route('appointments') }}" class="text-xs font-bold text-sky-800 hover:text-sky-900 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                                            <span>Reserve Midday Slot</span> &rarr;
-                                        </a>
-                                    </div>
+                            @else
+                                <div class="bg-amber-50/50 border border-amber-200 rounded-2xl p-6 text-center">
+                                    <p class="text-sm font-semibold text-slate-700">Customized Batch Timings on Demand</p>
+                                    <p class="text-xs text-slate-500 mt-1">Please book a session or contact administration for 1-on-1 personalized slot timings.</p>
+                                    <a href="{{ route('appointments') }}" class="inline-flex items-center gap-1.5 mt-4 px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-bold shadow hover:bg-brand-700 transition">
+                                        <span>Book Personalized Consultation</span> &rarr;
+                                    </a>
                                 </div>
-
-                                <!-- Card Slot 3: Evening Batch (Elegant Violet / Warm Light) -->
-                                <div class="bg-gradient-to-br from-indigo-50/80 via-white to-indigo-50/40 rounded-2xl p-6 border border-indigo-200/90 hover:border-indigo-400/80 hover:shadow-lg transition-all group flex flex-col justify-between">
-                                    <div>
-                                        <div class="flex items-center justify-between gap-2 mb-4">
-                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-900 border border-indigo-300/80">
-                                                <span>🌙</span>
-                                                <span>{{ $prog->timing_slot_3_name ?: 'Evening Batch' }}</span>
-                                            </span>
-                                            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md flex items-center gap-1">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Open
-                                            </span>
-                                        </div>
-
-                                        <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight my-2 font-mono group-hover:text-indigo-800 transition">
-                                            {{ $prog->timing_slot_3_time ?: '04:00 PM - 07:00 PM' }}
-                                        </div>
-
-                                        <p class="text-xs sm:text-sm text-slate-600 mt-2.5 leading-relaxed">
-                                            {{ $prog->timing_slot_3_details ?: 'Designed for working executives, intensive speaking clinics, and customized writing feedback.' }}
-                                        </p>
-                                    </div>
-
-                                    <div class="pt-5 mt-5 border-t border-indigo-200/60 flex items-center justify-between">
-                                        <span class="text-xs text-slate-500 font-semibold">Slot 3</span>
-                                        <a href="{{ route('appointments') }}" class="text-xs font-bold text-indigo-800 hover:text-indigo-900 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                                            <span>Reserve Evening Slot</span> &rarr;
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                            @endif
                         </div>
 
                         <!-- Highlights / Inclusions -->

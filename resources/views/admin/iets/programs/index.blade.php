@@ -1,18 +1,18 @@
 @extends('layouts.admin')
 
-@section('title', 'Classes & Test Timings')
-@section('page_title', 'Classes & Test Timings Management')
+@section('title', 'Courses & Test Timings')
+@section('page_title', 'Courses & Test Timings Management')
 
 @section('content')
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h3 class="text-lg font-bold text-slate-900">Classes, Tests &amp; 3-Slot Batch Timings</h3>
-            <p class="text-xs text-slate-500">Add training classes or mock tests and configure their 3 timing batch slots (Morning 9-12, Midday 11-2, Evening 4-7).</p>
+            <h3 class="text-lg font-bold text-slate-900">Courses, Tests &amp; 3-Slot Batch Timings</h3>
+            <p class="text-xs text-slate-500">Add training courses or mock tests and configure their 3 timing batch slots (Morning 9-12, Midday 11-2, Evening 4-7).</p>
         </div>
         <a href="{{ route('admin.iets.programs.create') }}" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-md shadow-brand-500/20 transition-all flex items-center gap-1.5 self-start sm:self-auto">
             <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Add New Class / Test</span>
+            <span>Add New Course / Test</span>
         </a>
     </div>
 
@@ -45,21 +45,44 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="space-y-1 text-[11px]">
-                                    <div class="flex items-center gap-1.5 text-amber-700 font-semibold">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                        <span>{{ $p->timing_slot_1_name ?? 'Morning' }}:</span>
-                                        <span class="text-slate-800 font-mono">{{ $p->timing_slot_1_time ?? '09:00 AM - 12:00 PM' }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-1.5 text-sky-700 font-semibold">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
-                                        <span>{{ $p->timing_slot_2_name ?? 'Midday' }}:</span>
-                                        <span class="text-slate-800 font-mono">{{ $p->timing_slot_2_time ?? '11:00 AM - 02:00 PM' }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-1.5 text-indigo-700 font-semibold">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-                                        <span>{{ $p->timing_slot_3_name ?? 'Evening' }}:</span>
-                                        <span class="text-slate-800 font-mono">{{ $p->timing_slot_3_time ?? '04:00 PM - 07:00 PM' }}</span>
-                                    </div>
+                                    @if($p->timing_slot_1_enabled ?? true)
+                                        <div class="flex items-center gap-1.5 text-amber-700 font-semibold">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                            <span>{{ $p->timing_slot_1_name ?? 'Morning' }}:</span>
+                                            <span class="text-slate-800 font-mono">{{ $p->timing_slot_1_time ?? '09:00 AM - 12:00 PM' }}</span>
+                                        </div>
+                                    @else
+                                        <div class="flex items-center gap-1.5 text-slate-400 line-through opacity-70">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                                            <span>{{ $p->timing_slot_1_name ?? 'Morning' }} (Disabled)</span>
+                                        </div>
+                                    @endif
+
+                                    @if($p->timing_slot_2_enabled ?? true)
+                                        <div class="flex items-center gap-1.5 text-sky-700 font-semibold">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+                                            <span>{{ $p->timing_slot_2_name ?? 'Midday' }}:</span>
+                                            <span class="text-slate-800 font-mono">{{ $p->timing_slot_2_time ?? '11:00 AM - 02:00 PM' }}</span>
+                                        </div>
+                                    @else
+                                        <div class="flex items-center gap-1.5 text-slate-400 line-through opacity-70">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                                            <span>{{ $p->timing_slot_2_name ?? 'Midday' }} (Disabled)</span>
+                                        </div>
+                                    @endif
+
+                                    @if($p->timing_slot_3_enabled ?? true)
+                                        <div class="flex items-center gap-1.5 text-indigo-700 font-semibold">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                                            <span>{{ $p->timing_slot_3_name ?? 'Evening' }}:</span>
+                                            <span class="text-slate-800 font-mono">{{ $p->timing_slot_3_time ?? '04:00 PM - 07:00 PM' }}</span>
+                                        </div>
+                                    @else
+                                        <div class="flex items-center gap-1.5 text-slate-400 line-through opacity-70">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                                            <span>{{ $p->timing_slot_3_name ?? 'Evening' }} (Disabled)</span>
+                                        </div>
+                                    @endif
                                 </div>
                             </td>
                             <td class="px-6 py-4">

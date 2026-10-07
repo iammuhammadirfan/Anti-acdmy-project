@@ -60,10 +60,21 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <!-- Slot 1: Morning -->
-                    <div class="bg-amber-50/60 p-4 rounded-xl border border-amber-200/80 space-y-3">
-                        <div class="flex items-center gap-2 text-amber-900 font-bold text-xs">
-                            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                            <span>Slot 1: Morning Batch</span>
+                    <div x-data="{ enabled: {{ old('timing_slot_1_enabled', $program->timing_slot_1_enabled ?? true) ? 'true' : 'false' }} }" 
+                         :class="enabled ? 'bg-amber-50/70 border-amber-200/80 shadow-xs' : 'bg-slate-50 border-slate-200 opacity-60'"
+                         class="p-4 rounded-xl border space-y-3 transition-all">
+                        <div class="flex items-center justify-between gap-2 pb-2 border-b" :class="enabled ? 'border-amber-200/60' : 'border-slate-200'">
+                            <div class="flex items-center gap-2 font-bold text-xs" :class="enabled ? 'text-amber-900' : 'text-slate-500'">
+                                <span class="w-2 h-2 rounded-full" :class="enabled ? 'bg-amber-500 animate-pulse' : 'bg-slate-400'"></span>
+                                <span>Slot 1: Morning</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer select-none">
+                                <input type="checkbox" name="timing_slot_1_enabled" value="1" 
+                                       x-model="enabled"
+                                       class="sr-only peer">
+                                <div class="w-8 h-4 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-amber-600"></div>
+                                <span class="ml-1.5 text-[10px] font-extrabold" :class="enabled ? 'text-amber-800' : 'text-slate-400'" x-text="enabled ? 'ON' : 'OFF'"></span>
+                            </label>
                         </div>
                         <div>
                             <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Batch Label</label>
@@ -83,10 +94,21 @@
                     </div>
 
                     <!-- Slot 2: Midday -->
-                    <div class="bg-sky-50/60 p-4 rounded-xl border border-sky-200/80 space-y-3">
-                        <div class="flex items-center gap-2 text-sky-900 font-bold text-xs">
-                            <span class="w-2 h-2 rounded-full bg-sky-500"></span>
-                            <span>Slot 2: Midday Batch</span>
+                    <div x-data="{ enabled: {{ old('timing_slot_2_enabled', $program->timing_slot_2_enabled ?? true) ? 'true' : 'false' }} }" 
+                         :class="enabled ? 'bg-sky-50/70 border-sky-200/80 shadow-xs' : 'bg-slate-50 border-slate-200 opacity-60'"
+                         class="p-4 rounded-xl border space-y-3 transition-all">
+                        <div class="flex items-center justify-between gap-2 pb-2 border-b" :class="enabled ? 'border-sky-200/60' : 'border-slate-200'">
+                            <div class="flex items-center gap-2 font-bold text-xs" :class="enabled ? 'text-sky-900' : 'text-slate-500'">
+                                <span class="w-2 h-2 rounded-full" :class="enabled ? 'bg-sky-500 animate-pulse' : 'bg-slate-400'"></span>
+                                <span>Slot 2: Midday</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer select-none">
+                                <input type="checkbox" name="timing_slot_2_enabled" value="1" 
+                                       x-model="enabled"
+                                       class="sr-only peer">
+                                <div class="w-8 h-4 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-sky-600"></div>
+                                <span class="ml-1.5 text-[10px] font-extrabold" :class="enabled ? 'text-sky-800' : 'text-slate-400'" x-text="enabled ? 'ON' : 'OFF'"></span>
+                            </label>
                         </div>
                         <div>
                             <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Batch Label</label>
@@ -106,10 +128,21 @@
                     </div>
 
                     <!-- Slot 3: Evening -->
-                    <div class="bg-indigo-50/60 p-4 rounded-xl border border-indigo-200/80 space-y-3">
-                        <div class="flex items-center gap-2 text-indigo-900 font-bold text-xs">
-                            <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
-                            <span>Slot 3: Evening Batch</span>
+                    <div x-data="{ enabled: {{ old('timing_slot_3_enabled', $program->timing_slot_3_enabled ?? true) ? 'true' : 'false' }} }" 
+                         :class="enabled ? 'bg-indigo-50/70 border-indigo-200/80 shadow-xs' : 'bg-slate-50 border-slate-200 opacity-60'"
+                         class="p-4 rounded-xl border space-y-3 transition-all">
+                        <div class="flex items-center justify-between gap-2 pb-2 border-b" :class="enabled ? 'border-indigo-200/60' : 'border-slate-200'">
+                            <div class="flex items-center gap-2 font-bold text-xs" :class="enabled ? 'text-indigo-900' : 'text-slate-500'">
+                                <span class="w-2 h-2 rounded-full" :class="enabled ? 'bg-indigo-500 animate-pulse' : 'bg-slate-400'"></span>
+                                <span>Slot 3: Evening</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer select-none">
+                                <input type="checkbox" name="timing_slot_3_enabled" value="1" 
+                                       x-model="enabled"
+                                       class="sr-only peer">
+                                <div class="w-8 h-4 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-indigo-600"></div>
+                                <span class="ml-1.5 text-[10px] font-extrabold" :class="enabled ? 'text-indigo-800' : 'text-slate-400'" x-text="enabled ? 'ON' : 'OFF'"></span>
+                            </label>
                         </div>
                         <div>
                             <label class="block text-[10px] uppercase font-bold text-slate-600 mb-1">Batch Label</label>

@@ -514,9 +514,9 @@
             @forelse($teachers as $teacher)
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between group">
                     <div>
-                        <div class="h-56 bg-slate-100 overflow-hidden relative">
+                        <div class="h-64 sm:h-72 bg-slate-100 overflow-hidden relative">
                             @if($teacher->profile_image)
-                                <img src="{{ asset('storage/' . $teacher->profile_image) }}" alt="{{ $teacher->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <img src="{{ asset('storage/' . $teacher->profile_image) }}" alt="{{ $teacher->name }}" class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-500">
                             @else
                                 <div class="w-full h-full flex items-center justify-center font-extrabold text-4xl text-brand-600 bg-brand-50">
                                     {{ substr($teacher->name, 0, 1) }}

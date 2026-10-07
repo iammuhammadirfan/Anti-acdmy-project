@@ -56,7 +56,7 @@
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Profile Photo</label>
                 @if($teacher->profile_image)
                     <div class="mb-3 w-20 h-20 rounded-xl overflow-hidden border border-slate-200">
-                        <img src="{{ asset('storage/' . $teacher->profile_image) }}" class="w-full h-full object-cover">
+                        <img src="{{ asset('storage/' . $teacher->profile_image) }}" class="w-full h-full object-cover object-top">
                     </div>
                 @endif
                 <input type="file" name="image_file" accept="image/*"

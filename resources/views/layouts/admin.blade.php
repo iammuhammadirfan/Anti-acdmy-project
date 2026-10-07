@@ -133,7 +133,7 @@
                 <a href="{{ route('admin.iets.programs.index') }}" 
                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.iets.programs*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
                     <i data-lucide="clock" class="w-4 h-4"></i>
-                    <span>Classes &amp; Timings</span>
+                    <span>Courses &amp; Timings</span>
                 </a>
                 @endif
 
