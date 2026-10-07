@@ -27,10 +27,17 @@
             </div>
 
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Background Image</label>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Hero Right-Side Image (Student Photo / Visual Composition)</label>
+                <p class="text-xs text-slate-500 mb-3">Upload a high-quality photo to replace the right-side student composition in the hero section.</p>
                 @if($slider->image)
-                    <div class="mb-3 w-40 h-24 rounded-xl overflow-hidden border border-slate-200">
+                    <div class="mb-3 w-48 h-32 rounded-xl overflow-hidden border border-slate-200 shadow-sm relative bg-slate-900">
                         <img src="{{ asset('storage/' . $slider->image) }}" class="w-full h-full object-cover">
+                        <span class="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-[10px] px-2 py-0.5 rounded font-mono">Current Upload</span>
+                    </div>
+                @else
+                    <div class="mb-3 w-48 h-32 rounded-xl overflow-hidden border border-slate-200 shadow-sm relative bg-slate-900">
+                        <img src="{{ asset('images/hero-student.jpg') }}" class="w-full h-full object-cover">
+                        <span class="absolute bottom-1.5 right-1.5 bg-brand-600 text-white text-[10px] px-2 py-0.5 rounded font-mono">Default Photo</span>
                     </div>
                 @endif
                 <input type="file" name="image_file" accept="image/*"

@@ -21,13 +21,7 @@
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col justify-between">
                 <div>
                     <div class="h-44 bg-slate-100 relative overflow-hidden">
-                        @if($slider->image)
-                            <img src="{{ asset('storage/' . $slider->image) }}" alt="{{ $slider->heading }}" class="w-full h-full object-cover">
-                        @else
-                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-brand-900 to-brand-700 text-white/50">
-                                <i data-lucide="image" class="w-10 h-10"></i>
-                            </div>
-                        @endif
+                        <img src="{{ $slider->image_url ?: asset('images/hero-student.jpg') }}" alt="{{ $slider->heading }}" class="w-full h-full object-cover">
                         <span class="absolute top-3 right-3 text-[10px] font-bold uppercase px-2.5 py-1 rounded-full {{ $slider->status ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white' }}">
                             {{ $slider->status ? 'Active' : 'Draft' }}
                         </span>
