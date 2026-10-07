@@ -17,94 +17,162 @@
 @section('content')
 <div class="space-y-24">
 
-    <!-- 1. Hero / Large Slider Section -->
-    <section class="relative bg-slate-950 text-white overflow-hidden" x-data="heroSlider()">
-        <div class="relative min-h-[580px] sm:min-h-[640px] flex items-center">
-            @forelse($sliders as $idx => $slide)
-                <div x-show="currentSlide === {{ $idx }}" 
-                     x-transition:enter="transition ease-out duration-700"
-                     x-transition:enter-start="opacity-0 scale-95"
-                     x-transition:enter-end="opacity-100 scale-100"
-                     x-transition:leave="transition ease-in duration-500"
-                     x-transition:leave-start="opacity-100 scale-100"
-                     x-transition:leave-end="opacity-0 scale-95"
-                     class="absolute inset-0 flex items-center">
-                    
-                    <!-- Background Image with Gradient Overlays -->
-                    <div class="absolute inset-0 z-0">
-                        @if($slide->image_url)
-                            <img src="{{ $slide->image_url }}" alt="{{ $slide->heading }}" class="w-full h-full object-cover opacity-35 filter brightness-75">
-                        @else
-                            <div class="w-full h-full bg-gradient-to-r from-brand-950 via-slate-900 to-brand-900 opacity-90"></div>
-                        @endif
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+    <!-- 1. Hero / Master IELTS Section -->
+    <section class="relative bg-[#020b1e] text-white overflow-hidden pt-6 pb-16 sm:pb-20 lg:pt-10 lg:pb-24">
+        <!-- Deep Ambient Background Glows & Subtle Radial Gradients -->
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-10%,rgba(37,99,235,0.22),rgba(2,11,30,0))] pointer-events-none"></div>
+        <div class="absolute top-1/4 -left-32 w-96 h-96 bg-blue-600/15 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-10 right-1/4 w-[30rem] h-[30rem] bg-indigo-600/15 rounded-full blur-[140px] pointer-events-none"></div>
+
+        <!-- Subtle Grid Pattern Overlay -->
+        <div class="absolute inset-0 bg-[radial-gradient(#1e3a8a_1px,transparent_1px)] [background-size:32px_32px] opacity-15 pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+                
+                <!-- Left Side: Content & Action Buttons -->
+                <div class="lg:col-span-6 xl:col-span-7 space-y-6 text-left">
+                    <!-- Badge -->
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md shadow-inner shadow-blue-500/20">
+                        <span class="text-amber-400 text-sm leading-none">★</span>
+                        <span>Premier Educational Excellence</span>
                     </div>
 
-                    <!-- Slide Content -->
-                    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                        <div class="max-w-3xl space-y-6">
-                            <span class="inline-flex items-center gap-2 bg-brand-500/20 text-brand-300 border border-brand-500/30 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-md">
-                                <span class="w-2 h-2 rounded-full bg-accent-500 animate-pulse"></span>
-                                Premier Educational Excellence
-                            </span>
+                    <!-- Main Headline -->
+                    <h1 class="text-3xl sm:text-5xl xl:text-6xl font-black text-white tracking-tight leading-[1.12]">
+                        Master <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-400 to-cyan-300 drop-shadow-[0_0_25px_rgba(56,189,248,0.4)]">IELTS</span> with Official Cambridge Certified Mentors
+                    </h1>
 
-                            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
-                                {{ $slide->heading }}
-                            </h1>
+                    <!-- Supporting Text -->
+                    <p class="text-slate-300 text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl font-normal">
+                        Target Band 8.0+ with personalized 1-on-1 coaching, real exam mock trials, and cutting-edge acoustic AI speech evaluation labs.
+                    </p>
 
-                            <p class="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-                                {{ $slide->short_description }}
-                            </p>
+                    <!-- Buttons: IELTS Login & PTE Login -->
+                    <div class="flex flex-wrap items-center gap-4 pt-2">
+                        <!-- IELTS Login Button -->
+                        <a href="{{ route('iets') }}" 
+                           class="group relative inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-white font-bold text-sm sm:text-base shadow-lg shadow-blue-600/40 hover:shadow-blue-500/60 hover:scale-[1.03] transition-all duration-300">
+                            <span>IELTS Login</span>
+                            <i data-lucide="arrow-up-right" class="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300"></i>
+                        </a>
 
-                            <div class="flex flex-wrap items-center gap-4 pt-4">
-                                @if($slide->button_text)
-                                    @php
-                                        $btnUrl = $slide->formatted_button_url ?: route('appointments');
-                                        $isBtnExt = $slide->is_button_external;
-                                    @endphp
-                                    <a href="{{ $btnUrl }}" 
-                                       @if($isBtnExt) target="_blank" rel="noopener noreferrer" @endif
-                                       class="bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm px-7 py-3.5 rounded-xl shadow-lg shadow-brand-500/30 transition transform hover:-translate-y-0.5 inline-flex items-center gap-2">
-                                        <span>{{ $slide->button_text }}</span>
-                                        <i data-lucide="{{ $isBtnExt ? 'external-link' : 'arrow-right' }}" class="w-4 h-4"></i>
-                                    </a>
-                                @endif
+                        <!-- PTE Login Button -->
+                        <a href="{{ route('iets') }}" 
+                           class="group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white border border-slate-700/80 hover:border-blue-400/50 font-bold text-sm sm:text-base backdrop-blur-md shadow-md hover:shadow-blue-500/20 hover:scale-[1.03] transition-all duration-300">
+                            <span>PTE Login</span>
+                            <i data-lucide="arrow-up-right" class="w-4 h-4 text-blue-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300"></i>
+                        </a>
+                    </div>
 
-                                @if($slide->secondary_button_text)
-                                    @php
-                                        $secUrl = $slide->formatted_secondary_button_url ?: route('iets');
-                                        $isSecExt = $slide->is_secondary_button_external;
-                                    @endphp
-                                    <a href="{{ $secUrl }}" 
-                                       @if($isSecExt) target="_blank" rel="noopener noreferrer" @endif
-                                       class="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold text-sm px-7 py-3.5 rounded-xl backdrop-blur-md transition inline-flex items-center gap-2">
-                                        <span>{{ $slide->secondary_button_text }}</span>
-                                        <i data-lucide="{{ $isSecExt ? 'external-link' : 'book-open' }}" class="w-4 h-4"></i>
-                                    </a>
-                                @endif
+                    <!-- Bottom Floating Feature Strip -->
+                    <div class="pt-6 sm:pt-10">
+                        <div class="backdrop-blur-xl bg-slate-900/75 border border-white/10 rounded-2xl p-4 sm:p-5 shadow-2xl shadow-blue-950/60 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <!-- Feature 1 -->
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-400 shrink-0 shadow-inner">
+                                    <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-extrabold text-white leading-tight">Official Cambridge</div>
+                                    <div class="text-[11px] text-slate-400">Curriculum &amp; Tests</div>
+                                </div>
+                            </div>
+
+                            <!-- Feature 2 -->
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-400 shrink-0 shadow-inner">
+                                    <i data-lucide="user-check" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-extrabold text-white leading-tight">1-on-1 Coaching</div>
+                                    <div class="text-[11px] text-slate-400">Expert Mentorship</div>
+                                </div>
+                            </div>
+
+                            <!-- Feature 3 -->
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-400 shrink-0 shadow-inner">
+                                    <i data-lucide="mic" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-extrabold text-white leading-tight">AI Speech Evaluation</div>
+                                    <div class="text-[11px] text-slate-400">Acoustic Scoring</div>
+                                </div>
+                            </div>
+
+                            <!-- Feature 4 -->
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-400 shrink-0 shadow-inner">
+                                    <i data-lucide="target" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-extrabold text-white leading-tight">8.0+ Band Target</div>
+                                    <div class="text-[11px] text-slate-400">1000+ Success Stories</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            @empty
-                <!-- Fallback Slide -->
-                <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center mx-auto">
-                    <h1 class="text-4xl sm:text-6xl font-extrabold text-white">Empowering Students Through Modern Education</h1>
-                    <p class="text-slate-300 mt-4 max-w-2xl mx-auto">Join the premier academy for higher education, IELTS band coaching, and global academic success.</p>
-                </div>
-            @endforelse
-        </div>
 
-        <!-- Slider Controls -->
-        @if($sliders->count() > 1)
-            <div class="absolute bottom-6 left-0 right-0 z-20 flex justify-center items-center gap-2">
-                @foreach($sliders as $idx => $s)
-                    <button @click="currentSlide = {{ $idx }}" 
-                            :class="currentSlide === {{ $idx }} ? 'w-8 bg-brand-500' : 'w-2 bg-white/40'" 
-                            class="h-2 rounded-full transition-all duration-300"></button>
-                @endforeach
+                <!-- Right Side: Realistic Student Composition & Floating Elements -->
+                <div class="lg:col-span-6 xl:col-span-5 relative mt-4 lg:mt-0">
+                    <!-- Glow Behind Image -->
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 sm:w-96 sm:h-96 bg-blue-600/30 rounded-full blur-[100px] pointer-events-none"></div>
+
+                    <!-- Student Hero Image Box -->
+                    <div class="relative w-full rounded-3xl overflow-hidden shadow-2xl shadow-blue-950/80 border border-white/10 group">
+                        <img src="{{ asset('images/hero-student.jpg') }}" alt="Prime IELTS College - Student Excellence" class="w-full h-full object-cover object-center min-h-[360px] sm:min-h-[460px] max-h-[540px] transform group-hover:scale-105 transition-transform duration-700">
+                        
+                        <!-- Smooth Overlay Gradients (Navy blending) -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#020b1e] via-transparent to-transparent opacity-80"></div>
+                        <div class="absolute inset-0 bg-gradient-to-r from-[#020b1e]/60 via-transparent to-transparent hidden sm:block"></div>
+                    </div>
+
+                    <!-- Handwritten Script Overlay ("Better English Bigger Opportunities") -->
+                    <div class="absolute top-4 right-3 sm:top-6 sm:right-6 z-20 select-none pointer-events-none transform -rotate-3 text-right">
+                        <div class="font-handwriting text-3xl sm:text-4xl lg:text-5xl text-white font-bold leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
+                            Better English<br>
+                            <span class="text-sky-300">Bigger</span> Opportunities
+                        </div>
+                        <div class="flex justify-end">
+                            <svg class="w-24 sm:w-32 h-3.5 text-sky-400 mt-1 opacity-90" viewBox="0 0 140 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2 12C45 2 95 3 138 12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Right Side Floating Feature Badge Card -->
+                    <div class="absolute -bottom-4 left-3 sm:bottom-6 sm:left-6 z-20 backdrop-blur-xl bg-slate-900/90 border border-white/15 rounded-2xl p-4 shadow-2xl max-w-[260px] sm:max-w-[280px] transition transform hover:-translate-y-1 duration-300">
+                        <div class="flex items-center gap-2 mb-2 pb-2 border-b border-white/10">
+                            <div class="w-7 h-7 rounded-lg bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-400 shrink-0">
+                                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-extrabold text-white">Cambridge Certified</div>
+                                <div class="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Official Exam Prep
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-1.5 text-[11px] text-slate-300 font-medium">
+                            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i> Expert Trainers</div>
+                            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i> Real Exam Mock Tests</div>
+                            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i> AI Speech Evaluation Labs</div>
+                            <div class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i> Proven 8.0+ Band Results</div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Right Organic Electric Blue Wave Decoration -->
+                    <div class="absolute -bottom-10 -right-10 w-48 sm:w-64 h-48 sm:h-64 pointer-events-none z-0 opacity-60">
+                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-blue-600/50 filter blur-xl">
+                            <path fill="currentColor" d="M44.7,-76.4C58.8,-69.2,71.8,-59.1,79.6,-45.8C87.4,-32.6,90,-16.3,88.5,-0.9C87,14.6,81.4,29.1,73.1,41.9C64.8,54.7,53.8,65.8,40.7,73.1C27.6,80.4,12.4,83.9,-2.4,87.9C-17.1,92,-31.4,96.6,-44.6,92.5C-57.8,88.3,-69.9,75.4,-78.4,60.8C-86.8,46.2,-91.7,29.9,-93.2,13.5C-94.7,-2.8,-92.8,-19.2,-85.7,-33.2C-78.6,-47.2,-66.3,-58.8,-52.3,-66.2C-38.3,-73.6,-22.6,-76.8,-6.2,-67.2C10.2,-57.6,30.6,-83.6,44.7,-76.4Z" transform="translate(100 100)" />
+                        </svg>
+                    </div>
+                </div>
+
             </div>
-        @endif
+        </div>
     </section>
 
     <!-- 2. Statistics Counter Section -->
