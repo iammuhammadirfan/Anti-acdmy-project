@@ -70,6 +70,17 @@ class AiController extends Controller
         return back()->with('success', 'AI Agent settings updated successfully.');
     }
 
+    public function testConnection(Request $request, \App\Services\AiAgentService $aiService)
+    {
+        $provider = $request->input('ai_provider', Setting::get('ai_provider', 'groq'));
+        $model = $request->input('ai_model', Setting::get('ai_model', 'llama-3.3-70b-versatile'));
+        $apiKey = $request->filled('ai_api_key') ? $request->input('ai_api_key') : Setting::get('ai_api_key');
+
+        $result = $aiService->testDirectApi($provider, $apiKey, $model);
+
+        return response()->json($result);
+    }
+
     public function showConversation(AiConversation $conversation)
     {
         $messages = $conversation->messages()->orderBy('id', 'asc')->get();

@@ -93,6 +93,8 @@ Route::post('/api/ai/chat', [AiChatbotController::class, 'chat'])->name('api.ai.
 |--------------------------------------------------------------------------
 */
 
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+
 Route::prefix('admin')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
     Route::post('/login', [AuthController::class, 'login'])->name('admin.login.submit');
@@ -362,6 +364,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::middleware(['module.permission:ai'])->group(function () {
         Route::get('/ai', [AiController::class, 'index'])->name('admin.ai.index');
         Route::post('/ai/settings', [AiController::class, 'updateSettings'])->name('admin.ai.settings');
+        Route::post('/ai/test-connection', [AiController::class, 'testConnection'])->name('admin.ai.test');
         Route::get('/ai/conversations/{conversation}', [AiController::class, 'showConversation'])->name('admin.ai.conversation');
         Route::delete('/ai/conversations/{conversation}', [AiController::class, 'destroyConversation'])->name('admin.ai.conversation.destroy');
     });
@@ -372,6 +375,8 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
         Route::post('/settings/test-smtp', [SettingController::class, 'testSmtp'])->name('admin.settings.test_smtp');
         Route::post('/settings/test-whatsapp', [SettingController::class, 'testWhatsApp'])->name('admin.settings.test_whatsapp');
+        Route::post('/settings/test-twilio', [SettingController::class, 'testTwilio'])->name('admin.settings.test_twilio');
+        Route::post('/settings/test-telegram', [SettingController::class, 'testTelegram'])->name('admin.settings.test_telegram');
     });
 
     // Website Page Visibility Manager & Audit Logs (Super Admin Exclusive)

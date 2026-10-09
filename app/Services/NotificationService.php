@@ -125,6 +125,9 @@ class NotificationService
         // 3. Send Admin WhatsApp Alert via CallMeBot (Free Gateway)
         $this->sendAdminCallMeBotWhatsApp($appointment, $appName);
 
+        // 3.5. Send Admin Telegram Instant Alert (100% Free Bot)
+        $this->sendAdminTelegramAlert($appointment, $appName);
+
         // 4. Send WhatsApp Notification to Student
         $regNumber = $appointment->registration_number ?: $appointment->booking_code;
         $dateFormatted = $appointment->appointment_date ? $appointment->appointment_date->format('M d, Y') : '';
@@ -447,7 +450,7 @@ HTML;
     }
 
     /**
-     * Send WhatsApp Message using configured provider credentials
+     * Send WhatsApp Message using configured provider credentials (Twilio or Meta Cloud)
      */
     public function sendWhatsAppMessage(?string $phoneNumber, string $message): bool
     {
@@ -456,10 +459,50 @@ HTML;
         }
 
         $provider = Setting::get('whatsapp_provider', 'meta_cloud');
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phoneNumber);
+
+        // 1. Twilio WhatsApp Integration
+        if ($provider === 'twilio') {
+            $sid = Setting::get('twilio_sid');
+            $token = Setting::get('twilio_token');
+            $from = Setting::get('twilio_from_whatsapp', '+14155238886');
+
+            if (empty($sid) || empty($token)) {
+                Log::info("[WhatsApp Simulated Twilio] To: {$cleanPhone} | Message: {$message}");
+                return true;
+            }
+
+            try {
+                $cleanFrom = str_starts_with($from, 'whatsapp:') ? $from : 'whatsapp:' . (str_starts_with($from, '+') ? $from : '+' . $from);
+                $cleanTo = str_starts_with($cleanPhone, '+') ? 'whatsapp:' . $cleanPhone : 'whatsapp:+' . $cleanPhone;
+
+                $url = "https://api.twilio.com/2010-04-01/Accounts/{$sid}/Messages.json";
+
+                $response = Http::withoutVerifying()
+                    ->withBasicAuth($sid, $token)
+                    ->asForm()
+                    ->post($url, [
+                        'To' => $cleanTo,
+                        'From' => $cleanFrom,
+                        'Body' => $message,
+                    ]);
+
+                if ($response->successful()) {
+                    Log::info("[Twilio WhatsApp] Message sent to {$cleanTo}");
+                    return true;
+                }
+
+                Log::warning("[Twilio WhatsApp] Dispatch failed ({$response->status()}): " . $response->body());
+                return false;
+            } catch (\Exception $e) {
+                Log::error('[Twilio WhatsApp] Dispatch Exception: ' . $e->getMessage());
+                return false;
+            }
+        }
+
+        // 2. Meta WhatsApp Cloud API
         $accessToken = Setting::get('whatsapp_access_token');
         $phoneNumberId = Setting::get('whatsapp_phone_number_id');
-
-        $cleanPhone = preg_replace('/[^0-9]/', '', $phoneNumber);
 
         if (empty($accessToken) || empty($phoneNumberId)) {
             Log::info("[WhatsApp Simulated Notification] To: {$cleanPhone} | Message: {$message}");
@@ -469,7 +512,7 @@ HTML;
         try {
             if ($provider === 'meta_cloud') {
                 $url = "https://graph.facebook.com/v18.0/{$phoneNumberId}/messages";
-                $response = Http::withToken($accessToken)->post($url, [
+                $response = Http::withoutVerifying()->withToken($accessToken)->post($url, [
                     'messaging_product' => 'whatsapp',
                     'to' => $cleanPhone,
                     'type' => 'text',
@@ -563,6 +606,87 @@ HTML;
             return false;
         } catch (\Throwable $e) {
             Log::error('[CallMeBot WhatsApp] Connection exception: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Send instant alert to Admin Telegram Bot
+     */
+    public function sendAdminTelegramAlert(Appointment $appointment, ?string $appName = null): bool
+    {
+        try {
+            $enabled = Setting::get('telegram_enabled', '1');
+            if ($enabled === '0' || $enabled === false) {
+                return false;
+            }
+
+            $botToken = Setting::get('telegram_bot_token');
+            $chatId = Setting::get('telegram_chat_id');
+
+            if (empty($botToken) || empty($chatId)) {
+                return false;
+            }
+
+            $appName = $appName ?: Setting::get('academy_name', config('app.name', 'Academy'));
+            $regNumber = $appointment->registration_number ?: $appointment->booking_code;
+            $typeLabel = ($appointment->type === 'iets_test') ? 'IELTS Mock Test' : 'Counseling Session';
+            $dateStr = $appointment->appointment_date ? $appointment->appointment_date->format('D, M d, Y') : 'N/A';
+            $testOrPurpose = $appointment->test_type ?: ($appointment->purpose ?: 'Campus Counseling');
+
+            $message = "🔔 <b>NEW BOOKING ALERT!</b>\n"
+                     . "🏛 <b>{$appName}</b>\n"
+                     . "━━━━━━━━━━━━━━━━━━\n"
+                     . "👤 <b>Student:</b> " . htmlspecialchars($appointment->name) . "\n"
+                     . "📋 <b>Type:</b> {$typeLabel}\n"
+                     . "🎯 <b>Details:</b> " . htmlspecialchars($testOrPurpose) . "\n"
+                     . "📅 <b>Date:</b> {$dateStr}\n"
+                     . "⏰ <b>Slot:</b> {$appointment->time_slot}\n"
+                     . "🆔 <b>Reg ID:</b> <code>{$regNumber}</code>\n"
+                     . "📞 <b>Phone:</b> <code>{$appointment->phone}</code>\n";
+
+            if (!empty($appointment->whatsapp) && $appointment->whatsapp !== $appointment->phone) {
+                $message .= "💬 <b>WhatsApp:</b> <code>{$appointment->whatsapp}</code>\n";
+            }
+            if (!empty($appointment->email)) {
+                $message .= "✉️ <b>Email:</b> " . htmlspecialchars($appointment->email) . "\n";
+            }
+
+            $message .= "━━━━━━━━━━━━━━━━━━\n"
+                      . "🌐 <i>Check Admin Dashboard for details.</i>";
+
+            return $this->dispatchTelegram($botToken, $chatId, $message, 'HTML');
+        } catch (\Throwable $e) {
+            Log::warning('[Telegram Alert] Alert failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Dispatch HTTP request to Telegram Bot API
+     */
+    public function dispatchTelegram(string $botToken, string $chatId, string $message, string $parseMode = 'HTML'): bool
+    {
+        try {
+            $token = trim($botToken);
+            $url = "https://api.telegram.org/bot{$token}/sendMessage";
+
+            $response = Http::withoutVerifying()->timeout(8)->asForm()->post($url, [
+                'chat_id' => trim($chatId),
+                'text' => $message,
+                'parse_mode' => $parseMode,
+                'disable_web_page_preview' => true,
+            ]);
+
+            if ($response->successful()) {
+                Log::info("[Telegram Bot] Alert dispatched successfully to Chat ID: {$chatId}.");
+                return true;
+            }
+
+            Log::warning("[Telegram Bot] API returned {$response->status()}: " . substr($response->body(), 0, 150));
+            return false;
+        } catch (\Throwable $e) {
+            Log::error('[Telegram Bot] Connection exception: ' . $e->getMessage());
             return false;
         }
     }

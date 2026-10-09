@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'super.admin' => \App\Http\Middleware\SuperAdminOnly::class,
             'page.visible' => \App\Http\Middleware\CheckPageVisibility::class,
         ]);
+        $middleware->redirectTo(
+            guests: '/admin/login',
+            users: '/admin/dashboard'
+        );
         $middleware->validateCsrfTokens(except: [
             'api/ai/chat',
         ]);
