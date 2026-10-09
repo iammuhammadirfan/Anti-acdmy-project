@@ -268,19 +268,15 @@
 
                 <!-- Intro Graphic -->
                 <div class="relative">
-                    <div class="rounded-3xl overflow-hidden shadow-xl border border-slate-200 aspect-[4/3] bg-slate-100 relative flex items-center justify-center">
-                        @if($intro && $intro->image)
-                            <img src="{{ asset('storage/' . $intro->image) }}" class="w-full h-full object-cover">
-                        @else
-                            <div class="text-center p-8 text-slate-400">
-                                <i data-lucide="book-marked" class="w-16 h-16 mx-auto mb-3 text-slate-700"></i>
-                                <span class="font-bold text-slate-800 text-lg block">Modern Academic Campus</span>
-                                <span class="text-xs text-slate-500">Excellence in Teaching &amp; Student Research</span>
-                            </div>
-                        @endif
+                    <div class="rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 aspect-[4/3] bg-slate-100 relative flex items-center justify-center group">
+                        <img src="{{ ($intro && $intro->image) ? asset('storage/' . $intro->image) : asset('images/about-campus.jpg') }}" 
+                             alt="Modern Academic Campus - {{ $globalSettings['academy_name'] ?? 'Prime IELTS College' }}"
+                             loading="lazy"
+                             decoding="async"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                     </div>
-                    <div class="absolute -bottom-6 -left-6 bg-white p-5 rounded-2xl shadow-xl border border-slate-200 hidden sm:flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center font-extrabold text-xl">
+                    <div class="absolute -bottom-6 -left-6 bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow-xl border border-slate-200/90 hidden sm:flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center font-extrabold text-xl shadow-md shadow-slate-900/20">
                             15+
                         </div>
                         <div>
@@ -294,7 +290,7 @@
     @endif
 
     <!-- 4. Student Result Cards Slider (with Indigo Gradient Shade) -->
-    <section class="py-16 bg-slate-100 text-slate-900 border-y border-slate-200 relative min-h-[500px]"
+    <section class="py-16 bg-slate-100 text-slate-900 border-y border-slate-200 relative min-h-[460px]"
              x-data="{
                 sectionReady: false,
                 activeTab: 'ALL',
@@ -304,13 +300,44 @@
                 modalScore: '',
                 modalCategory: '',
                 init() {
-                    this.$nextTick(() => {
-                        setTimeout(() => { 
-                            this.sectionReady = true; 
-                            if (window.homeResultSwiper) {
-                                window.homeResultSwiper.update();
-                            }
-                        }, 120);
+                    const images = Array.from(this.$el.querySelectorAll('.home-results-swiper img'));
+                    if (images.length === 0) {
+                        this.sectionReady = true;
+                        return;
+                    }
+                    let loadedCount = 0;
+                    const totalToCheck = Math.min(images.length, 3);
+                    const markReady = () => {
+                        loadedCount++;
+                        if (loadedCount >= totalToCheck && !this.sectionReady) {
+                            this.sectionReady = true;
+                            this.$nextTick(() => {
+                                if (window.homeResultSwiper) {
+                                    window.homeResultSwiper.update();
+                                }
+                            });
+                        }
+                    };
+
+                    // Maximum safety fallback timeout so page is never stuck
+                    setTimeout(() => {
+                        if (!this.sectionReady) {
+                            this.sectionReady = true;
+                            this.$nextTick(() => {
+                                if (window.homeResultSwiper) {
+                                    window.homeResultSwiper.update();
+                                }
+                            });
+                        }
+                    }, 1200);
+
+                    images.slice(0, 3).forEach(img => {
+                        if (img.complete && img.naturalHeight !== 0) {
+                            markReady();
+                        } else {
+                            img.addEventListener('load', markReady, { once: true });
+                            img.addEventListener('error', markReady, { once: true });
+                        }
                     });
                 },
                 filterResults(category) {
@@ -378,34 +405,24 @@
                 </div>
             </div>
 
-            <!-- Full Section Skeleton Loader (shown during initialization) -->
-            <div x-show="!sectionReady" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-pulse">
-                @for($i = 0; $i < 4; $i++)
-                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-                    <div class="p-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                        <div class="h-4 w-16 bg-slate-200 rounded-full"></div>
-                        <div class="h-4 w-12 bg-slate-200 rounded-lg"></div>
-                    </div>
-                    <div class="w-full aspect-[4/5] bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 flex flex-col items-center justify-center gap-2">
-                        <div class="w-8 h-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></div>
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Loading Scorecard...</span>
-                    </div>
-                    <div class="p-4 bg-white border-t border-slate-100 flex items-center justify-between">
-                        <div class="space-y-1.5 flex-1 pr-2">
-                            <div class="h-4 w-28 bg-slate-200 rounded"></div>
-                            <div class="h-3 w-16 bg-slate-100 rounded"></div>
-                        </div>
-                        <div class="h-6 w-8 bg-slate-200 rounded"></div>
-                    </div>
+            <!-- Clean Dedicated Loader Container (Only this loader shows until results are 100% loaded) -->
+            <div x-show="!sectionReady" class="w-full py-16 sm:py-24 bg-white rounded-3xl border border-slate-200/90 shadow-xs flex flex-col items-center justify-center text-center space-y-4">
+                <div class="relative flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-full border-4 border-indigo-100 border-t-indigo-600 animate-spin"></div>
+                    <div class="absolute w-3.5 h-3.5 rounded-full bg-indigo-600/30 animate-ping"></div>
                 </div>
-                @endfor
+                <div class="space-y-1">
+                    <h4 class="text-sm font-extrabold text-slate-900 tracking-tight">Loading Result Scorecards...</h4>
+                    <p class="text-xs text-slate-500">Preparing verified IELTS, PTE &amp; TOEFL student result cards</p>
+                </div>
             </div>
 
             <!-- Swiper Slider Container (Fades in smoothly when ready) -->
             <div x-show="sectionReady" 
+                 x-cloak
                  x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100"
+                 x-transition:enter-start="opacity-0 scale-[0.99]"
+                 x-transition:enter-end="opacity-100 scale-100"
                  class="swiper home-results-swiper !overflow-visible">
                 <div class="swiper-wrapper">
                     @forelse($ietsResults as $res)
