@@ -88,9 +88,18 @@
                     </label>
                 </div>
 
-                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs py-2.5 rounded-xl shadow transition">
-                    Save AI Settings
-                </button>
+                <!-- Test Connection Diagnostic Box -->
+                <div id="testResultBox" class="hidden p-3.5 rounded-xl text-xs space-y-1.5 transition"></div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                    <button type="button" id="testApiBtn" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs py-2.5 rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                        <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+                        <span>Test Connection</span>
+                    </button>
+                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs py-2.5 rounded-xl shadow transition">
+                        Save AI Settings
+                    </button>
+                </div>
             </form>
         </div>
 
@@ -159,7 +168,7 @@
                 label: 'Get Free Gemini Key (No Card Required) &rarr;'
             },
             groq: {
-                model: 'llama-3.3-70b-versatile',
+                model: 'qwen/qwen3.8-27b',
                 link: 'https://console.groq.com/keys',
                 label: 'Get Free Groq Key (Fast & Free) &rarr;'
             },
@@ -205,6 +214,57 @@
         });
 
         updateProviderUI();
+
+        // AJAX Test API Connection
+        const testBtn = document.getElementById('testApiBtn');
+        const resultBox = document.getElementById('testResultBox');
+
+        testBtn?.addEventListener('click', async () => {
+            const provider = providerSelect.value;
+            const model = modelInput.value;
+            const keyInput = document.querySelector('input[name="ai_api_key"]');
+            const apiKey = keyInput ? keyInput.value : '';
+
+            testBtn.disabled = true;
+            testBtn.innerHTML = `<span class="animate-spin inline-block mr-1">⏳</span> Testing...`;
+            resultBox.className = 'p-3.5 rounded-xl text-xs space-y-1 bg-slate-100 text-slate-700 border border-slate-200 block';
+            resultBox.innerHTML = `<strong>Testing API connection...</strong> Contacting AI servers...`;
+
+            try {
+                const res = await fetch("{{ route('admin.ai.test') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ai_provider: provider,
+                        ai_model: model,
+                        ai_api_key: apiKey
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    if (data.active_model && modelInput) {
+                        modelInput.value = data.active_model;
+                    }
+                    resultBox.className = 'p-3.5 rounded-xl text-xs space-y-1 bg-emerald-50 text-emerald-900 border border-emerald-200 block';
+                    resultBox.innerHTML = `<div class="font-bold flex items-center gap-1 text-emerald-950">✅ Connected successfully! (${data.provider})</div><div class="text-[11px] text-emerald-800 bg-white/70 p-2 rounded-lg border border-emerald-100 font-mono mt-1">${data.message}</div>`;
+                } else {
+                    resultBox.className = 'p-3.5 rounded-xl text-xs space-y-1 bg-rose-50 text-rose-900 border border-rose-200 block';
+                    resultBox.innerHTML = `<div class="font-bold flex items-center gap-1 text-rose-950">❌ Connection Failed</div><div class="text-[11px] text-rose-800 break-words mt-1">${data.message}</div>`;
+                }
+            } catch (err) {
+                resultBox.className = 'p-3.5 rounded-xl text-xs space-y-1 bg-rose-50 text-rose-900 border border-rose-200 block';
+                resultBox.innerHTML = `<div class="font-bold flex items-center gap-1 text-rose-950">❌ Error</div><div class="text-[11px] text-rose-800 mt-1">${err.message}</div>`;
+            } finally {
+                testBtn.disabled = false;
+                testBtn.innerHTML = `<i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i><span>Test Connection</span>`;
+                if (window.lucide) lucide.createIcons();
+            }
+        });
     });
 </script>
 @endsection

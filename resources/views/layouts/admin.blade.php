@@ -50,9 +50,9 @@
         [x-cloak] { display: none !important; }
         /* Custom scrollbar for sidebar */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body class="font-sans antialiased text-slate-800 bg-slate-100 min-h-screen flex flex-col" x-data="{ sidebarOpen: false }">
@@ -70,15 +70,16 @@
              @click="sidebarOpen = false" 
              class="fixed inset-0 bg-slate-950/60 z-30 md:hidden backdrop-blur-xs"></div>
 
-        <!-- Sidebar Navigation -->
-        <aside class="fixed md:static inset-y-0 left-0 z-40 w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 transition-transform duration-300 ease-in-out overflow-y-auto shadow-2xl md:shadow-none"
+        <!-- Sidebar Navigation (rgb(223 226 229) Background, Fixed Top Info, Scrollable Navigation) -->
+        <aside class="fixed md:static inset-y-0 left-0 z-40 w-64 border-r border-slate-300/80 text-slate-700 flex flex-col shrink-0 transition-transform duration-300 ease-in-out h-screen overflow-hidden shadow-xl md:shadow-none select-none"
+               style="background-color: rgb(223 226 229);"
                :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
             
-            <!-- Brand Header -->
-            <div class="h-16 px-6 bg-slate-950 flex items-center justify-between border-b border-slate-800">
+            <!-- Brand Header (Fixed - Non-scrolling) -->
+            <div class="h-16 px-6 flex items-center justify-between border-b border-slate-300/80 shrink-0" style="background-color: rgb(223 226 229);">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
                     @if(!empty($siteLogo))
-                        <div class="w-9 h-9 rounded-xl bg-white p-0.5 flex items-center justify-center shrink-0 shadow">
+                        <div class="w-9 h-9 rounded-xl bg-white p-0.5 flex items-center justify-center shrink-0 shadow border border-slate-200">
                             <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" class="h-full w-full object-contain">
                         </div>
                     @else
@@ -87,43 +88,43 @@
                         </div>
                     @endif
                     <div>
-                        <span class="font-extrabold text-white text-base tracking-tight block truncate max-w-[140px]">{{ $siteName }}</span>
-                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Admin Portal</span>
+                        <span class="font-extrabold text-slate-900 text-base tracking-tight block truncate max-w-[140px]">{{ $siteName }}</span>
+                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Admin Portal</span>
                     </div>
                 </a>
-                <button @click="sidebarOpen = false" class="md:hidden text-slate-400 hover:text-white">
+                <button @click="sidebarOpen = false" class="md:hidden text-slate-400 hover:text-slate-800">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
 
-            <!-- User Quick Info -->
-            <div class="p-4 border-b border-slate-800/80 bg-slate-900/50 flex items-center gap-3">
+            <!-- User Quick Info (Fixed - Non-scrolling) -->
+            <div class="p-4 border-b border-slate-300/80 flex items-center gap-3 shrink-0" style="background-color: rgb(223 226 229);">
                 <div class="w-10 h-10 rounded-full bg-brand-700 text-white font-bold flex items-center justify-center text-sm shadow">
                     {{ substr(auth()->user()->name, 0, 1) }}
                 </div>
                 <div class="overflow-hidden">
-                    <h5 class="text-sm font-semibold text-white truncate">{{ auth()->user()->name }}</h5>
-                    <span class="text-[11px] text-brand-400 font-medium capitalize">
+                    <h5 class="text-sm font-semibold text-slate-900 truncate">{{ auth()->user()->name }}</h5>
+                    <span class="text-[11px] text-brand-600 font-medium capitalize">
                         {{ auth()->user()->isSuperAdmin() ? 'Super Administrator' : 'Staff Member' }}
                     </span>
                 </div>
             </div>
 
-            <!-- Navigation Menu Items (with Dynamic RBAC) -->
-            <nav class="flex-1 px-3 py-4 space-y-1 text-sm font-medium">
+            <!-- Navigation Menu Items (Scrollable Navigation) -->
+            <nav class="flex-1 px-3 py-4 space-y-1 text-sm font-medium overflow-y-auto">
                 <!-- Dashboard -->
                 <a href="{{ route('admin.dashboard') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.dashboard') ? 'bg-brand-600 text-white shadow-md shadow-brand-500/20' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.dashboard') ? 'bg-brand-600 text-white shadow-md shadow-brand-500/20 font-bold' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                     <span>Dashboard</span>
                 </a>
 
                 @if(auth()->user()->canAccessAnySection(['teachers', 'iets', 'iets_results', 'classrooms', 'gallery']))
-                <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Academics &amp; IELTS</div>
+                <div class="pt-3 pb-1 px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Academics &amp; IELTS</div>
 
                 @if(auth()->user()->canAccessSection('teachers'))
                 <a href="{{ route('admin.teachers.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.teachers*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.teachers*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="users" class="w-4 h-4"></i>
                     <span>Teachers</span>
                 </a>
@@ -131,7 +132,7 @@
 
                 @if(auth()->user()->canAccessSection('iets'))
                 <a href="{{ route('admin.iets.programs.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.iets.programs*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.iets.programs*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="clock" class="w-4 h-4"></i>
                     <span>Courses &amp; Timings</span>
                 </a>
@@ -139,7 +140,7 @@
 
                 @if(auth()->user()->canAccessSection('iets_results'))
                 <a href="{{ route('admin.iets.results.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.iets.results*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.iets.results*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="award" class="w-4 h-4"></i>
                     <span>IELTS Results</span>
                 </a>
@@ -147,7 +148,7 @@
 
                 @if(auth()->user()->canAccessSection('classrooms'))
                 <a href="{{ route('admin.classrooms.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.classrooms*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.classrooms*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="building" class="w-4 h-4"></i>
                     <span>Classrooms &amp; Labs</span>
                 </a>
@@ -155,7 +156,7 @@
 
                 @if(auth()->user()->canAccessSection('gallery'))
                 <a href="{{ route('admin.gallery.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.gallery*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.gallery*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="image" class="w-4 h-4"></i>
                     <span>Campus Gallery</span>
                 </a>
@@ -163,23 +164,23 @@
                 @endif
 
                 @if(auth()->user()->canAccessAnySection(['appointments', 'scheduling_iets', 'scheduling_counseling', 'calendar', 'contact']))
-                <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Scheduling &amp; Admissions</div>
+                <div class="pt-3 pb-1 px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Scheduling &amp; Admissions</div>
 
                 @if(auth()->user()->canAccessAnySection(['appointments', 'scheduling_iets', 'scheduling_counseling', 'calendar']))
                 <div x-data="{ open: {{ request()->routeIs('admin.scheduling*') || request()->routeIs('admin.appointments*') ? 'true' : 'false' }} }" class="space-y-1">
                     <button type="button" @click="open = !open" 
-                            class="w-full flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.scheduling*') || request()->routeIs('admin.appointments*') ? 'bg-slate-800 text-white font-bold' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                            class="w-full flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.scheduling*') || request()->routeIs('admin.appointments*') ? 'bg-slate-200/90 text-slate-900 font-bold' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                         <div class="flex items-center gap-3">
-                            <i data-lucide="calendar-range" class="w-4 h-4 text-brand-400"></i>
+                            <i data-lucide="calendar-range" class="w-4 h-4 text-brand-600"></i>
                             <span>Scheduling</span>
                         </div>
-                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform" :class="open ? 'rotate-180 text-brand-400' : 'text-slate-400'"></i>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform" :class="open ? 'rotate-180 text-brand-600' : 'text-slate-500'"></i>
                     </button>
 
                     <div x-show="open" x-cloak class="pl-4 pr-1 py-1 space-y-1 text-xs">
                         @if(auth()->user()->canAccessAnySection(['scheduling_iets', 'scheduling_counseling']))
                         <a href="{{ route('admin.scheduling.dashboard') }}" 
-                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.dashboard') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.dashboard') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-200/80 text-slate-600 hover:text-slate-900' }}">
                             <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
                             <span>Scheduling Dashboard</span>
                         </a>
@@ -187,7 +188,7 @@
 
                         @if(auth()->user()->canAccessSection('calendar'))
                         <a href="{{ route('admin.scheduling.calendar') }}" 
-                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.calendar') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.calendar') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-200/80 text-slate-600 hover:text-slate-900' }}">
                             <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
                             <span>Calendar</span>
                         </a>
@@ -195,7 +196,7 @@
 
                         @if(auth()->user()->canAccessSection('scheduling_counseling'))
                         <a href="{{ route('admin.scheduling.counseling') }}" 
-                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.counseling') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.counseling') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-200/80 text-slate-600 hover:text-slate-900' }}">
                             <i data-lucide="messages-square" class="w-3.5 h-3.5"></i>
                             <span>Counseling Appointments</span>
                         </a>
@@ -203,7 +204,7 @@
 
                         @if(auth()->user()->canAccessSection('scheduling_iets'))
                         <a href="{{ route('admin.scheduling.iets') }}" 
-                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.iets') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.iets') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-200/80 text-slate-600 hover:text-slate-900' }}">
                             <i data-lucide="file-check-2" class="w-3.5 h-3.5"></i>
                             <span>IELTS Test Schedule</span>
                         </a>
@@ -211,7 +212,7 @@
 
                         @if(auth()->user()->canAccessAnySection(['scheduling_iets', 'scheduling_counseling']))
                         <a href="{{ route('admin.scheduling.slots') }}" 
-                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.slots') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.slots') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-200/80 text-slate-600 hover:text-slate-900' }}">
                             <i data-lucide="clock" class="w-3.5 h-3.5"></i>
                             <span>Slot Management</span>
                         </a>
@@ -219,7 +220,7 @@
 
                         @if(auth()->user()->canAccessSection('appointments'))
                         <a href="{{ route('admin.scheduling.bookings') }}" 
-                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.bookings') && !request()->routeIs('admin.scheduling.counseling') && !request()->routeIs('admin.scheduling.iets') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.bookings') && !request()->routeIs('admin.scheduling.counseling') && !request()->routeIs('admin.scheduling.iets') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-200/80 text-slate-600 hover:text-slate-900' }}">
                             <i data-lucide="users" class="w-3.5 h-3.5"></i>
                             <span>Bookings</span>
                         </a>
@@ -227,7 +228,7 @@
 
                         @if(auth()->user()->canAccessSection('students'))
                         <a href="{{ route('admin.scheduling.students') }}" 
-                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.students') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.students') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-200/80 text-slate-600 hover:text-slate-900' }}">
                             <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
                             <span>Students</span>
                         </a>
@@ -235,7 +236,7 @@
 
                         @if(auth()->user()->canAccessSection('appointments', 'edit'))
                         <a href="{{ route('admin.scheduling.emails') }}" 
-                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.email*') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.email*') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-200/80 text-slate-600 hover:text-slate-900' }}">
                             <i data-lucide="mail" class="w-3.5 h-3.5"></i>
                             <span>Email Notifications</span>
                         </a>
@@ -243,7 +244,7 @@
 
                         @if(auth()->user()->canAccessSection('settings') || auth()->user()->canAccessSection('appointments', 'edit'))
                         <a href="{{ route('admin.scheduling.settings') }}" 
-                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.settings') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-800 text-slate-400 hover:text-white' }}">
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition {{ request()->routeIs('admin.scheduling.settings') ? 'bg-brand-600 text-white font-bold' : 'hover:bg-slate-200/80 text-slate-600 hover:text-slate-900' }}">
                             <i data-lucide="settings" class="w-3.5 h-3.5"></i>
                             <span>Settings</span>
                         </a>
@@ -254,7 +255,7 @@
 
                 @if(auth()->user()->canAccessSection('contact'))
                 <a href="{{ route('admin.messages.index') }}" 
-                   class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.messages*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.messages*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <div class="flex items-center gap-3">
                         <i data-lucide="inbox" class="w-4 h-4"></i>
                         <span>Inquiries</span>
@@ -264,11 +265,11 @@
                 @endif
 
                 @if(auth()->user()->canAccessAnySection(['sliders', 'homepage', 'about', 'students', 'videos', 'blog', 'faq', 'media']))
-                <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Content Management</div>
+                <div class="pt-3 pb-1 px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Content Management</div>
 
                 @if(auth()->user()->canAccessSection('sliders'))
                 <a href="{{ route('admin.sliders.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.sliders*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.sliders*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="layers" class="w-4 h-4"></i>
                     <span>Hero Sliders</span>
                 </a>
@@ -276,7 +277,7 @@
 
                 @if(auth()->user()->canAccessSection('homepage'))
                 <a href="{{ route('admin.sections.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.sections*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.sections*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="layout" class="w-4 h-4"></i>
                     <span>Page Sections</span>
                 </a>
@@ -284,12 +285,12 @@
 
                 @if(auth()->user()->canAccessSection('about'))
                 <a href="{{ route('admin.about.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.about*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.about*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="info" class="w-4 h-4"></i>
                     <span>About Page Content</span>
                 </a>
                 <a href="{{ route('admin.timelines.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.timelines*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.timelines*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="history" class="w-4 h-4"></i>
                     <span>Timeline History</span>
                 </a>
@@ -297,7 +298,7 @@
 
                 @if(auth()->user()->canAccessSection('students'))
                 <a href="{{ route('admin.statistics.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.statistics*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.statistics*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
                     <span>Statistics &amp; Counters</span>
                 </a>
@@ -305,7 +306,7 @@
 
                 @if(auth()->user()->canAccessSection('videos'))
                 <a href="{{ route('admin.videos.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.videos*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.videos*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="video" class="w-4 h-4"></i>
                     <span>Videos &amp; Vlogs</span>
                 </a>
@@ -313,7 +314,7 @@
 
                 @if(auth()->user()->canAccessSection('blog'))
                 <a href="{{ route('admin.blog.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.blog*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.blog*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="file-text" class="w-4 h-4"></i>
                     <span>Blog &amp; News</span>
                 </a>
@@ -321,7 +322,7 @@
 
                 @if(auth()->user()->canAccessSection('faq'))
                 <a href="{{ route('admin.faqs.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.faqs*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.faqs*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="help-circle" class="w-4 h-4"></i>
                     <span>FAQs</span>
                 </a>
@@ -329,23 +330,23 @@
 
                 @if(auth()->user()->canAccessSection('settings') || auth()->user()->isSuperAdmin())
                 <a href="{{ route('admin.reviews.index') }}" 
-                   class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.reviews*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.reviews*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <div class="flex items-center gap-3">
-                        <i data-lucide="message-square-quote" class="w-4 h-4 text-amber-400"></i>
+                        <i data-lucide="message-square-quote" class="w-4 h-4 text-amber-500"></i>
                         <span>Student Reviews</span>
                     </div>
                     @php
                         $pendingReviewsCount = \App\Models\Review::where('is_approved', false)->count();
                     @endphp
                     @if($pendingReviewsCount > 0)
-                        <span class="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-500 text-black font-extrabold">{{ $pendingReviewsCount }}</span>
+                        <span class="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-500 text-slate-950 font-extrabold">{{ $pendingReviewsCount }}</span>
                     @endif
                 </a>
                 @endif
 
                 @if(auth()->user()->canAccessSection('media'))
                 <a href="{{ route('admin.media.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.media*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.media*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="folder-image" class="w-4 h-4"></i>
                     <span>Media Library</span>
                 </a>
@@ -353,11 +354,11 @@
                 @endif
 
                 @if(auth()->user()->canAccessAnySection(['seo', 'ai', 'users', 'settings']) || auth()->user()->isSuperAdmin())
-                <div class="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">System &amp; Intelligence</div>
+                <div class="pt-3 pb-1 px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">System &amp; Intelligence</div>
 
                 @if(auth()->user()->canAccessSection('seo'))
                 <a href="{{ route('admin.seo.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.seo*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.seo*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="search" class="w-4 h-4"></i>
                     <span>Technical SEO &amp; GEO</span>
                 </a>
@@ -365,7 +366,7 @@
 
                 @if(auth()->user()->canAccessSection('ai'))
                 <a href="{{ route('admin.ai.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.ai*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.ai*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="bot" class="w-4 h-4"></i>
                     <span>Agentic AI Chatbot</span>
                 </a>
@@ -373,7 +374,7 @@
 
                 @if(auth()->user()->canAccessSection('users'))
                 <a href="{{ route('admin.users.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.users*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.users*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="user-check" class="w-4 h-4"></i>
                     <span>Staff Management</span>
                 </a>
@@ -381,24 +382,24 @@
 
                 @if(auth()->user()->isSuperAdmin())
                 <a href="{{ route('admin.roles.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.roles*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.roles*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="shield" class="w-4 h-4"></i>
                     <span>Roles &amp; Permissions</span>
                 </a>
 
                 <a href="{{ route('admin.page_visibility.index') }}" 
-                   class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.page_visibility*') ? 'bg-brand-600 text-white shadow-md shadow-brand-500/20' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.page_visibility*') ? 'bg-brand-600 text-white shadow-md shadow-brand-500/20 font-bold' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <div class="flex items-center gap-3">
-                        <i data-lucide="eye" class="w-4 h-4 text-emerald-400"></i>
+                        <i data-lucide="eye" class="w-4 h-4 text-emerald-600"></i>
                         <span>Page Visibility</span>
                     </div>
-                    <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase bg-emerald-500/20 text-emerald-300">Admin</span>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase bg-emerald-100 text-emerald-800">Admin</span>
                 </a>
                 @endif
 
                 @if(auth()->user()->canAccessSection('settings'))
                 <a href="{{ route('admin.settings.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.settings*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.settings*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="settings" class="w-4 h-4"></i>
                     <span>Settings &amp; APIs</span>
                 </a>
@@ -406,7 +407,7 @@
 
                 @if(auth()->user()->isSuperAdmin())
                 <a href="{{ route('admin.activity.index') }}" 
-                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.activity*') ? 'bg-brand-600 text-white' : 'hover:bg-slate-800 text-slate-300 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.activity*') ? 'bg-brand-600 text-white font-bold shadow-md shadow-brand-500/20' : 'hover:bg-slate-200/80 text-slate-700 hover:text-slate-900' }}">
                     <i data-lucide="activity" class="w-4 h-4"></i>
                     <span>Activity Audit Logs</span>
                 </a>
@@ -416,7 +417,7 @@
         </aside>
 
         <!-- Main Wrapper -->
-        <div class="flex-1 flex flex-col overflow-hidden min-w-0">
+        <div class="flex-1 flex flex-col overflow-hidden min-w-0 bg-slate-100">
             <!-- Top Navbar -->
             <header class="h-16 bg-white border-b border-slate-200 px-3 sm:px-6 flex items-center justify-between shrink-0 gap-2">
                 <div class="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -580,7 +581,7 @@
             </header>
 
             <!-- Main Content Area -->
-            <main class="flex-1 overflow-y-auto p-3.5 sm:p-6 lg:p-8 min-w-0">
+            <main class="flex-1 overflow-y-auto p-3.5 sm:p-6 lg:p-8 min-w-0 bg-slate-100">
                 <!-- Flash Alerts -->
                 @if(session('success'))
                     <div class="mb-6 bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-xl text-emerald-800 flex items-center justify-between shadow-sm">

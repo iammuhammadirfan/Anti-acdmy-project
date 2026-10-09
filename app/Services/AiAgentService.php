@@ -26,6 +26,135 @@ class AiAgentService
     }
 
     /**
+     * Direct test for Admin Diagnostic
+     */
+    public function testDirectApi(string $provider, ?string $apiKey, ?string $model): array
+    {
+        if (empty($apiKey)) {
+            return [
+                'success' => false,
+                'message' => 'API Key is missing. Please enter or paste your API key.',
+            ];
+        }
+
+        $apiKey = trim($apiKey);
+        $testPrompt = "Say hello and confirm in 1 short sentence that you are online and ready to answer any questions.";
+
+        try {
+            if ($provider === 'groq') {
+                $candidateModels = array_unique(array_filter([
+                    $model,
+                    'qwen/qwen3.8-27b',
+                    'openai/gpt-oss-120b',
+                    'openai/gpt-oss-20b',
+                    'llama-3.3-70b-versatile',
+                    'llama-3.1-8b-instant',
+                ]));
+
+                // Filter out non-chat models
+                $candidateModels = array_values(array_filter($candidateModels, function ($m) {
+                    return !preg_match('/(whisper|orpheus|guard|tts|vision|audio|embed)/i', $m);
+                }));
+
+                $lastError = 'Unable to connect to Groq models.';
+
+                foreach ($candidateModels as $groqModel) {
+                    $response = Http::withoutVerifying()->withToken($apiKey)->timeout(15)->post('https://api.groq.com/openai/v1/chat/completions', [
+                        'model' => $groqModel,
+                        'messages' => [
+                            ['role' => 'user', 'content' => $testPrompt],
+                        ],
+                        'max_tokens' => 150,
+                    ]);
+
+                    if ($response->successful()) {
+                        $text = $response->json()['choices'][0]['message']['content'] ?? 'Connected!';
+                        return [
+                            'success' => true,
+                            'message' => trim($text),
+                            'provider' => 'Groq (' . $groqModel . ')',
+                            'active_model' => $groqModel
+                        ];
+                    }
+
+                    if ($response->status() === 401) {
+                        return ['success' => false, 'message' => 'Groq API Key Error: Invalid API Key. Please verify your key on console.groq.com/keys'];
+                    }
+
+                    $lastError = 'Groq Error: ' . $response->body();
+                }
+
+                return ['success' => false, 'message' => $lastError];
+            }
+
+            if ($provider === 'gemini') {
+                $candidateModels = array_unique(array_filter([
+                    $model,
+                    'gemini-1.5-flash',
+                    'gemini-2.0-flash',
+                    'gemini-2.5-flash',
+                ]));
+
+                foreach ($candidateModels as $geminiModel) {
+                    $url = "https://generativelanguage.googleapis.com/v1beta/models/{$geminiModel}:generateContent?key={$apiKey}";
+                    $response = Http::withoutVerifying()->timeout(15)->post($url, [
+                        'contents' => [
+                            ['role' => 'user', 'parts' => [['text' => $testPrompt]]]
+                        ]
+                    ]);
+
+                    if ($response->successful()) {
+                        $text = $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? 'Connected!';
+                        return ['success' => true, 'message' => trim($text), 'provider' => 'Google Gemini (' . $geminiModel . ')'];
+                    }
+
+                    if ($response->status() !== 404) {
+                        return ['success' => false, 'message' => 'Gemini Error (' . $response->status() . '): ' . $response->body()];
+                    }
+                }
+                return ['success' => false, 'message' => 'Gemini Error: No available model found for this key.'];
+            }
+
+            if ($provider === 'openrouter') {
+                $orModel = $model ?: 'meta-llama/llama-3.2-3b-instruct:free';
+                $response = Http::withoutVerifying()->withToken($apiKey)->timeout(15)->post('https://openrouter.ai/api/v1/chat/completions', [
+                    'model' => $orModel,
+                    'messages' => [
+                        ['role' => 'user', 'content' => $testPrompt],
+                    ],
+                    'max_tokens' => 150,
+                ]);
+
+                if ($response->successful()) {
+                    $text = $response->json()['choices'][0]['message']['content'] ?? 'Connected!';
+                    return ['success' => true, 'message' => trim($text), 'provider' => 'OpenRouter (' . $orModel . ')'];
+                }
+                return ['success' => false, 'message' => 'OpenRouter Error (' . $response->status() . '): ' . $response->body()];
+            }
+
+            if ($provider === 'openai') {
+                $response = Http::withoutVerifying()->withToken($apiKey)->timeout(15)->post('https://api.openai.com/v1/chat/completions', [
+                    'model' => $model ?: 'gpt-4o-mini',
+                    'messages' => [
+                        ['role' => 'user', 'content' => $testPrompt],
+                    ],
+                    'max_tokens' => 150,
+                ]);
+
+                if ($response->successful()) {
+                    $text = $response->json()['choices'][0]['message']['content'] ?? 'Connected!';
+                    return ['success' => true, 'message' => trim($text), 'provider' => 'OpenAI'];
+                }
+                return ['success' => false, 'message' => 'OpenAI Error (' . $response->status() . '): ' . $response->body()];
+            }
+        } catch (\Exception $e) {
+            return ['success' => false, 'message' => 'Connection Exception: ' . $e->getMessage()];
+        }
+
+        return ['success' => false, 'message' => 'Unknown provider: ' . $provider];
+    }
+
+    /**
      * Process an incoming chat message with session and tool execution
      */
     public function processChat(string $sessionId, string $userMessage, ?string $userIp = null): array
@@ -182,75 +311,108 @@ class AiAgentService
         $systemPrompt = Setting::get('ai_system_prompt');
 
         if (!empty($apiKey)) {
+            $apiKey = trim($apiKey);
             try {
                 $context = $this->buildAcademyContext();
                 $academyName = Setting::get('academy_name') ?: config('app.name', 'the academy');
-                $fullSystemPrompt = ($systemPrompt ?: "You are {$academyName}'s expert AI Academic Counselor and Admissions Advisor. Answer accurately, politely, and guide students in English, Urdu or Roman Urdu depending on the user's language.") . "\n\nAcademy Knowledge Base:\n" . $context;
+                $defaultInstructions = "You are a smart, friendly, and helpful AI Assistant and Academic Counselor for {$academyName}. " .
+                    "You have two main roles:\n" .
+                    "1. ACADEMY ADVISOR: When asked about {$academyName}, admissions, courses, IELTS/IETS prep, faculty, schedule, or appointments, use the Academy Knowledge Base provided below.\n" .
+                    "2. GENERAL ASSISTANT: You can answer ANY general, random, educational, linguistic, grammar, math, tech, creative, or conversational questions the user asks. Never refuse general or random questions!\n" .
+                    "3. LANGUAGE: Naturally respond in whatever language the user speaks (English, Urdu, or Roman Urdu).";
+
+                $fullSystemPrompt = ($systemPrompt ?: $defaultInstructions) . "\n\nAcademy Knowledge Base:\n" . $context;
 
                 // 1. Google Gemini API (100% Free Tier on Google AI Studio)
                 if ($provider === 'gemini') {
-                    $geminiModel = $model ?: 'gemini-1.5-flash';
-                    $url = "https://generativelanguage.googleapis.com/v1beta/models/{$geminiModel}:generateContent?key={$apiKey}";
+                    $candidateModels = array_unique(array_filter([
+                        $model,
+                        'gemini-1.5-flash',
+                        'gemini-2.0-flash',
+                        'gemini-2.5-flash',
+                        'gemini-1.5-pro',
+                    ]));
 
-                    $response = Http::timeout(15)->post($url, [
-                        'contents' => [
-                            [
-                                'role' => 'user',
-                                'parts' => [
-                                    ['text' => $fullSystemPrompt . "\n\nUser Question:\n" . $query]
+                    foreach ($candidateModels as $geminiModel) {
+                        $url = "https://generativelanguage.googleapis.com/v1beta/models/{$geminiModel}:generateContent?key={$apiKey}";
+
+                        $response = Http::withoutVerifying()->timeout(15)->post($url, [
+                            'contents' => [
+                                [
+                                    'role' => 'user',
+                                    'parts' => [
+                                        ['text' => $fullSystemPrompt . "\n\nUser Question:\n" . $query]
+                                    ]
                                 ]
+                            ],
+                            'generationConfig' => [
+                                'maxOutputTokens' => 800,
+                                'temperature' => 0.7,
                             ]
-                        ],
-                        'generationConfig' => [
-                            'maxOutputTokens' => 600,
-                            'temperature' => 0.7,
-                        ]
-                    ]);
+                        ]);
 
-                    if ($response->successful()) {
-                        $data = $response->json();
-                        $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
-                        if (!empty($text)) {
-                            return trim($text);
+                        if ($response->successful()) {
+                            $data = $response->json();
+                            $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
+                            if (!empty($text)) {
+                                return trim($text);
+                            }
+                        } else {
+                            Log::warning("Gemini API ({$geminiModel}) Error: " . $response->body());
+                            // If not a 404 model error, don't loop endlessly
+                            if ($response->status() !== 404) {
+                                break;
+                            }
                         }
-                    } else {
-                        Log::warning('Gemini API Error: ' . $response->body());
                     }
                 }
 
-                // 2. Groq Cloud (100% Free High-Speed Inference - Llama 3)
+                // 2. Groq Cloud (100% Free High-Speed Inference - Llama 3 / Qwen)
                 if ($provider === 'groq') {
-                    $groqModel = $model ?: 'llama-3.3-70b-versatile';
-                    $response = Http::withToken($apiKey)->timeout(12)->post('https://api.groq.com/openai/v1/chat/completions', [
-                        'model' => $groqModel,
-                        'messages' => [
-                            ['role' => 'system', 'content' => $fullSystemPrompt],
-                            ['role' => 'user', 'content' => $query],
-                        ],
-                        'max_tokens' => 600,
-                    ]);
+                    $candidateGroqModels = array_unique(array_filter([
+                        $model,
+                        'qwen/qwen3.8-27b',
+                        'openai/gpt-oss-120b',
+                        'openai/gpt-oss-20b',
+                        'llama-3.3-70b-versatile',
+                        'llama-3.1-8b-instant',
+                    ]));
 
-                    if ($response->successful()) {
-                        $data = $response->json();
-                        $text = $data['choices'][0]['message']['content'] ?? null;
-                        if (!empty($text)) {
-                            return trim($text);
+                    foreach ($candidateGroqModels as $groqModel) {
+                        $response = Http::withoutVerifying()->withToken($apiKey)->timeout(15)->post('https://api.groq.com/openai/v1/chat/completions', [
+                            'model' => $groqModel,
+                            'messages' => [
+                                ['role' => 'system', 'content' => $fullSystemPrompt],
+                                ['role' => 'user', 'content' => $query],
+                            ],
+                            'max_tokens' => 800,
+                        ]);
+
+                        if ($response->successful()) {
+                            $data = $response->json();
+                            $text = $data['choices'][0]['message']['content'] ?? null;
+                            if (!empty($text)) {
+                                return trim($text);
+                            }
+                        } else {
+                            Log::warning("Groq API ({$groqModel}) Error: " . $response->body());
+                            if ($response->status() !== 404 && $response->status() !== 400) {
+                                break;
+                            }
                         }
-                    } else {
-                        Log::warning('Groq API Error: ' . $response->body());
                     }
                 }
 
                 // 3. OpenRouter (Free community models)
                 if ($provider === 'openrouter') {
                     $orModel = $model ?: 'meta-llama/llama-3.2-3b-instruct:free';
-                    $response = Http::withToken($apiKey)->timeout(15)->post('https://openrouter.ai/api/v1/chat/completions', [
+                    $response = Http::withoutVerifying()->withToken($apiKey)->timeout(15)->post('https://openrouter.ai/api/v1/chat/completions', [
                         'model' => $orModel,
                         'messages' => [
                             ['role' => 'system', 'content' => $fullSystemPrompt],
                             ['role' => 'user', 'content' => $query],
                         ],
-                        'max_tokens' => 600,
+                        'max_tokens' => 800,
                     ]);
 
                     if ($response->successful()) {
@@ -266,13 +428,13 @@ class AiAgentService
 
                 // 4. OpenAI (ChatGPT / GPT-4o)
                 if ($provider === 'openai') {
-                    $response = Http::withToken($apiKey)->timeout(12)->post('https://api.openai.com/v1/chat/completions', [
+                    $response = Http::withoutVerifying()->withToken($apiKey)->timeout(15)->post('https://api.openai.com/v1/chat/completions', [
                         'model' => $model ?: 'gpt-4o-mini',
                         'messages' => [
                             ['role' => 'system', 'content' => $fullSystemPrompt],
                             ['role' => 'user', 'content' => $query],
                         ],
-                        'max_tokens' => 500,
+                        'max_tokens' => 800,
                     ]);
 
                     if ($response->successful()) {
@@ -298,7 +460,13 @@ class AiAgentService
     {
         $q = strtolower(trim($query));
 
-        // Greetings & pleasantries
+        // Greetings & Introductions (e.g. "hi i am irfan", "my name is ali", "hello")
+        if (preg_match('/(?:i am|i\'m|my name is|mera naam|main hoon)\s+([a-zA-Z]+)/i', $query, $nameMatches)) {
+            $userName = ucfirst(strtolower($nameMatches[1]));
+            $academyName = Setting::get('academy_name', config('app.name', 'Prime IELTS College'));
+            return "Hello **{$userName}**! Great to meet you! 😊 Welcome to **{$academyName}**.\n\nHow can I help you today? Are you interested in:\n• **IELTS Preparation Courses & Timings**\n• **Checking Available Mock Test Slots**\n• **Meeting Our Certified Faculty**\n• **Fee Details & Admissions**\n\nLet me know what you'd like to explore!";
+        }
+
         if (preg_match('/^(hi|hello|hey|salam|assalam|aoa|hy|hola|good morning|good afternoon|good evening|kese ho|kaise ho)\b/i', $q)) {
             $name = Setting::get('academy_name', config('app.name', 'Academy'));
             return "Walaikum Assalam / Hello! Welcome to **{$name}**! 👋\n\nI am your 24/7 AI Academic Advisor. How can I assist you today? You can ask me about:\n• **IETS & IELTS Prep Modules & Test Dates**\n• **Class Schedules & Faculty Details**\n• **Booking a Free Counseling Session**\n• **Admissions & Fee Details**";

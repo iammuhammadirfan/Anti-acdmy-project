@@ -39,19 +39,24 @@
                     },
                     colors: {
                         brand: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
-                            950: '#0f172a',
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#334155',
+                            700: '#1e293b',
+                            800: '#0f172a',
+                            900: '#090d16',
+                            950: '#020617',
                         },
                         accent: {
-                            500: '#f59e0b',
-                            600: '#d97706',
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            500: '#0f172a',
+                            600: '#1e293b',
                         }
                     }
                 }
@@ -167,94 +172,93 @@
         </div>
     @endif
 
-    <!-- Top Announcement Bar (Static at top of page, does NOT stick on scroll) -->
-    <div class="bg-brand-950 text-slate-300 text-xs py-1.5 sm:py-2 px-3 sm:px-6 2xl:px-8 border-b border-slate-800/90 no-print">
+    <!-- Top Announcement Bar (Static at top of page, clean light gray minimal style) -->
+    <div class="bg-slate-100 text-slate-700 text-xs py-2 px-3 sm:px-6 2xl:px-8 border-b border-slate-200 no-print">
         <div class="max-w-[1600px] mx-auto flex flex-col sm:flex-row justify-between items-center gap-1.5 sm:gap-2">
-            <div class="flex items-center gap-3 sm:gap-4 flex-wrap justify-center sm:justify-start">
-                <a href="tel:{{ $sitePhone }}" class="flex items-center gap-1.5 hover:text-white transition"><i data-lucide="phone" class="w-3.5 h-3.5 text-accent-500 shrink-0"></i> <span>{{ $sitePhone }}</span></a>
-                <a href="mailto:{{ $siteEmail }}" class="items-center gap-1.5 hover:text-white transition hidden md:flex"><i data-lucide="mail" class="w-3.5 h-3.5 text-accent-500 shrink-0"></i> <span>{{ $siteEmail }}</span></a>
-                <span class="hidden lg:inline text-slate-600">|</span>
-                <span class="hidden lg:inline text-slate-400">Admissions Open for Spring {{ date('Y') }} IELTS &amp; Language Batches</span>
+            <div class="flex items-center gap-3 sm:gap-4 flex-wrap justify-center sm:justify-start font-medium">
+                <a href="tel:{{ $sitePhone }}" class="flex items-center gap-1.5 hover:text-slate-950 transition"><i data-lucide="phone" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i> <span>{{ $sitePhone }}</span></a>
+                <a href="mailto:{{ $siteEmail }}" class="items-center gap-1.5 hover:text-slate-950 transition hidden md:flex"><i data-lucide="mail" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i> <span>{{ $siteEmail }}</span></a>
+                <span class="hidden lg:inline text-slate-300">|</span>
+                <span class="hidden lg:inline text-slate-600">Admissions Open for Spring {{ date('Y') }} IELTS &amp; Language Batches</span>
             </div>
-            <div class="flex items-center gap-3 shrink-0">
-                <a href="{{ route('appointments') }}" class="text-accent-500 hover:text-accent-400 font-semibold flex items-center gap-1">
+            <div class="flex items-center gap-3 shrink-0 font-medium">
+                <a href="{{ route('appointments') }}" class="text-slate-900 hover:text-black font-bold flex items-center gap-1">
                     <i data-lucide="calendar" class="w-3 h-3"></i> Book Appointment
                 </a>
-                <span class="text-slate-600">•</span>
-                <a href="{{ route('admin.login') }}" class="text-slate-400 hover:text-white transition">Staff Portal</a>
+                <span class="text-slate-300">•</span>
+                <a href="{{ route('admin.login') }}" class="text-slate-600 hover:text-slate-950 transition">Staff Portal</a>
             </div>
         </div>
     </div>
 
     <!-- Main Navigation Header (Sticky on Scroll across all pages) -->
-    <header class="site-sticky-top glassmorphism border-b border-slate-200/80 transition-all duration-300 no-print shadow-md">
+    <header class="site-sticky-top bg-white/95 backdrop-blur-md border-b border-slate-200 transition-all duration-300 no-print shadow-xs">
         <div class="max-w-[1600px] mx-auto px-3 sm:px-6 2xl:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-3 2xl:gap-6">
                     <!-- Brand Logo -->
                     <a href="{{ route('home') }}" class="flex items-center gap-2.5 sm:gap-3 group shrink min-w-0 max-w-[280px] xl:max-w-[340px] 2xl:max-w-none">
                         @if(!empty($siteLogo))
-                            <div class="h-11 w-11 sm:h-13 sm:w-13 2xl:h-14 2xl:w-14 rounded-xl bg-white p-1 shadow-sm border border-slate-200/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition transform">
+                            <div class="h-11 w-11 sm:h-13 sm:w-13 2xl:h-14 2xl:w-14 rounded-xl bg-white p-1 shadow-xs border border-slate-200 flex items-center justify-center shrink-0 group-hover:scale-105 transition transform">
                                 <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" class="h-full w-full object-contain">
                             </div>
                         @else
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-tr from-brand-700 to-brand-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/25 group-hover:scale-105 transition transform shrink-0">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition transform shrink-0">
                                 <i data-lucide="graduation-cap" class="w-5 h-5 sm:w-6 sm:h-6"></i>
                             </div>
                         @endif
                         <div class="min-w-0">
-                            <span class="text-sm sm:text-base xl:text-lg 2xl:text-xl font-extrabold tracking-tight text-slate-900 group-hover:text-brand-600 transition block leading-tight truncate">{{ $siteName }}</span>
+                            <span class="text-sm sm:text-base xl:text-lg 2xl:text-xl font-black tracking-tight text-slate-900 group-hover:text-black transition block leading-tight truncate uppercase">{{ $siteName }}</span>
                             @if(!empty($siteTagline))
-                                <span class="text-[10px] xl:text-[11px] font-bold uppercase tracking-wider text-accent-600 block mt-0.5 truncate">{{ $siteTagline }}</span>
+                                <span class="text-[10px] xl:text-[11px] font-bold uppercase tracking-wider text-slate-500 block mt-0.5 truncate">{{ $siteTagline }}</span>
                             @endif
                         </div>
                     </a>
 
-                    <!-- Desktop Navigation Links (Responsive flex & auto-adjusting gaps/text size when multiple tabs are enabled) -->
-                    <nav class="hidden xl:flex items-center justify-center gap-1 xl:gap-1.5 2xl:gap-4 text-xs 2xl:text-sm font-semibold text-slate-700 whitespace-nowrap shrink min-w-0 px-1">
+                    <!-- Desktop Navigation Links -->
+                    <nav class="hidden xl:flex items-center justify-center gap-1 xl:gap-1.5 2xl:gap-4 text-xs 2xl:text-sm font-semibold text-slate-600 whitespace-nowrap shrink min-w-0 px-1">
                         @if(\App\Services\PageVisibilityService::isPageVisible('home'))
-                            <a href="{{ route('home') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('home') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Home</a>
+                            <a href="{{ route('home') }}" class="px-2.5 py-1.5 rounded-lg hover:text-slate-950 hover:bg-slate-100 transition {{ request()->routeIs('home') ? 'text-slate-950 font-bold bg-slate-100' : '' }}">Home</a>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('about'))
-                            <a href="{{ route('about') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('about') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">About</a>
+                            <a href="{{ route('about') }}" class="px-2.5 py-1.5 rounded-lg hover:text-slate-950 hover:bg-slate-100 transition {{ request()->routeIs('about') ? 'text-slate-950 font-bold bg-slate-100' : '' }}">About</a>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('history'))
-                            <a href="{{ route('history') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('history') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">History</a>
+                            <a href="{{ route('history') }}" class="px-2.5 py-1.5 rounded-lg hover:text-slate-950 hover:bg-slate-100 transition {{ request()->routeIs('history') ? 'text-slate-950 font-bold bg-slate-100' : '' }}">History</a>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('iets'))
-                            <a href="{{ route('iets') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('iets') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Courses & Timings</a>
+                            <a href="{{ route('iets') }}" class="px-2.5 py-1.5 rounded-lg hover:text-slate-950 hover:bg-slate-100 transition {{ request()->routeIs('iets') ? 'text-slate-950 font-bold bg-slate-100' : '' }}">Courses &amp; Timings</a>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('results'))
-                            <a href="{{ route('iets.results') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('iets.results') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Results</a>
+                            <a href="{{ route('iets.results') }}" class="px-2.5 py-1.5 rounded-lg hover:text-slate-950 hover:bg-slate-100 transition {{ request()->routeIs('iets.results') ? 'text-slate-950 font-bold bg-slate-100' : '' }}">Results</a>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('teachers'))
-                            <a href="{{ route('teachers') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('teachers*') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Teachers</a>
+                            <a href="{{ route('teachers') }}" class="px-2.5 py-1.5 rounded-lg hover:text-slate-950 hover:bg-slate-100 transition {{ request()->routeIs('teachers*') ? 'text-slate-950 font-bold bg-slate-100' : '' }}">Teachers</a>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('classrooms'))
-                            <a href="{{ route('classrooms') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('classrooms') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Classrooms</a>
+                            <a href="{{ route('classrooms') }}" class="px-2.5 py-1.5 rounded-lg hover:text-slate-950 hover:bg-slate-100 transition {{ request()->routeIs('classrooms') ? 'text-slate-950 font-bold bg-slate-100' : '' }}">Classrooms</a>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('campus'))
-                            <a href="{{ route('gallery') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('gallery') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Campus</a>
+                            <a href="{{ route('gallery') }}" class="px-2.5 py-1.5 rounded-lg hover:text-slate-950 hover:bg-slate-100 transition {{ request()->routeIs('gallery') ? 'text-slate-950 font-bold bg-slate-100' : '' }}">Campus</a>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('videos'))
-                            <a href="{{ route('videos') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('videos*') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Vlogs</a>
+                            <a href="{{ route('videos') }}" class="px-2.5 py-1.5 rounded-lg hover:text-slate-950 hover:bg-slate-100 transition {{ request()->routeIs('videos*') ? 'text-slate-950 font-bold bg-slate-100' : '' }}">Vlogs</a>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('news'))
-                            <a href="{{ route('blog') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('blog*') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">News</a>
+                            <a href="{{ route('blog') }}" class="px-2.5 py-1.5 rounded-lg hover:text-slate-950 hover:bg-slate-100 transition {{ request()->routeIs('blog*') ? 'text-slate-950 font-bold bg-slate-100' : '' }}">News</a>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('faq'))
-                            <a href="{{ route('faq') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('faq') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">FAQ</a>
+                            <a href="{{ route('faq') }}" class="px-2.5 py-1.5 rounded-lg hover:text-slate-950 hover:bg-slate-100 transition {{ request()->routeIs('faq') ? 'text-slate-950 font-bold bg-slate-100' : '' }}">FAQ</a>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('contact'))
-                            <a href="{{ route('contact') }}" class="px-1.5 2xl:px-2.5 py-1 rounded-lg hover:text-brand-600 hover:bg-brand-50/50 transition {{ request()->routeIs('contact') ? 'text-brand-600 font-bold bg-brand-50/60' : '' }}">Contact</a>
+                            <a href="{{ route('contact') }}" class="px-2.5 py-1.5 rounded-lg hover:text-slate-950 hover:bg-slate-100 transition {{ request()->routeIs('contact') ? 'text-slate-950 font-bold bg-slate-100' : '' }}">Contact</a>
                         @endif
                     </nav>
 
-                    <!-- Action Button -->
+                    <!-- Action Button (Book Appointment) -->
                     <div class="flex items-center gap-2 shrink-0">
                         @if(\App\Services\PageVisibilityService::isPageVisible('appointments'))
-                        <a href="{{ route('appointments') }}" class="inline-flex items-center gap-1.5 bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white font-semibold text-xs 2xl:text-sm px-3 2xl:px-4 py-2 2xl:py-2.5 rounded-xl shadow-md shadow-brand-500/20 hover:shadow-lg transition transform hover:-translate-y-0.5 whitespace-nowrap shrink-0">
-                            <i data-lucide="calendar" class="w-3.5 h-3.5 2xl:w-4 2xl:h-4 shrink-0"></i>
-                            <span>Book Session</span>
+                        <a href="{{ route('appointments') }}" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-xs hover:shadow transition transform hover:-translate-y-0.5 whitespace-nowrap shrink-0">
+                            <span>Book Appointment</span>
                         </a>
                         @endif
 
@@ -342,140 +346,140 @@
         @yield('content')
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800 mt-20">
+    <!-- Footer (Matching Avantgarde Minimalist reference theme) -->
+    <footer class="bg-[#f1f5f9] text-slate-700 pt-16 pb-12 border-t border-slate-200 mt-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
                 <!-- Col 1: About -->
                 <div class="lg:col-span-2 space-y-4">
                     <div class="flex items-center gap-3">
                         @if(!empty($siteLogo))
-                            <div class="h-12 w-12 rounded-xl bg-white p-1 shadow-sm flex items-center justify-center shrink-0">
+                            <div class="h-12 w-12 rounded-xl bg-white p-1 shadow-xs border border-slate-200 flex items-center justify-center shrink-0">
                                 <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" class="h-full w-full object-contain">
                             </div>
                         @else
-                            <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-xl">
+                            <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white font-bold text-xl">
                                 <i data-lucide="graduation-cap" class="w-6 h-6"></i>
                             </div>
                         @endif
-                        <span class="text-xl font-bold text-white tracking-tight">{{ $siteName }}</span>
+                        <span class="text-xl font-black text-slate-900 tracking-tight uppercase">{{ $siteName }}</span>
                     </div>
-                    <p class="text-sm text-slate-400 leading-relaxed pr-6">
+                    <p class="text-sm text-slate-500 leading-relaxed pr-6">
                         An elite educational institution dedicated to higher learning, language fluency, and premier IELTS test preparation. Featuring AI-assisted evaluation, world-class faculty, and modern laboratory infrastructure.
                     </p>
-                    <div class="flex items-center gap-3 pt-2">
+                    <div class="flex items-center gap-2.5 pt-2">
                         @if(!empty($fbLink))
-                            <a href="{{ $fbLink }}" target="_blank" rel="noopener" aria-label="Facebook" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
+                            <a href="{{ $fbLink }}" target="_blank" rel="noopener" aria-label="Facebook" class="w-9 h-9 rounded-lg bg-white hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-600 flex items-center justify-center transition shadow-xs"><i class="fa-brands fa-facebook-f text-xs" aria-hidden="true"></i></a>
                         @endif
                         @if(!empty($instaLink))
-                            <a href="{{ $instaLink }}" target="_blank" rel="noopener" aria-label="Instagram" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+                            <a href="{{ $instaLink }}" target="_blank" rel="noopener" aria-label="Instagram" class="w-9 h-9 rounded-lg bg-white hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-600 flex items-center justify-center transition shadow-xs"><i class="fa-brands fa-instagram text-xs" aria-hidden="true"></i></a>
                         @endif
                         @if(!empty($ytLink))
-                            <a href="{{ $ytLink }}" target="_blank" rel="noopener" aria-label="YouTube" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
+                            <a href="{{ $ytLink }}" target="_blank" rel="noopener" aria-label="YouTube" class="w-9 h-9 rounded-lg bg-white hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-600 flex items-center justify-center transition shadow-xs"><i class="fa-brands fa-youtube text-xs" aria-hidden="true"></i></a>
                         @endif
                         @if(!empty($liLink))
-                            <a href="{{ $liLink }}" target="_blank" rel="noopener" aria-label="LinkedIn" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>
+                            <a href="{{ $liLink }}" target="_blank" rel="noopener" aria-label="LinkedIn" class="w-9 h-9 rounded-lg bg-white hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-600 flex items-center justify-center transition shadow-xs"><i class="fa-brands fa-linkedin-in text-xs" aria-hidden="true"></i></a>
                         @endif
                     </div>
                 </div>
 
                 <!-- Col 2: Quick Links -->
                 <div>
-                    <h4 class="text-white font-semibold text-sm uppercase tracking-wider mb-4">Quick Links</h4>
+                    <h4 class="text-slate-900 font-bold text-xs uppercase tracking-wider mb-4">Quick Links</h4>
                     <ul class="space-y-2.5 text-sm">
                         @if(\App\Services\PageVisibilityService::isPageVisible('about'))
-                            <li><a href="{{ route('about') }}" class="hover:text-white transition">About Us</a></li>
+                            <li><a href="{{ route('about') }}" class="hover:text-slate-950 transition">About Us</a></li>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('history'))
-                            <li><a href="{{ route('history') }}" class="hover:text-white transition">Milestone Timeline</a></li>
+                            <li><a href="{{ route('history') }}" class="hover:text-slate-950 transition">Milestone Timeline</a></li>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('teachers'))
-                            <li><a href="{{ route('teachers') }}" class="hover:text-white transition">Faculty Members</a></li>
+                            <li><a href="{{ route('teachers') }}" class="hover:text-slate-950 transition">Faculty Members</a></li>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('classrooms'))
-                            <li><a href="{{ route('classrooms') }}" class="hover:text-white transition">Classrooms &amp; Labs</a></li>
+                            <li><a href="{{ route('classrooms') }}" class="hover:text-slate-950 transition">Classrooms &amp; Labs</a></li>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('campus'))
-                            <li><a href="{{ route('gallery') }}" class="hover:text-white transition">Campus Gallery</a></li>
+                            <li><a href="{{ route('gallery') }}" class="hover:text-slate-950 transition">Campus Gallery</a></li>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('faq'))
-                            <li><a href="{{ route('faq') }}" class="hover:text-white transition">Admissions FAQ</a></li>
+                            <li><a href="{{ route('faq') }}" class="hover:text-slate-950 transition">Admissions FAQ</a></li>
                         @endif
                     </ul>
                 </div>
 
                 <!-- Col 3: Programs -->
                 <div>
-                    <h4 class="text-white font-semibold text-sm uppercase tracking-wider mb-4">IELTS Prep</h4>
+                    <h4 class="text-slate-900 font-bold text-xs uppercase tracking-wider mb-4">IELTS Prep</h4>
                     <ul class="space-y-2.5 text-sm">
                         @if(\App\Services\PageVisibilityService::isPageVisible('iets'))
-                            <li><a href="{{ route('iets') }}" class="hover:text-white transition">IELTS Overview</a></li>
+                            <li><a href="{{ route('iets') }}" class="hover:text-slate-950 transition">IELTS Overview</a></li>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('results'))
-                            <li><a href="{{ route('iets.results') }}" class="hover:text-white transition">Band Results &amp; Scores</a></li>
+                            <li><a href="{{ route('iets.results') }}" class="hover:text-slate-950 transition">Band Results &amp; Scores</a></li>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('appointments'))
-                            <li><a href="{{ route('appointments') }}" class="hover:text-white transition">Diagnostic Mock Test</a></li>
+                            <li><a href="{{ route('appointments') }}" class="hover:text-slate-950 transition">Diagnostic Mock Test</a></li>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('videos'))
-                            <li><a href="{{ route('videos') }}" class="hover:text-white transition">Lectures &amp; Vlogs</a></li>
+                            <li><a href="{{ route('videos') }}" class="hover:text-slate-950 transition">Lectures &amp; Vlogs</a></li>
                         @endif
                         @if(\App\Services\PageVisibilityService::isPageVisible('news'))
-                            <li><a href="{{ route('blog') }}" class="hover:text-white transition">Latest Announcements</a></li>
+                            <li><a href="{{ route('blog') }}" class="hover:text-slate-950 transition">Latest Announcements</a></li>
                         @endif
                     </ul>
                 </div>
 
                 <!-- Col 4: Contact -->
                 <div>
-                    <h4 class="text-white font-semibold text-sm uppercase tracking-wider mb-4">Contact Campus</h4>
-                    <div class="space-y-3 text-sm text-slate-400">
+                    <h4 class="text-slate-900 font-bold text-xs uppercase tracking-wider mb-4">Contact Campus</h4>
+                    <div class="space-y-3 text-sm text-slate-600">
                         <p class="flex items-start gap-2.5">
-                            <i data-lucide="map-pin" class="w-4 h-4 text-accent-500 shrink-0 mt-1"></i>
+                            <i data-lucide="map-pin" class="w-4 h-4 text-slate-500 shrink-0 mt-1"></i>
                             <span>{{ $siteAddress }}</span>
                         </p>
                         <p class="flex items-center gap-2.5">
-                            <i data-lucide="phone" class="w-4 h-4 text-accent-500 shrink-0"></i>
-                            <a href="tel:{{ $sitePhone }}" class="hover:text-white transition">{{ $sitePhone }}</a>
+                            <i data-lucide="phone" class="w-4 h-4 text-slate-500 shrink-0"></i>
+                            <a href="tel:{{ $sitePhone }}" class="hover:text-slate-950 transition">{{ $sitePhone }}</a>
                         </p>
                         @if(!empty($sitePhone2))
                         <p class="flex items-center gap-2.5">
-                            <i data-lucide="phone-call" class="w-4 h-4 text-accent-500 shrink-0"></i>
-                            <a href="tel:{{ $sitePhone2 }}" class="hover:text-white transition">{{ $sitePhone2 }}</a>
+                            <i data-lucide="phone-call" class="w-4 h-4 text-slate-500 shrink-0"></i>
+                            <a href="tel:{{ $sitePhone2 }}" class="hover:text-slate-950 transition">{{ $sitePhone2 }}</a>
                         </p>
                         @endif
                         <p class="flex items-center gap-2.5">
-                            <i data-lucide="mail" class="w-4 h-4 text-accent-500 shrink-0"></i>
-                            <a href="mailto:{{ $siteEmail }}" class="hover:text-white transition">{{ $siteEmail }}</a>
+                            <i data-lucide="mail" class="w-4 h-4 text-slate-500 shrink-0"></i>
+                            <a href="mailto:{{ $siteEmail }}" class="hover:text-slate-950 transition">{{ $siteEmail }}</a>
                         </p>
                         <p class="flex items-center gap-2.5">
-                            <i data-lucide="clock" class="w-4 h-4 text-accent-500 shrink-0"></i>
+                            <i data-lucide="clock" class="w-4 h-4 text-slate-500 shrink-0"></i>
                             <span>{{ $siteTimings }}</span>
                         </p>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <div class="mt-12 pt-8 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
                 <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
                     <p>&copy; {{ date('Y') }} {{ $siteName }} Management System. All rights reserved.</p>
-                    <span class="hidden sm:inline text-slate-700">•</span>
+                    <span class="hidden sm:inline text-slate-300">•</span>
                     <a href="https://wa.me/923235502570" 
                        target="_blank" 
                        rel="noopener noreferrer" 
-                       class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500/50 text-slate-300 hover:text-white transition group shadow-sm"
+                       class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-950 transition group shadow-xs"
                        title="Contact MJ Developer on WhatsApp">
-                        <span class="text-[11px] font-medium text-slate-400">Made by</span>
-                        <span class="text-[11px] font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">MJ Developer</span>
+                        <span class="text-[11px] font-medium text-slate-500">Made by</span>
+                        <span class="text-[11px] font-bold text-slate-900 group-hover:text-black transition-colors">MJ Developer</span>
                         <svg class="w-3.5 h-3.5 fill-[#25D366] group-hover:scale-110 transition-transform shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
                         </svg>
                     </a>
                 </div>
                 <div class="flex items-center gap-6">
-                    <a href="{{ route('privacy') }}" class="hover:text-slate-400 transition">Privacy Policy</a>
-                    <a href="{{ route('terms') }}" class="hover:text-slate-400 transition">Terms of Service</a>
-                    <a href="{{ route('sitemap') }}" class="hover:text-slate-400 transition">XML Sitemap</a>
+                    <a href="{{ route('privacy') }}" class="hover:text-slate-950 transition">Privacy Policy</a>
+                    <a href="{{ route('terms') }}" class="hover:text-slate-950 transition">Terms of Service</a>
+                    <a href="{{ route('sitemap') }}" class="hover:text-slate-950 transition">XML Sitemap</a>
                 </div>
             </div>
         </div>

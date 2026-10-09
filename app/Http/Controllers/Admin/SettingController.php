@@ -158,6 +158,23 @@ class SettingController extends Controller
             if ($request->filled('callmebot_api_key')) {
                 Setting::set('callmebot_api_key', trim($request->callmebot_api_key), 'whatsapp', true);
             }
+
+            // Telegram Instant Alerts
+            Setting::set('telegram_enabled', $request->has('telegram_enabled') ? '1' : '0', 'telegram');
+            if ($request->filled('telegram_bot_token')) {
+                Setting::set('telegram_bot_token', trim($request->telegram_bot_token), 'telegram', true);
+            }
+            if ($request->filled('telegram_chat_id')) {
+                Setting::set('telegram_chat_id', trim($request->telegram_chat_id), 'telegram');
+            }
+        } elseif ($group === 'telegram') {
+            Setting::set('telegram_enabled', $request->has('telegram_enabled') ? '1' : '0', 'telegram');
+            if ($request->filled('telegram_bot_token')) {
+                Setting::set('telegram_bot_token', trim($request->telegram_bot_token), 'telegram', true);
+            }
+            if ($request->filled('telegram_chat_id')) {
+                Setting::set('telegram_chat_id', trim($request->telegram_chat_id), 'telegram');
+            }
         } elseif ($group === 'email') {
             Setting::set('smtp_host', $request->smtp_host, 'email');
             Setting::set('smtp_port', $request->smtp_port, 'email');
@@ -303,6 +320,132 @@ HTML;
             return response()->json([
                 'success' => false,
                 'message' => 'CallMeBot Connection Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Send an instant test WhatsApp message via Twilio Gateway
+     */
+    public function testTwilio(Request $request)
+    {
+        $request->validate([
+            'test_phone' => 'required',
+            'twilio_sid' => 'required',
+            'twilio_token' => 'required',
+            'twilio_from' => 'required',
+        ]);
+
+        $sid = trim($request->twilio_sid);
+        $token = trim($request->twilio_token);
+        $from = trim($request->twilio_from);
+        $rawPhone = $request->test_phone;
+        $cleanPhone = preg_replace('/[^0-9]/', '', $rawPhone);
+        $appName = Setting::get('academy_name', config('app.name', 'Prime IELTS College'));
+
+        if (empty($cleanPhone)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please provide a valid recipient phone number.',
+            ], 422);
+        }
+
+        $cleanFrom = str_starts_with($from, 'whatsapp:') ? $from : 'whatsapp:' . (str_starts_with($from, '+') ? $from : '+' . $from);
+        $cleanTo = str_starts_with($cleanPhone, '+') ? 'whatsapp:' . $cleanPhone : 'whatsapp:+' . $cleanPhone;
+
+        $nowStr = now()->format('h:i A, d M Y');
+        $testMsg = "✅ *Twilio WhatsApp Gateway Test*\n\n"
+                 . "🏛 *{$appName}*\n"
+                 . "Your Twilio WhatsApp Business integration is working perfectly!\n\n"
+                 . "Candidates and administrators will receive instant booking confirmations via WhatsApp.\n\n"
+                 . "🕒 *Time:* {$nowStr}";
+
+        try {
+            $url = "https://api.twilio.com/2010-04-01/Accounts/{$sid}/Messages.json";
+
+            $response = \Illuminate\Support\Facades\Http::withoutVerifying()
+                ->withBasicAuth($sid, $token)
+                ->asForm()
+                ->post($url, [
+                    'To' => $cleanTo,
+                    'From' => $cleanFrom,
+                    'Body' => $testMsg,
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                return response()->json([
+                    'success' => true,
+                    'message' => "Twilio message sent successfully! SID: " . ($data['sid'] ?? 'OK') . ". Please check your WhatsApp app right now.",
+                ]);
+            }
+
+            $errData = $response->json();
+            $errMsg = $errData['message'] ?? $response->body();
+
+            return response()->json([
+                'success' => false,
+                'message' => "Twilio Error ({$response->status()}): {$errMsg}",
+            ], 422);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Twilio Exception: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Send an instant test alert to Telegram Bot
+     */
+    public function testTelegram(Request $request)
+    {
+        $request->validate([
+            'bot_token' => 'required',
+            'chat_id' => 'required',
+        ]);
+
+        $botToken = trim($request->bot_token);
+        $chatId = trim($request->chat_id);
+        $appName = Setting::get('academy_name', config('app.name', 'Academy'));
+        $nowStr = now()->format('h:i A, d M Y');
+
+        $message = "🤖 <b>Telegram Alert Test Successful!</b>\n\n"
+                 . "🏛 <b>{$appName}</b>\n"
+                 . "Your Telegram bot is now successfully connected to the academy portal.\n\n"
+                 . "✅ Instant notifications for new IELTS mock tests & counseling appointments will now arrive directly on your Telegram.\n\n"
+                 . "🕒 <b>Time:</b> {$nowStr}";
+
+        try {
+            $url = "https://api.telegram.org/bot{$botToken}/sendMessage";
+
+            $response = \Illuminate\Support\Facades\Http::withoutVerifying()
+                ->timeout(8)
+                ->asForm()
+                ->post($url, [
+                    'chat_id' => $chatId,
+                    'text' => $message,
+                    'parse_mode' => 'HTML',
+                ]);
+
+            if ($response->successful()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "Telegram message sent successfully! Please check your Telegram chat right now.",
+                ]);
+            }
+
+            $errData = $response->json();
+            $errMsg = $errData['description'] ?? $response->body();
+
+            return response()->json([
+                'success' => false,
+                'message' => "Telegram Error ({$response->status()}): {$errMsg}",
+            ], 422);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Telegram Exception: ' . $e->getMessage(),
             ], 500);
         }
     }

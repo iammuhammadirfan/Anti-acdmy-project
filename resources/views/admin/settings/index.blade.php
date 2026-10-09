@@ -4,19 +4,51 @@
 @section('page_title', 'Academy Settings & API Integrations')
 
 @section('content')
-<div class="max-w-4xl space-y-8" x-data="{ tab: 'general' }">
-    <!-- Tab Navigation -->
-    <div class="flex items-center gap-2 border-b border-slate-200 pb-3 text-xs font-bold uppercase tracking-wider overflow-x-auto">
-        <button @click="tab = 'general'" :class="tab === 'general' ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl transition shadow-sm">General Info</button>
-        <button @click="tab = 'results'" :class="tab === 'results' ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl transition shadow-sm flex items-center gap-1.5">
-            <span>🏆 Results Page (Hall of Fame)</span>
-        </button>
-        <a href="{{ route('admin.about.index') }}" class="px-4 py-2 rounded-xl transition shadow-sm bg-white text-slate-600 hover:bg-slate-50 flex items-center gap-1.5 shrink-0 border border-slate-200">
-            <span>📖 About Page Content</span>
-        </a>
-        <button @click="tab = 'social'" :class="tab === 'social' ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl transition shadow-sm">Social Channels</button>
-        <button @click="tab = 'email'" :class="tab === 'email' ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl transition shadow-sm">SMTP Email Server</button>
-        <button @click="tab = 'whatsapp'" :class="tab === 'whatsapp' ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-xl transition shadow-sm">WhatsApp Business API</button>
+<div class="w-full space-y-6" x-data="{ tab: 'general' }">
+    <!-- Premium Modern Tab Navigation (100% Responsive Grid - No Scrollbar) -->
+    <div class="bg-white p-1.5 sm:p-2 rounded-2xl border border-slate-200/90 shadow-xs">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5 sm:gap-2 text-xs font-bold uppercase tracking-wider">
+            <button @click="tab = 'general'" 
+                    :class="tab === 'general' ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-slate-50/60'" 
+                    class="w-full py-2.5 px-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5 text-center">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span class="truncate">General Info</span>
+            </button>
+
+            <button @click="tab = 'results'" 
+                    :class="tab === 'results' ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-slate-50/60'" 
+                    class="w-full py-2.5 px-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5 text-center">
+                <span class="text-sm shrink-0">🏆</span>
+                <span class="truncate">Hall of Fame</span>
+            </button>
+
+            <a href="{{ route('admin.about.index') }}" 
+               class="w-full py-2.5 px-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-slate-50/60 transition-all duration-200 flex items-center justify-center gap-1.5 text-center">
+                <span class="text-sm shrink-0">📖</span>
+                <span class="truncate">About Page</span>
+            </a>
+
+            <button @click="tab = 'social'" 
+                    :class="tab === 'social' ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-slate-50/60'" 
+                    class="w-full py-2.5 px-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5 text-center">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+                <span class="truncate">Social Links</span>
+            </button>
+
+            <button @click="tab = 'email'" 
+                    :class="tab === 'email' ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-slate-50/60'" 
+                    class="w-full py-2.5 px-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5 text-center">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                <span class="truncate">SMTP Email</span>
+            </button>
+
+            <button @click="tab = 'telegram'" 
+                    :class="tab === 'telegram' ? 'bg-sky-600 text-white shadow-md shadow-sky-600/25' : 'text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200/80'" 
+                    class="w-full py-2.5 px-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-1.5 text-center">
+                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+                <span class="truncate">Telegram</span>
+            </button>
+        </div>
     </div>
 
     <!-- General Settings Form -->
@@ -362,219 +394,7 @@
         </div>
     </div>
 
-    <!-- WhatsApp Settings Form -->
-    <div x-show="tab === 'whatsapp'" x-cloak class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-8"
-         x-data="{
-             waTesting: false,
-             waTestPhone: '{{ $settings['admin_whatsapp_phone'] ?? '923235502570' }}',
-             waTestApiKey: '{{ $settings['callmebot_api_key'] ?? '' }}',
-             waTestResult: null,
-             waTestSuccess: false,
-             sendTestWhatsApp() {
-                 if (!this.waTestPhone || !this.waTestApiKey) {
-                     alert('Please enter both your WhatsApp phone number and CallMeBot API Key to run the test.');
-                     return;
-                 }
-                 this.waTesting = true;
-                 this.waTestResult = null;
-                 fetch('{{ route('admin.settings.test_whatsapp') }}', {
-                     method: 'POST',
-                     headers: {
-                         'Content-Type': 'application/json',
-                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                         'Accept': 'application/json'
-                     },
-                     body: JSON.stringify({
-                         admin_phone: this.waTestPhone,
-                         api_key: this.waTestApiKey
-                     })
-                 })
-                 .then(res => res.json().then(data => ({ status: res.status, body: data })))
-                 .then(res => {
-                     this.waTesting = false;
-                     this.waTestSuccess = res.status === 200 && res.body.success;
-                     this.waTestResult = res.body.message || (this.waTestSuccess ? 'Test WhatsApp message dispatched successfully!' : 'Failed to send WhatsApp message.');
-                 })
-                 .catch(err => {
-                     this.waTesting = false;
-                     this.waTestSuccess = false;
-                     this.waTestResult = 'Connection error: ' + err.message;
-                 });
-             }
-         }">
 
-        <!-- SECTION 1: CallMeBot Free WhatsApp Admin Gateway -->
-        <div class="border border-emerald-200 bg-emerald-50/40 rounded-2xl p-5 sm:p-6 space-y-5">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-200/80 pb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold shadow-md shadow-emerald-600/20">
-                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
-                            <span>Admin WhatsApp Instant Alerts</span>
-                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">100% Free - CallMeBot</span>
-                        </h3>
-                        <p class="text-xs text-slate-600">Receive instant WhatsApp alerts on your phone whenever any student registers for an IELTS Mock Test or Counseling Session.</p>
-                    </div>
-                </div>
-            </div>
-
-            <form action="{{ route('admin.settings.update') }}" method="POST" class="space-y-5">
-                @csrf
-                <input type="hidden" name="group" value="whatsapp">
-
-                <!-- Enable / Disable Switch -->
-                <div class="flex items-center justify-between p-3.5 bg-white rounded-xl border border-emerald-200/80 shadow-xs">
-                    <div>
-                        <p class="text-xs font-bold text-slate-800 uppercase tracking-wider">Enable WhatsApp Alerts</p>
-                        <p class="text-[11px] text-slate-500">When enabled, the system automatically sends a WhatsApp message with candidate details to your number.</p>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="callmebot_enabled" value="1" {{ ($settings['callmebot_enabled'] ?? '1') == '1' ? 'checked' : '' }} class="sr-only peer">
-                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
-                    </label>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Admin WhatsApp Phone Number</label>
-                        <input type="text" name="admin_whatsapp_phone" x-model="waTestPhone" required
-                               placeholder="923235502570"
-                               class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        <p class="text-[11px] text-slate-500 mt-1">Format: Country code without <code>+</code> or <code>00</code> (e.g. <code>923235502570</code> for Pakistan).</p>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">CallMeBot API Key</label>
-                        <input type="text" name="callmebot_api_key" x-model="waTestApiKey" required
-                               placeholder="Enter your API key (e.g. 1234567)"
-                               class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        <p class="text-[11px] text-slate-500 mt-1">Get this key in 10 seconds via WhatsApp (see 1-click guide below).</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between pt-2">
-                    <a href="https://api.whatsapp.com/send?phone=34684783708&text=I%20allow%20callmebot%20to%20send%20me%20messages" 
-                       target="_blank"
-                       class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-900 bg-white hover:bg-emerald-100/70 border border-emerald-300 px-3.5 py-2 rounded-xl transition shadow-xs">
-                        <span>📲 1-Click: Send Authorization Message on WhatsApp</span>
-                    </a>
-                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow transition">
-                        Save WhatsApp Settings
-                    </button>
-                </div>
-            </form>
-
-            <!-- Test CallMeBot Card -->
-            <div class="border-t border-emerald-200/80 pt-4 mt-4 bg-white/70 p-4 rounded-xl border border-emerald-100">
-                <h4 class="font-bold text-slate-900 text-xs sm:text-sm mb-1 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                    Test Admin WhatsApp Notification
-                </h4>
-                <p class="text-xs text-slate-500 mb-3">Send a real-time test notification to your phone right now to verify that your number and API key are working.</p>
-
-                <div class="flex flex-col sm:flex-row gap-3 items-center">
-                    <button type="button" @click="sendTestWhatsApp()" :disabled="waTesting"
-                            class="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
-                        <template x-if="waTesting">
-                            <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
-                        </template>
-                        <span x-text="waTesting ? 'Sending Alert to WhatsApp...' : '🚀 Send Test WhatsApp Alert'"></span>
-                    </button>
-                    <span class="text-[11px] text-slate-400">Will test recipient: <code class="font-bold text-slate-700" x-text="waTestPhone || 'Not set'"></code></span>
-                </div>
-
-                <!-- Test Feedback Banner -->
-                <div x-show="waTestResult" x-cloak class="mt-4 p-3.5 rounded-xl text-xs font-medium"
-                     :class="waTestSuccess ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' : 'bg-rose-50 text-rose-800 border border-rose-200'">
-                    <div class="flex items-start gap-2">
-                        <span x-text="waTestSuccess ? '✔' : '✖'" class="font-bold text-sm"></span>
-                        <span x-text="waTestResult" class="leading-relaxed"></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Visual Step-by-Step Instructions -->
-            <div class="p-4 bg-white rounded-xl border border-emerald-200/90 text-xs text-slate-700 space-y-2.5 shadow-xs">
-                <p class="font-bold text-emerald-900 flex items-center gap-1.5 text-sm">
-                    <span>📖 Free API Key Hasil Karne Ka Tareeqa (Urdu / English Guide):</span>
-                </p>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                    <div class="p-3 bg-emerald-50/50 rounded-xl border border-emerald-100">
-                        <p class="font-bold text-emerald-950 mb-1">Step 1: Save Contact</p>
-                        <p class="text-[11px] text-slate-600 leading-relaxed">Apne phone mein ye WhatsApp number save karein: <strong class="text-emerald-700 select-all">+34 684 783 708</strong> ya oper diye gaye green link par click karein.</p>
-                    </div>
-                    <div class="p-3 bg-emerald-50/50 rounded-xl border border-emerald-100">
-                        <p class="font-bold text-emerald-950 mb-1">Step 2: Send Message</p>
-                        <p class="text-[11px] text-slate-600 leading-relaxed">Is number par WhatsApp se bilkul ye message send karein:<br><code class="bg-white px-1.5 py-0.5 rounded text-[11px] font-bold text-emerald-800 border select-all">I allow callmebot to send me messages</code></p>
-                    </div>
-                    <div class="p-3 bg-emerald-50/50 rounded-xl border border-emerald-100">
-                        <p class="font-bold text-emerald-950 mb-1">Step 3: Get API Key</p>
-                        <p class="text-[11px] text-slate-600 leading-relaxed">CallMeBot 5 se 10 second mein reply karega: <em>"Your APIKEY is: 123456"</em>. Wo key yahan paste karein aur Save button daba dein!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION 2: Meta Cloud & Twilio (Student SMS / WhatsApp Dispatch) -->
-        <div class="border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-5">
-            <div>
-                <h3 class="font-bold text-slate-900 text-base">Student Direct WhatsApp Gateway (Meta Cloud / Twilio)</h3>
-                <p class="text-xs text-slate-500">Optional: Configure enterprise gateways to send direct confirmation WhatsApp messages to candidate phone numbers.</p>
-            </div>
-
-            <form action="{{ route('admin.settings.update') }}" method="POST" class="space-y-5">
-                @csrf
-                <input type="hidden" name="group" value="whatsapp">
-
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Student Provider Integration</label>
-                    <select name="whatsapp_provider" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
-                        <option value="meta_cloud" {{ ($settings['whatsapp_provider'] ?? '') === 'meta_cloud' ? 'selected' : '' }}>Meta WhatsApp Cloud API (Recommended)</option>
-                        <option value="twilio" {{ ($settings['whatsapp_provider'] ?? '') === 'twilio' ? 'selected' : '' }}>Twilio WhatsApp Gateway</option>
-                        <option value="webhook" {{ ($settings['whatsapp_provider'] ?? '') === 'webhook' ? 'selected' : '' }}>Custom Webhook HTTP Relay</option>
-                    </select>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Phone Number ID (Meta Cloud)</label>
-                        <input type="text" name="whatsapp_phone_number_id" value="{{ $settings['whatsapp_phone_number_id'] ?? '' }}" placeholder="e.g. 104829104928"
-                               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Access Token (Meta Cloud)</label>
-                        <input type="password" name="whatsapp_access_token" placeholder="{{ !empty($settings['whatsapp_access_token']) ? '••••••••••••••••' : 'EAAG...' }}"
-                               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-500">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-3 border-t border-slate-100">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Twilio Account SID</label>
-                        <input type="text" name="twilio_sid" value="{{ $settings['twilio_sid'] ?? '' }}"
-                               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Twilio Auth Token</label>
-                        <input type="password" name="twilio_token" placeholder="••••••••"
-                               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Twilio From Number</label>
-                        <input type="text" name="twilio_from_whatsapp" value="{{ $settings['twilio_from_whatsapp'] ?? '' }}" placeholder="+14155238886"
-                               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono">
-                    </div>
-                </div>
-
-                <div class="flex justify-end pt-3 border-t border-slate-100">
-                    <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow transition">Save Provider Credentials</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- Results Page (Hall of Fame) Content Settings Form -->
     <div x-show="tab === 'results'" class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
@@ -624,6 +444,157 @@
                 </button>
             </div>
         </form>
+    </div>
+
+    <!-- Telegram Bot Instant Alerts Settings Form -->
+    <div x-show="tab === 'telegram'" x-cloak class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6"
+         x-data="{
+             telegramTesting: false,
+             telegramBotToken: '{{ $settings['telegram_bot_token'] ?? '' }}',
+             telegramChatId: '{{ $settings['telegram_chat_id'] ?? '' }}',
+             telegramTestResult: null,
+             telegramTestSuccess: false,
+             sendTestTelegram() {
+                 if (!this.telegramBotToken || !this.telegramChatId) {
+                     alert('Please enter both your Telegram Bot Token and Chat ID to run the test.');
+                     return;
+                 }
+                 this.telegramTesting = true;
+                 this.telegramTestResult = null;
+                 fetch('{{ route('admin.settings.test_telegram') }}', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                         'Accept': 'application/json'
+                     },
+                     body: JSON.stringify({
+                         bot_token: this.telegramBotToken,
+                         chat_id: this.telegramChatId
+                     })
+                 })
+                 .then(res => res.json().then(data => ({ status: res.status, body: data })))
+                 .then(res => {
+                     this.telegramTesting = false;
+                     this.telegramTestSuccess = res.status === 200 && res.body.success;
+                     this.telegramTestResult = res.body.message || (this.telegramTestSuccess ? 'Telegram test alert sent successfully!' : 'Failed to send Telegram message.');
+                 })
+                 .catch(err => {
+                     this.telegramTesting = false;
+                     this.telegramTestSuccess = false;
+                     this.telegramTestResult = 'Connection error: ' + err.message;
+                 });
+             }
+         }">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-sky-100 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-sky-500 text-white flex items-center justify-center font-bold shadow-md shadow-sky-500/20">
+                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                        <span>Telegram Instant Booking Alerts</span>
+                        <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-sky-300">100% Free &amp; Instant</span>
+                    </h3>
+                    <p class="text-xs text-slate-600">Whenever a student books an IELTS Mock Test or Counseling session, receive an instant Telegram message on your phone.</p>
+                </div>
+            </div>
+        </div>
+
+        <form action="{{ route('admin.settings.update') }}" method="POST" class="space-y-5">
+            @csrf
+            <input type="hidden" name="group" value="telegram">
+
+            <!-- Enable Switch -->
+            <div class="flex items-center justify-between p-3.5 bg-sky-50/50 rounded-xl border border-sky-200/80 shadow-xs">
+                <div>
+                    <p class="text-xs font-bold text-slate-800 uppercase tracking-wider">Enable Telegram Instant Alerts</p>
+                    <p class="text-[11px] text-slate-500">Automatically send instant notification to your Telegram when any new booking is submitted.</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" name="telegram_enabled" value="1" {{ ($settings['telegram_enabled'] ?? '1') == '1' ? 'checked' : '' }} class="sr-only peer">
+                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Telegram Bot API Token</label>
+                    <input type="password" name="telegram_bot_token" x-model="telegramBotToken" required
+                           placeholder="e.g. 7584930211:AAH89k3..."
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <p class="text-[11px] text-slate-500 mt-1">Get this token from <code>@BotFather</code> on Telegram in 30 seconds.</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Your Telegram Chat ID</label>
+                    <input type="text" name="telegram_chat_id" x-model="telegramChatId" required
+                           placeholder="e.g. 1234567890"
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <p class="text-[11px] text-slate-500 mt-1">Get your Chat ID instantly by sending <code>/start</code> to <code>@userinfobot</code> on Telegram.</p>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-2">
+                <button type="submit" class="bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Save Telegram Settings
+                </button>
+            </div>
+        </form>
+
+        <!-- Test Telegram Alert Card -->
+        <div class="border border-sky-200 bg-sky-50/30 rounded-xl p-5 space-y-3">
+            <div>
+                <h4 class="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-sky-500 animate-pulse"></span>
+                    Test Telegram Notification
+                </h4>
+                <p class="text-xs text-slate-500">Send an instant test notification to your Telegram right now to verify that your bot is connected.</p>
+            </div>
+
+            <div class="pt-2">
+                <button type="button" @click="sendTestTelegram()" :disabled="telegramTesting"
+                        class="w-full sm:w-auto px-6 py-2.5 bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
+                    <template x-if="telegramTesting">
+                        <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                    </template>
+                    <span x-text="telegramTesting ? 'Sending Telegram Alert...' : '🚀 Send Test Telegram Alert'"></span>
+                </button>
+            </div>
+
+            <!-- Test Feedback Banner -->
+            <div x-show="telegramTestResult" x-cloak class="mt-3 p-3.5 rounded-xl text-xs font-medium transition"
+                 :class="telegramTestSuccess ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' : 'bg-rose-50 text-rose-800 border border-rose-200'">
+                <div class="flex items-start gap-2">
+                    <span x-text="telegramTestSuccess ? '✔' : '✖'" class="font-bold text-sm"></span>
+                    <span x-text="telegramTestResult" class="leading-relaxed"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visual Step-by-Step Instructions -->
+        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-3 shadow-xs">
+            <p class="font-bold text-slate-900 flex items-center gap-1.5 text-sm">
+                <span>📖 1 Minute Telegram Bot Setup (Urdu / English Guide):</span>
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                    <p class="font-bold text-sky-900 mb-1">Step 1: Bot Banayein</p>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">Telegram par <strong>@BotFather</strong> search karein aur <code>/newbot</code> bhejein. Bot ka name aur username rakhein. Wo aapko <strong>API Token</strong> de dega.</p>
+                </div>
+                <div class="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                    <p class="font-bold text-sky-900 mb-1">Step 2: Bot Start Karein</p>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">Apne naye banaye hue Bot ke link par click karke <strong>START</strong> button daba dein taake wo aapko messages bhej sake.</p>
+                </div>
+                <div class="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                    <p class="font-bold text-sky-900 mb-1">Step 3: Chat ID Hasil Karein</p>
+                    <p class="text-[11px] text-slate-600 leading-relaxed">Telegram par <strong>@userinfobot</strong> search karein aur <code>/start</code> bhejein. Wo aapka <strong>Id (Chat ID)</strong> batayega. Wo yahan paste karke Test karein!</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

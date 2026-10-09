@@ -19,25 +19,25 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="font-sans antialiased bg-slate-900 min-h-screen flex items-center justify-center p-4 selection:bg-blue-600 selection:text-white">
+<body class="font-sans antialiased bg-slate-100 min-h-screen flex items-center justify-center p-4 selection:bg-blue-600 selection:text-white">
     <div class="max-w-md w-full">
         <!-- Logo -->
         <div class="text-center mb-8">
             @if(!empty($siteLogo))
-                <div class="inline-flex w-20 h-20 rounded-2xl bg-white p-2 items-center justify-center shadow-xl shadow-blue-500/20 mb-3 border border-slate-100">
+                <div class="inline-flex w-20 h-20 rounded-2xl bg-white p-2 items-center justify-center shadow-lg mb-3 border border-slate-200">
                     <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" class="h-full w-full object-contain">
                 </div>
             @else
-                <div class="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-500 items-center justify-center text-white shadow-xl shadow-blue-500/30 mb-3">
+                <div class="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-500 items-center justify-center text-white shadow-lg shadow-blue-500/20 mb-3">
                     <i data-lucide="graduation-cap" class="w-8 h-8"></i>
                 </div>
             @endif
-            <h1 class="text-2xl font-extrabold text-white tracking-tight">{{ $siteName }}</h1>
-            <p class="text-sm text-slate-400 mt-1">Management Portal &amp; Staff Login</p>
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">{{ $siteName }}</h1>
+            <p class="text-sm text-slate-600 mt-1">Management Portal &amp; Staff Login</p>
         </div>
 
         <!-- Login Card -->
-        <div class="bg-white rounded-3xl p-8 shadow-2xl border border-slate-100">
+        <div class="bg-white rounded-3xl p-8 shadow-xl border border-slate-200">
             @if(session('error'))
                 <div class="mb-5 bg-red-50 border-l-4 border-red-500 p-3 rounded-r-lg text-red-800 text-xs font-semibold">
                     {{ session('error') }}
