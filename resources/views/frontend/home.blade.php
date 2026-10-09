@@ -294,14 +294,25 @@
     @endif
 
     <!-- 4. Student Result Cards Slider (with Indigo Gradient Shade) -->
-    <section class="py-16 bg-slate-100 text-slate-900 border-y border-slate-200"
+    <section class="py-16 bg-slate-100 text-slate-900 border-y border-slate-200 relative min-h-[500px]"
              x-data="{
+                sectionReady: false,
                 activeTab: 'ALL',
                 modalOpen: false,
                 modalImg: '',
                 modalTitle: '',
                 modalScore: '',
                 modalCategory: '',
+                init() {
+                    this.$nextTick(() => {
+                        setTimeout(() => { 
+                            this.sectionReady = true; 
+                            if (window.homeResultSwiper) {
+                                window.homeResultSwiper.update();
+                            }
+                        }, 120);
+                    });
+                },
                 filterResults(category) {
                     this.activeTab = category;
                     this.$nextTick(() => {
@@ -367,8 +378,35 @@
                 </div>
             </div>
 
-            <!-- Swiper Slider Container -->
-            <div class="swiper home-results-swiper !overflow-visible">
+            <!-- Full Section Skeleton Loader (shown during initialization) -->
+            <div x-show="!sectionReady" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-pulse">
+                @for($i = 0; $i < 4; $i++)
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+                    <div class="p-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                        <div class="h-4 w-16 bg-slate-200 rounded-full"></div>
+                        <div class="h-4 w-12 bg-slate-200 rounded-lg"></div>
+                    </div>
+                    <div class="w-full aspect-[4/5] bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 flex flex-col items-center justify-center gap-2">
+                        <div class="w-8 h-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Loading Scorecard...</span>
+                    </div>
+                    <div class="p-4 bg-white border-t border-slate-100 flex items-center justify-between">
+                        <div class="space-y-1.5 flex-1 pr-2">
+                            <div class="h-4 w-28 bg-slate-200 rounded"></div>
+                            <div class="h-3 w-16 bg-slate-100 rounded"></div>
+                        </div>
+                        <div class="h-6 w-8 bg-slate-200 rounded"></div>
+                    </div>
+                </div>
+                @endfor
+            </div>
+
+            <!-- Swiper Slider Container (Fades in smoothly when ready) -->
+            <div x-show="sectionReady" 
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 class="swiper home-results-swiper !overflow-visible">
                 <div class="swiper-wrapper">
                     @forelse($ietsResults as $res)
                         <div class="swiper-slide !h-auto"
@@ -390,15 +428,24 @@
                                     </div>
                                 </div>
 
-                                <!-- Fixed 4:5 Aspect Ratio Standard Card Frame -->
-                                <div class="relative w-full aspect-[4/5] bg-slate-100 overflow-hidden">
+                                <!-- Fixed 4:5 Aspect Ratio Standard Card Frame with Animated Loader -->
+                                <div class="relative w-full aspect-[4/5] bg-slate-100 overflow-hidden" x-data="{ imgLoaded: false }">
+                                    <!-- Animated Spinner & Shimmer Skeleton while loading -->
+                                    <div x-show="!imgLoaded" class="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 animate-pulse z-10">
+                                        <div class="w-8 h-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin mb-2"></div>
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Loading Scorecard...</span>
+                                    </div>
+
                                     <img src="{{ $res->card_image_url }}"
                                          alt="{{ $res->student_name }} Result Card"
                                          loading="lazy"
-                                         class="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500">
+                                         decoding="async"
+                                         @load="imgLoaded = true"
+                                         class="w-full h-full object-cover group-hover:scale-103 transition-all duration-500"
+                                         :class="imgLoaded ? 'opacity-100' : 'opacity-0'">
 
                                     <!-- Hover Magnify Overlay -->
-                                    <div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
+                                    <div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4 z-20">
                                         <span class="px-3.5 py-1.5 rounded-xl bg-white text-slate-900 text-xs font-bold shadow flex items-center gap-1.5">
                                             <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i> Click to Enlarge
                                         </span>
@@ -461,8 +508,15 @@
                     </button>
                 </div>
 
-                <div class="w-full aspect-[4/5] bg-slate-100 rounded-2xl overflow-hidden flex items-center justify-center">
-                    <img :src="modalImg" alt="Result Card" class="w-full h-full object-contain">
+                <div class="w-full aspect-[4/5] bg-slate-100 rounded-2xl overflow-hidden flex items-center justify-center relative"
+                     x-data="{ modalImgLoaded: false }"
+                     x-effect="if(modalOpen) modalImgLoaded = false">
+                    <!-- Modal image loader -->
+                    <div x-show="!modalImgLoaded" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 z-10">
+                        <div class="w-9 h-9 rounded-full border-3 border-indigo-600 border-t-transparent animate-spin mb-2"></div>
+                        <span class="text-xs font-bold text-slate-400">Loading High-Res Poster...</span>
+                    </div>
+                    <img :src="modalImg" alt="Result Card" @load="modalImgLoaded = true" class="w-full h-full object-contain transition-opacity duration-300" :class="modalImgLoaded ? 'opacity-100' : 'opacity-0'">
                 </div>
 
                 <div class="mt-4 flex items-center justify-between w-full text-xs text-slate-600">
