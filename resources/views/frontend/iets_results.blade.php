@@ -161,21 +161,13 @@
                             </div>
                         </div>
 
-                        <!-- Fixed Standard 4:5 Aspect Ratio Container with Skeleton Loader -->
-                        <div class="relative w-full aspect-[4/5] bg-slate-100 overflow-hidden" x-data="{ imgLoaded: false }">
-                            <!-- Animated Spinner Skeleton while loading -->
-                            <div x-show="!imgLoaded" class="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 animate-pulse z-10">
-                                <div class="w-8 h-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin mb-2"></div>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Loading Scorecard...</span>
-                            </div>
-
+                        <!-- Fixed Standard 4:5 Aspect Ratio Container -->
+                        <div class="relative w-full aspect-[4/5] bg-slate-100 overflow-hidden">
                             <img src="{{ $item->card_image_url }}"
                                  alt="{{ $item->student_name }}"
                                  loading="lazy"
                                  decoding="async"
-                                 @load="imgLoaded = true"
-                                 class="w-full h-full object-cover group-hover:scale-103 transition-all duration-500"
-                                 :class="imgLoaded ? 'opacity-100' : 'opacity-0'">
+                                 class="w-full h-full object-cover group-hover:scale-103 transition-all duration-500">
 
                             <!-- Hover Overlay -->
                             <div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4 z-20">
@@ -241,12 +233,12 @@
             <!-- Modal Image 4:5 with Loader -->
             <div class="w-full aspect-[4/5] bg-slate-100 rounded-2xl overflow-hidden flex items-center justify-center shadow-inner relative"
                  x-data="{ modalImgLoaded: false }"
-                 x-effect="if(modalOpen) modalImgLoaded = false">
+                 x-effect="if(modalOpen) { modalImgLoaded = false; $nextTick(() => { if($refs.modalImgRef && $refs.modalImgRef.complete) modalImgLoaded = true; }); }">
                 <div x-show="!modalImgLoaded" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 z-10">
                     <div class="w-9 h-9 rounded-full border-3 border-indigo-600 border-t-transparent animate-spin mb-2"></div>
                     <span class="text-xs font-bold text-slate-400">Loading High-Res Poster...</span>
                 </div>
-                <img :src="modalImg" alt="Result Card" @load="modalImgLoaded = true" class="w-full h-full object-contain transition-opacity duration-300" :class="modalImgLoaded ? 'opacity-100' : 'opacity-0'">
+                <img :src="modalImg" x-ref="modalImgRef" alt="Result Card" x-on:load="modalImgLoaded = true" x-on:error="modalImgLoaded = true" class="w-full h-full object-contain transition-opacity duration-300" :class="modalImgLoaded ? 'opacity-100' : 'opacity-0'">
             </div>
 
             <div class="mt-4 flex items-center justify-between w-full text-xs text-slate-600">
