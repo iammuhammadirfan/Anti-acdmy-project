@@ -319,6 +319,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
         Route::get('/scheduling/settings', [SchedulingController::class, 'settings'])->name('admin.scheduling.settings');
         Route::post('/scheduling/settings', [SchedulingController::class, 'updateSettings'])->name('admin.scheduling.settings.update');
+        Route::post('/scheduling/settings/toggle', [SchedulingController::class, 'toggleSchedulingStatus'])->name('admin.scheduling.settings.toggle');
 
         // Backward compatibility for legacy appointment endpoints
         Route::get('/appointments', [SchedulingController::class, 'bookings'])->name('admin.appointments.index');

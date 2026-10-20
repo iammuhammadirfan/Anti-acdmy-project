@@ -76,11 +76,19 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
-                        Campus / Office Timings (Contact &amp; Footer)
+                        Monday to Friday Timings (Contact &amp; Footer)
                     </label>
-                    <input type="text" name="academy_timings" value="{{ $settings['academy_timings'] ?? 'Mon - Sat: 8:00 AM - 7:00 PM' }}" placeholder="Mon - Sat: 8:00 AM - 7:00 PM"
+                    <input type="text" name="academy_timings_mon_fri" value="{{ $settings['academy_timings_mon_fri'] ?? ($settings['academy_timings'] ?? 'Mon - Fri: 8:00 AM - 7:00 PM') }}" placeholder="Mon - Fri: 8:00 AM - 7:00 PM"
                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                    <p class="text-[11px] text-slate-400 mt-1">Website footer aur contact page dono jagah yehi timing show hogi.</p>
+                    <p class="text-[11px] text-slate-400 mt-1">Website footer aur contact page par Monday to Friday ki timings show hogi.</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                        Saturday Timings (Contact &amp; Footer)
+                    </label>
+                    <input type="text" name="academy_timings_sat" value="{{ $settings['academy_timings_sat'] ?? 'Saturday: 9:00 AM - 2:00 PM' }}" placeholder="Saturday: 9:00 AM - 2:00 PM"
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <p class="text-[11px] text-slate-400 mt-1">Website footer aur contact page par Saturday ki specific timing show hogi.</p>
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Public Contact Email</label>

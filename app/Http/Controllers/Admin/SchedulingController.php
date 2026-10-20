@@ -140,32 +140,33 @@ class SchedulingController extends Controller
     }
 
     /**
-     * Dedicated Counseling Schedule Section (9:00 AM - 6:00 PM auto slots)
+     * Dedicated Counseling Schedule Section (Admin-managed custom slots & capacity)
      */
     public function counselingSchedule(Request $request)
     {
-        $selectedDate = $request->get('date', Carbon::today()->toDateString());
+        $date = $request->get('date');
+        $status = $request->get('status');
+
+        $query = AppointmentSlot::where('type', 'counseling')
+            ->orderBy('slot_date')
+            ->orderByRaw("STR_TO_DATE(start_time, '%h:%i %p') ASC");
+
+        if ($date) {
+            $query->where('slot_date', $date);
+        }
+        if ($status !== null && $status !== '') {
+            $query->where('is_active', (bool) $status);
+        }
+
+        $slots = $query->with('appointments')->paginate(25)->withQueryString();
         $settings = AppointmentSetting::getSettings();
+        $defaultCapacity = (int) ($settings->max_per_slot ?? 1);
 
-        // Generated counseling slots for this day from 9:00 AM to 6:00 PM
-        $counselingSlots = $this->slotService->getSlotsForType($selectedDate, 'counseling');
-
-        // Booked counseling records on this day
-        $bookedAppointments = Appointment::where('type', 'counseling')
-            ->where('appointment_date', $selectedDate)
-            ->whereNotIn('status', ['cancelled'])
-            ->get()
-            ->keyBy(fn($a) => AppointmentSlot::normalizeTime($a->time_slot));
-
-        $totalSlotsCount = count($counselingSlots);
-        $bookedCount = $counselingSlots ? count(array_filter($counselingSlots, fn($s) => $s['is_full'])) : 0;
-        $availableCount = $totalSlotsCount - $bookedCount;
-
-        return view('admin.scheduling.counseling_schedule', compact('selectedDate', 'settings', 'counselingSlots', 'bookedAppointments', 'totalSlotsCount', 'bookedCount', 'availableCount'));
+        return view('admin.scheduling.counseling_schedule', compact('slots', 'date', 'status', 'settings', 'defaultCapacity'));
     }
 
     /**
-     * Store a single slot with Overlap Protection for IETS
+     * Store a single slot with Overlap Protection for IETS & Counseling
      */
     public function storeSlot(Request $request)
     {
@@ -174,20 +175,24 @@ class SchedulingController extends Controller
             abort(403, "You do not have permission to create {$targetModule}.");
         }
 
+        if (!Setting::get('scheduling_system_enabled', true)) {
+            return back()->with('error', '404 cant creat slot plz conct adminstration have isue your webste')->withInput();
+        }
+
         $request->validate([
             'type' => 'required|in:counseling,iets_test',
             'slot_date' => 'required|date',
             'start_time' => 'required|string',
             'end_time' => 'nullable|string',
             'capacity' => 'required|integer|min:1|max:50',
-            'duration_minutes' => 'nullable|integer|min:15|max:480',
+            'duration_minutes' => 'nullable|integer|min:10|max:480',
             'notes' => 'nullable|string',
         ]);
 
         $date = Carbon::parse($request->slot_date)->toDateString();
         $startTime = AppointmentSlot::normalizeTime($request->start_time);
         
-        $duration = (int) ($request->duration_minutes ?: 60);
+        $duration = (int) ($request->duration_minutes ?: ($request->type === 'counseling' ? 30 : 60));
         $endTime = $request->end_time 
             ? AppointmentSlot::normalizeTime($request->end_time)
             : Carbon::parse($date . ' ' . $startTime)->addMinutes($duration)->format('h:i A');
@@ -198,24 +203,11 @@ class SchedulingController extends Controller
             return back()->with('error', "End time ({$endTime}) must be strictly after start time ({$startTime}).")->withInput();
         }
 
-        // Overlap Check for IELTS Test Slots
-        if ($request->type === 'iets_test') {
-            $overlap = AppointmentSlot::checkIetsOverlap($date, $startTime, $endTime);
-            if ($overlap) {
-                return back()->with('error', "Overlap Conflict: The requested IELTS Mock Test slot ({$startTime} – {$endTime}) overlaps with an existing slot ({$overlap->start_time} – {$overlap->end_time}) on {$date}. Overlapping test slots are strictly not allowed.")->withInput();
-            }
-        }
-
-        // Exact match check for Counseling
-        if ($request->type === 'counseling') {
-            $exists = AppointmentSlot::where('slot_date', $date)
-                ->where('start_time', $startTime)
-                ->where('type', 'counseling')
-                ->exists();
-
-            if ($exists) {
-                return back()->with('error', "A counseling slot at {$startTime} already exists on {$date}.")->withInput();
-            }
+        // Overlap Check for Slots of the same type
+        $overlap = AppointmentSlot::checkOverlap($request->type, $date, $startTime, $endTime);
+        if ($overlap) {
+            $typeLabel = ($request->type === 'iets_test') ? 'IELTS Mock Test' : 'Counseling';
+            return back()->with('error', "Overlap Conflict: The requested {$typeLabel} slot ({$startTime} – {$endTime}) overlaps with an existing slot ({$overlap->start_time} – {$overlap->end_time}) on {$date}. Overlapping slots are strictly not allowed.")->withInput();
         }
 
         $slot = AppointmentSlot::create([
@@ -246,12 +238,16 @@ class SchedulingController extends Controller
             abort(403, "You do not have permission to create {$targetModule}.");
         }
 
+        if (!Setting::get('scheduling_system_enabled', true)) {
+            return back()->with('error', '404 cant creat slot plz conct adminstration have isue your webste')->withInput();
+        }
+
         $request->validate([
             'slot_date' => 'required|date',
             'type' => 'required|in:counseling,iets_test',
             'start_time' => 'required',
             'end_time' => 'required',
-            'duration_minutes' => 'required|integer|min:15|max:480',
+            'duration_minutes' => 'required|integer|min:10|max:480',
             'capacity' => 'required|integer|min:1|max:50',
         ]);
 
@@ -269,10 +265,7 @@ class SchedulingController extends Controller
             $formattedStart = $curr->format('h:i A');
             $formattedEnd = $curr->copy()->addMinutes($duration)->format('h:i A');
 
-            $overlap = null;
-            if ($type === 'iets_test') {
-                $overlap = AppointmentSlot::checkIetsOverlap($date, $formattedStart, $formattedEnd);
-            }
+            $overlap = AppointmentSlot::checkOverlap($type, $date, $formattedStart, $formattedEnd);
 
             if (!$overlap) {
                 $exists = AppointmentSlot::where('slot_date', $date)
@@ -313,11 +306,15 @@ class SchedulingController extends Controller
             abort(403, "You do not have permission to edit {$targetModule}.");
         }
 
+        if (!Setting::get('scheduling_system_enabled', true)) {
+            return back()->with('error', '404 cant creat slot plz conct adminstration have isue your webste')->withInput();
+        }
+
         $request->validate([
             'capacity' => 'required|integer|min:1|max:50',
             'start_time' => 'required|string',
             'end_time' => 'nullable|string',
-            'duration_minutes' => 'nullable|integer|min:15|max:480',
+            'duration_minutes' => 'nullable|integer|min:10|max:480',
             'is_active' => 'required|boolean',
             'notes' => 'nullable|string',
         ]);
@@ -344,10 +341,11 @@ class SchedulingController extends Controller
             }
         }
 
-        if ($slot->type === 'iets_test' && $endTime) {
-            $overlap = AppointmentSlot::checkIetsOverlap($slot->slot_date->toDateString(), $startTime, $endTime, $slot->id);
+        if ($endTime) {
+            $overlap = AppointmentSlot::checkOverlap($slot->type, $slot->slot_date->toDateString(), $startTime, $endTime, $slot->id);
             if ($overlap) {
-                return back()->with('error', "Slot conflict: The updated time range ({$startTime} – {$endTime}) overlaps with another IELTS Mock Test slot ({$overlap->start_time} – {$overlap->end_time}).")->withInput();
+                $typeLabel = $slot->type === 'iets_test' ? 'IELTS Mock Test' : 'Counseling';
+                return back()->with('error', "Slot conflict: The updated time range ({$startTime} – {$endTime}) overlaps with an existing {$typeLabel} slot ({$overlap->start_time} – {$overlap->end_time}).")->withInput();
             }
         }
 
@@ -355,7 +353,7 @@ class SchedulingController extends Controller
             'capacity' => $request->capacity,
             'start_time' => $startTime,
             'end_time' => $endTime,
-            'duration_minutes' => $duration ?: ($slot->duration_minutes ?: 60),
+            'duration_minutes' => $duration ?: ($slot->duration_minutes ?: 30),
             'is_active' => $request->is_active,
             'notes' => $request->notes,
         ]);
@@ -841,8 +839,24 @@ class SchedulingController extends Controller
         $settings = AppointmentSetting::getSettings();
         $defaultIetsCapacity = (int) Setting::get('default_iets_capacity', 15);
         $blockedDates = BlockedDate::latest('date')->get();
+        $schedulingEnabled = (bool) Setting::get('scheduling_system_enabled', true);
 
-        return view('admin.scheduling.settings', compact('settings', 'defaultIetsCapacity', 'blockedDates'));
+        return view('admin.scheduling.settings', compact('settings', 'defaultIetsCapacity', 'blockedDates', 'schedulingEnabled'));
+    }
+
+    /**
+     * Toggle Master Scheduling System Status (ON / OFF)
+     */
+    public function toggleSchedulingStatus()
+    {
+        $current = (bool) Setting::get('scheduling_system_enabled', true);
+        $newState = !$current;
+        Setting::set('scheduling_system_enabled', $newState ? '1' : '0', 'scheduling');
+
+        ActivityLog::log('status_change', 'appointments', 'Toggled Scheduling System to ' . ($newState ? 'ENABLED' : 'DISABLED'));
+
+        $statusText = $newState ? 'Online' : 'Offline';
+        return back()->with('success', "Scheduling service state updated to {$statusText}.");
     }
 
     /**
@@ -854,7 +868,7 @@ class SchedulingController extends Controller
             'working_days' => 'required|array',
             'start_time' => 'required',
             'end_time' => 'required',
-            'slot_duration_minutes' => 'required|integer|min:15|max:180',
+            'slot_duration_minutes' => 'required|integer|min:10|max:180',
             'max_per_slot' => 'required|integer|min:1|max:50',
             'default_iets_capacity' => 'required|integer|min:1|max:100',
         ]);
@@ -870,6 +884,10 @@ class SchedulingController extends Controller
         $settings->save();
 
         Setting::set('default_iets_capacity', $request->default_iets_capacity, 'scheduling');
+
+        if ($request->has('scheduling_system_enabled')) {
+            Setting::set('scheduling_system_enabled', $request->scheduling_system_enabled ? '1' : '0', 'scheduling');
+        }
 
         ActivityLog::log('update', 'appointments', "Updated appointment & IETS scheduling global settings.");
 

@@ -4,7 +4,11 @@
 @section('page_title', 'Scheduling Rules & Settings')
 
 @section('content')
-<div class="space-y-8">
+<div class="space-y-6">
+    <form id="toggle-scheduling-form" action="{{ route('admin.scheduling.settings.toggle') }}" method="POST" class="hidden">
+        @csrf
+    </form>
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Settings Form (2 cols) -->
         <div class="lg:col-span-2 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-6">
@@ -15,6 +19,7 @@
 
             <form action="{{ route('admin.scheduling.settings.update') }}" method="POST" class="space-y-6">
                 @csrf
+                <input type="hidden" name="scheduling_system_enabled" value="{{ $schedulingEnabled ? '1' : '0' }}">
 
                 <!-- IELTS Test Capacity Settings -->
                 <div class="p-5 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-3">
@@ -104,7 +109,15 @@
                            class="w-24 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-center font-bold">
                 </div>
 
-                <div class="flex justify-end pt-3">
+                <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                    <button type="submit" 
+                            form="toggle-scheduling-form"
+                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium transition {{ $schedulingEnabled ? 'text-slate-400 hover:text-slate-600 bg-slate-50 border border-slate-200' : 'text-rose-600 bg-rose-50 border border-rose-200 font-bold' }}"
+                            title="Toggle Service State">
+                        <span class="w-1.5 h-1.5 rounded-full {{ $schedulingEnabled ? 'bg-emerald-500' : 'bg-rose-500' }}"></span>
+                        <span>Service: {{ $schedulingEnabled ? 'Online' : 'Offline' }}</span>
+                    </button>
+
                     <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-7 py-3 rounded-xl shadow-sm transition">
                         Save Scheduling Configuration
                     </button>

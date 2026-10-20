@@ -8,6 +8,7 @@ use App\Models\AppointmentSetting;
 use App\Models\AppointmentSlot;
 use App\Models\BlockedDate;
 use App\Models\SeoMeta;
+use App\Models\Setting;
 use App\Services\AppointmentSlotService;
 use App\Services\NotificationService;
 use Carbon\Carbon;
@@ -27,6 +28,10 @@ class AppointmentBookingController extends Controller
 
     public function index(Request $request)
     {
+        if (!Setting::get('scheduling_system_enabled', true)) {
+            abort(404, '404 cant creat slot plz conct adminstration have isue your webste');
+        }
+
         $defaultType = $request->get('type', 'counseling');
         if (!in_array($defaultType, ['counseling', 'iets_test'])) {
             $defaultType = 'counseling';
@@ -44,6 +49,14 @@ class AppointmentBookingController extends Controller
 
     public function getSlots(Request $request)
     {
+        if (!Setting::get('scheduling_system_enabled', true)) {
+            return response()->json([
+                'success' => false,
+                'message' => '404 cant creat slot plz conct adminstration have isue your webste',
+                'slots' => [],
+            ], 404);
+        }
+
         $request->validate([
             'date' => 'required|date',
             'type' => 'nullable|string|in:counseling,iets_test',
@@ -64,6 +77,9 @@ class AppointmentBookingController extends Controller
 
     public function book(Request $request)
     {
+        if (!Setting::get('scheduling_system_enabled', true)) {
+            abort(404, '404 cant creat slot plz conct adminstration have isue your webste');
+        }
         $type = $request->input('appointment_type', 'counseling');
         if (!in_array($type, ['counseling', 'iets_test'])) {
             $type = 'counseling';

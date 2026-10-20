@@ -83,8 +83,9 @@
         $siteName = $globalSettings['academy_name'] ?? \App\Models\Setting::get('academy_name', 'Academy');
         $siteTagline = $globalSettings['academy_tagline'] ?? \App\Models\Setting::get('academy_tagline', '& IELTS Center');
         $sitePhone = $globalSettings['contact_phone'] ?? \App\Models\Setting::get('contact_phone', '+1 (555) 234-5678');
-        $sitePhone2 = $globalSettings['contact_phone_2'] ?? \App\Models\Setting::get('contact_phone_2', '');
-        $siteTimings = $globalSettings['academy_timings'] ?? \App\Models\Setting::get('academy_timings', 'Mon - Sat: 8:00 AM - 7:00 PM');
+        $siteTimingsMonFri = $globalSettings['academy_timings_mon_fri'] ?? ($globalSettings['academy_timings'] ?? \App\Models\Setting::get('academy_timings_mon_fri', \App\Models\Setting::get('academy_timings', 'Mon - Fri: 8:00 AM - 7:00 PM')));
+        $siteTimingsSat = $globalSettings['academy_timings_sat'] ?? \App\Models\Setting::get('academy_timings_sat', 'Saturday: 9:00 AM - 2:00 PM');
+        $siteTimings = $siteTimingsMonFri;
         $siteEmail = $globalSettings['contact_email'] ?? \App\Models\Setting::get('contact_email', 'info@antiacademy.edu');
         $siteAddress = $globalSettings['contact_address'] ?? \App\Models\Setting::get('contact_address', '124 Academic Boulevard, Knowledge Park');
         $fbLink = $globalSettings['social_facebook'] ?? \App\Models\Setting::get('social_facebook', 'https://facebook.com');
@@ -454,8 +455,14 @@
                         </p>
                         <p class="flex items-center gap-2.5">
                             <i data-lucide="clock" class="w-4 h-4 text-slate-500 shrink-0"></i>
-                            <span>{{ $siteTimings }}</span>
+                            <span>{{ $siteTimingsMonFri }}</span>
                         </p>
+                        @if(!empty($siteTimingsSat))
+                        <p class="flex items-center gap-2.5">
+                            <i data-lucide="clock-3" class="w-4 h-4 text-slate-500 shrink-0"></i>
+                            <span>{{ $siteTimingsSat }}</span>
+                        </p>
+                        @endif
                     </div>
                 </div>
             </div>
