@@ -56,8 +56,12 @@
                                         <a href="tel:{{ $settings['phone_2'] }}" class="hover:text-emerald-300 transition">{{ $settings['phone_2'] }}</a>
                                     @endif
                                 </p>
-                                <span class="text-xs text-slate-300">{{ $settings['timings'] ?? ($globalSettings['academy_timings'] ?? 'Mon - Sat: 8:00 AM - 7:00 PM') }}</span>
-                            </div>
+                                <div class="text-xs text-slate-300 space-y-0.5 mt-1">
+                                    <p>{{ $settings['timings_mon_fri'] ?? ($settings['timings'] ?? ($globalSettings['academy_timings_mon_fri'] ?? 'Mon - Fri: 8:00 AM - 7:00 PM')) }}</p>
+                                    @if(!empty($settings['timings_sat']) || !empty($globalSettings['academy_timings_sat']))
+                                        <p class="text-slate-400">{{ $settings['timings_sat'] ?? $globalSettings['academy_timings_sat'] }}</p>
+                                    @endif
+                                </div>
                         </div>
 
                         <div class="flex items-start gap-4">

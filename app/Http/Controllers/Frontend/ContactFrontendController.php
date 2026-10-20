@@ -23,8 +23,9 @@ class ContactFrontendController extends Controller
         $settings = [
             'address' => Setting::get('contact_address', '124 Academic Boulevard, Knowledge Park'),
             'phone' => Setting::get('contact_phone', '+1 (555) 234-5678'),
-            'phone_2' => Setting::get('contact_phone_2', ''),
-            'timings' => Setting::get('academy_timings', 'Mon - Sat: 8:00 AM - 7:00 PM'),
+            'timings' => Setting::get('academy_timings_mon_fri', Setting::get('academy_timings', 'Mon - Fri: 8:00 AM - 7:00 PM')),
+            'timings_mon_fri' => Setting::get('academy_timings_mon_fri', Setting::get('academy_timings', 'Mon - Fri: 8:00 AM - 7:00 PM')),
+            'timings_sat' => Setting::get('academy_timings_sat', 'Saturday: 9:00 AM - 2:00 PM'),
             'email' => Setting::get('contact_email', 'info@antiacademy.edu'),
             'whatsapp' => Setting::get('contact_whatsapp', '+15552345678'),
         ];

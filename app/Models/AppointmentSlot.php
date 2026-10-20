@@ -41,10 +41,10 @@ class AppointmentSlot extends Model
     }
 
     /**
-     * Check if a proposed IETS slot overlaps with any existing IETS slot on the same date.
-     * Returns true if overlap is detected.
+     * Check if a proposed slot overlaps with any existing slot of the same type on the same date.
+     * Returns true/slot if overlap is detected.
      */
-    public static function checkIetsOverlap(string $date, string $startTime, string $endTime, ?int $excludeSlotId = null): ?self
+    public static function checkOverlap(string $type, string $date, string $startTime, string $endTime, ?int $excludeSlotId = null): ?self
     {
         $start = Carbon::parse($date . ' ' . $startTime);
         $end = Carbon::parse($date . ' ' . $endTime);
@@ -54,7 +54,7 @@ class AppointmentSlot extends Model
             return null;
         }
 
-        $existingSlots = static::where('type', 'iets_test')
+        $existingSlots = static::where('type', $type)
             ->where('slot_date', $date)
             ->when($excludeSlotId, fn($q) => $q->where('id', '!=', $excludeSlotId))
             ->get();
@@ -63,7 +63,7 @@ class AppointmentSlot extends Model
             $sStart = Carbon::parse($date . ' ' . $slot->start_time);
             $sEnd = $slot->end_time 
                 ? Carbon::parse($date . ' ' . $slot->end_time)
-                : $sStart->copy()->addMinutes($slot->duration_minutes ?: 60);
+                : $sStart->copy()->addMinutes($slot->duration_minutes ?: 30);
 
             // Time interval overlap condition: newStart < existingEnd AND newEnd > existingStart
             if ($start->lt($sEnd) && $end->gt($sStart)) {
@@ -72,6 +72,15 @@ class AppointmentSlot extends Model
         }
 
         return null;
+    }
+
+    /**
+     * Check if a proposed IETS slot overlaps with any existing IETS slot on the same date.
+     * Returns true if overlap is detected.
+     */
+    public static function checkIetsOverlap(string $date, string $startTime, string $endTime, ?int $excludeSlotId = null): ?self
+    {
+        return static::checkOverlap('iets_test', $date, $startTime, $endTime, $excludeSlotId);
     }
 
     public function creator(): BelongsTo
@@ -91,7 +100,15 @@ class AppointmentSlot extends Model
 
     public function getBookedCountAttribute(): int
     {
-        return $this->activeAppointments()->count();
+        return Appointment::where(function($q) {
+            $q->where('slot_id', $this->id)
+              ->orWhere(function($sub) {
+                  $sub->whereNull('slot_id')
+                      ->where('appointment_date', $this->slot_date->toDateString())
+                      ->where('time_slot', $this->start_time)
+                      ->where('type', $this->type);
+              });
+        })->whereNotIn('status', ['cancelled'])->count();
     }
 
     public function getRemainingSeatsAttribute(): int

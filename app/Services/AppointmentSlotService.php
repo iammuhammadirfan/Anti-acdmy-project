@@ -6,6 +6,7 @@ use App\Models\Appointment;
 use App\Models\AppointmentSetting;
 use App\Models\AppointmentSlot;
 use App\Models\BlockedDate;
+use App\Models\Setting;
 use Carbon\Carbon;
 
 class AppointmentSlotService
@@ -20,6 +21,10 @@ class AppointmentSlotService
      */
     public function getSlotsForType(string $dateStr, string $type = 'counseling'): array
     {
+        if (!Setting::get('scheduling_system_enabled', true)) {
+            return [];
+        }
+
         $date = Carbon::parse($dateStr);
         $today = Carbon::today();
 
@@ -97,8 +102,68 @@ class AppointmentSlotService
         }
 
         // ============================================================
-        // 2. COUNSELING SLOTS (Automatic Single Slots 9:00 AM to 6:00 PM)
+        // 2. COUNSELING SLOTS (Admin-Configured Slots or Fallback Auto)
         // ============================================================
+        $dbSlots = AppointmentSlot::where('slot_date', $date->toDateString())
+            ->where('type', 'counseling')
+            ->where('is_active', true)
+            ->orderByRaw("STR_TO_DATE(start_time, '%h:%i %p') ASC")
+            ->get();
+
+        if ($dbSlots->isNotEmpty()) {
+            $result = [];
+            foreach ($dbSlots as $slot) {
+                $isPast = false;
+                if ($date->isToday()) {
+                    $slotTime = Carbon::parse($date->toDateString() . ' ' . $slot->start_time);
+                    if ($slotTime->lte(Carbon::now())) {
+                        $isPast = true;
+                    }
+                } elseif ($date->lt(Carbon::today())) {
+                    $isPast = true;
+                }
+
+                $bookedCount = $slot->booked_count;
+                $capacity = (int) $slot->capacity;
+                $remaining = max(0, $capacity - $bookedCount);
+                $isFull = $bookedCount >= $capacity;
+                $isAvailable = !$isPast && !$isFull && $slot->is_active;
+
+                $statusText = $capacity > 1 ? "{$remaining} Seats Available" : 'Available';
+                if ($isPast) {
+                    $statusText = 'Time Passed';
+                } elseif ($isFull) {
+                    $statusText = 'FULLY BOOKED';
+                }
+
+                $result[] = [
+                    'id' => $slot->id,
+                    'time' => $slot->start_time,
+                    'start_time' => $slot->start_time,
+                    'end_time' => $slot->end_time,
+                    'time_range' => $slot->start_time . ($slot->end_time ? ' – ' . $slot->end_time : ''),
+                    'capacity' => $capacity,
+                    'booked_count' => $bookedCount,
+                    'remaining_seats' => $remaining,
+                    'is_full' => $isFull,
+                    'is_past' => $isPast,
+                    'is_disabled' => !$isAvailable,
+                    'is_available' => $isAvailable,
+                    'status_text' => $statusText,
+                    'duration_minutes' => (int) ($slot->duration_minutes ?: 30),
+                    'formatted_duration' => $slot->formatted_duration,
+                    'type' => 'counseling',
+                ];
+            }
+            return $result;
+        }
+
+        // If admin is actively managing counseling slots in the database,
+        // do not auto-generate unwanted slots on dates the admin did not schedule.
+        if (AppointmentSlot::where('type', 'counseling')->exists()) {
+            return [];
+        }
+
         $settings = AppointmentSetting::getSettings();
         $workingDays = $settings->working_days ?? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         $dayName = $date->format('l');
@@ -109,7 +174,7 @@ class AppointmentSlotService
 
         $startTime = Carbon::parse($settings->start_time ?: '09:00:00');
         $endTime = Carbon::parse($settings->end_time ?: '18:00:00'); // 9:00 AM to 6:00 PM
-        $slotMinutes = max(15, (int) ($settings->slot_duration_minutes ?: 30));
+        $slotMinutes = max(10, (int) ($settings->slot_duration_minutes ?: 30));
 
         $breakStart = $settings->break_start ? Carbon::parse($settings->break_start) : null;
         $breakEnd = $settings->break_end ? Carbon::parse($settings->break_end) : null;
@@ -154,7 +219,7 @@ class AppointmentSlotService
                 $isFull = $countBooked >= $maxPerSlot;
                 $isAvailable = !$isPastToday && !$isFull;
 
-                $statusText = 'Available';
+                $statusText = $maxPerSlot > 1 ? "{$remaining} Seats Available" : 'Available';
                 if ($isPastToday) {
                     $statusText = 'Time Passed';
                 } elseif ($isFull) {
@@ -175,6 +240,8 @@ class AppointmentSlotService
                     'is_disabled' => !$isAvailable,
                     'is_available' => $isAvailable,
                     'status_text' => $statusText,
+                    'duration_minutes' => $slotMinutes,
+                    'formatted_duration' => $slotMinutes < 60 ? "{$slotMinutes} Mins" : (floor($slotMinutes / 60) . ' Hour'),
                     'type' => 'counseling',
                 ];
             }

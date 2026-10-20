@@ -158,8 +158,8 @@
                             </template>
                             <template x-if="appointmentType === 'counseling'">
                                 <div class="space-y-1">
-                                    <p>• Sessions are <strong>{{ $settings->slot_duration_minutes ?? 30 }} minutes</strong> each.</p>
-                                    <p>• 1-on-1 counseling with experienced academic advisors.</p>
+                                    <p>• Flexible session durations (from 10 mins upwards) with reserved student seats.</p>
+                                    <p>• 1-on-1 diagnostic advice, admission counseling, and campus tour guidance.</p>
                                     <p>• Instant confirmation via email and WhatsApp alert.</p>
                                 </div>
                             </template>
@@ -189,7 +189,7 @@
                         <p class="font-bold text-sm">No scheduled slots available for this date.</p>
                         <p x-text="appointmentType === 'iets_test' 
                             ? 'No IELTS mock test sessions are scheduled on this date. Please pick another upcoming date.' 
-                            : 'The academy may be closed or on a scheduled break. Please pick another date.'"></p>
+                            : 'No counseling sessions are scheduled on this date. Please pick another upcoming date.'"></p>
                     </div>
 
                     <!-- Slot Cards Grid -->
@@ -313,7 +313,7 @@
 
                                             <div class="text-[11px] font-medium whitespace-nowrap"
                                                  :class="selectedSlot === slot.time ? 'text-emerald-100' : 'text-slate-400'"
-                                                 x-show="appointmentType === 'iets_test'">
+                                                 x-show="appointmentType === 'iets_test' || slot.capacity > 1">
                                                 <span x-text="slot.booked_count + ' / ' + slot.capacity + ' Booked'"></span>
                                             </div>
                                         </div>

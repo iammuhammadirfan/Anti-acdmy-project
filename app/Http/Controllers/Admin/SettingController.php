@@ -27,7 +27,9 @@ class SettingController extends Controller
         $settings = [
             'academy_name' => Setting::get('academy_name', config('app.name', 'Academy')),
             'academy_tagline' => Setting::get('academy_tagline', '& IETS Center'),
-            'academy_timings' => Setting::get('academy_timings', 'Mon - Sat: 8:00 AM - 7:00 PM'),
+            'academy_timings' => Setting::get('academy_timings_mon_fri', Setting::get('academy_timings', 'Mon - Fri: 8:00 AM - 7:00 PM')),
+            'academy_timings_mon_fri' => Setting::get('academy_timings_mon_fri', Setting::get('academy_timings', 'Mon - Fri: 8:00 AM - 7:00 PM')),
+            'academy_timings_sat' => Setting::get('academy_timings_sat', 'Saturday: 9:00 AM - 2:00 PM'),
             'academy_logo' => Setting::get('academy_logo', ''),
             'site_favicon' => Setting::get('site_favicon', ''),
             'contact_email' => Setting::get('contact_email', 'info@antiacademy.edu'),
@@ -78,9 +80,14 @@ class SettingController extends Controller
                 'favicon_file.max' => 'The favicon size must not exceed 1MB (1024 KB).',
             ]);
 
+            $monFriTimings = $request->academy_timings_mon_fri ?? ($request->academy_timings ?? 'Mon - Fri: 8:00 AM - 7:00 PM');
+            $satTimings = $request->academy_timings_sat ?? 'Saturday: 9:00 AM - 2:00 PM';
+
             Setting::set('academy_name', $request->academy_name, 'general');
             Setting::set('academy_tagline', $request->academy_tagline ?? '', 'general');
-            Setting::set('academy_timings', $request->academy_timings ?? 'Mon - Sat: 8:00 AM - 7:00 PM', 'general');
+            Setting::set('academy_timings_mon_fri', $monFriTimings, 'general');
+            Setting::set('academy_timings_sat', $satTimings, 'general');
+            Setting::set('academy_timings', $monFriTimings, 'general');
             Setting::set('contact_email', $request->contact_email, 'general');
             Setting::set('contact_phone', $request->contact_phone, 'general');
             Setting::set('contact_phone_2', $request->contact_phone_2 ?? '', 'general');
